@@ -18,9 +18,17 @@ import time
 import cv2
 
 if __package__:
-    from .metrics import calculate_exposure_ratios, calculate_mean_brightness
+    from .metrics import (
+        calculate_exposure_ratios,
+        calculate_mean_brightness,
+        calculate_sharpness,
+    )
 else:
-    from metrics import calculate_exposure_ratios, calculate_mean_brightness
+    from metrics import (
+        calculate_exposure_ratios,
+        calculate_mean_brightness,
+        calculate_sharpness,
+    )
 
 # ---------------- 可调参数 ----------------
 CAMERA_INDEX = 0        # 0 号摄像头。如果有多个摄像头, 可以试 1、2
@@ -121,6 +129,7 @@ def main() -> int:
             frame_count += 1
             gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             brightness = calculate_mean_brightness(gray_frame)
+            sharpness = calculate_sharpness(gray_frame)
             dark_ratio, bright_ratio = calculate_exposure_ratios(
                 gray_frame,
                 DARK_THRESHOLD,
@@ -144,6 +153,15 @@ def main() -> int:
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.8,
                 (0, 255, 255),
+                2,
+            )
+            cv2.putText(
+                frame,
+                f"sharpness: {sharpness:.1f}",
+                (10, 100),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.8,
+                (255, 255, 0),
                 2,
             )
 

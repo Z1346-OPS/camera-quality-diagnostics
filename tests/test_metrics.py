@@ -1,9 +1,14 @@
 """图像质量指标测试。"""
 
+import cv2
 import numpy as np
 import pytest
 
-from src.metrics import calculate_exposure_ratios, calculate_mean_brightness
+from src.metrics import (
+    calculate_exposure_ratios,
+    calculate_mean_brightness,
+    calculate_sharpness,
+)
 
 
 @pytest.mark.parametrize(
@@ -28,6 +33,25 @@ def test_mean_brightness_rejects_empty_image():
 
     with pytest.raises(ValueError, match="图像不能为空"):
         calculate_mean_brightness(empty_image)
+
+
+def test_sharpness_is_zero_for_uniform_image():
+    uniform_image = np.full((60, 60), 128, dtype=np.uint8)
+
+    assert calculate_sharpness(uniform_image) == 0.0
+
+
+def test_sharpness_decreases_after_blurring():
+    checker = np.zeros((60, 60), dtype=np.uint8)
+    checker[::2, ::2] = 255
+    checker[1::2, 1::2] = 255
+    blurred = cv2.GaussianBlur(checker, (7, 7), 0)
+
+    sharp_score = calculate_sharpness(checker)
+    blurred_score = calculate_sharpness(blurred)
+
+    assert sharp_score > blurred_score
+    assert blurred_score >= 0.0
 
 
 @pytest.mark.parametrize(

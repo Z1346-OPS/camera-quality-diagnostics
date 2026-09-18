@@ -31,6 +31,14 @@ def calculate_mean_brightness(frame: np.ndarray) -> float:
     return float(gray.mean())
 
 
+def calculate_sharpness(frame: np.ndarray) -> float:
+    """使用拉普拉斯方差计算清晰度分数，分数越高通常表示边缘越丰富。"""
+    gray = _to_grayscale(frame)
+    laplacian = cv2.Laplacian(gray, cv2.CV_64F)
+
+    return float(laplacian.var())
+
+
 def calculate_exposure_ratios(
     frame: np.ndarray,
     dark_threshold: int = 30,
