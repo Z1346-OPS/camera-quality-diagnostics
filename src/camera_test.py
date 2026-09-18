@@ -18,13 +18,15 @@ import time
 import cv2
 
 if __package__:
-    from .metrics import calculate_mean_brightness
+    from .metrics import calculate_exposure_ratios, calculate_mean_brightness
 else:
-    from metrics import calculate_mean_brightness
+    from metrics import calculate_exposure_ratios, calculate_mean_brightness
 
 # ---------------- 可调参数 ----------------
 CAMERA_INDEX = 0        # 0 号摄像头。如果有多个摄像头, 可以试 1、2
 WINDOW_NAME = "Camera Test - press q to quit"
+DARK_THRESHOLD = 30     # 灰度值小于等于它, 暂时视为欠曝像素
+BRIGHT_THRESHOLD = 225  # 灰度值大于等于它, 暂时视为过曝像素
 
 # 最多尝试打开几次。设成 3 而不是"一直重试",
 # 是为了在摄像头有问题时快速失败, 而不是卡死在这里。
@@ -117,7 +119,13 @@ def main() -> int:
                 break
 
             frame_count += 1
-            brightness = calculate_mean_brightness(frame)
+            gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            brightness = calculate_mean_brightness(gray_frame)
+            dark_ratio, bright_ratio = calculate_exposure_ratios(
+                gray_frame,
+                DARK_THRESHOLD,
+                BRIGHT_THRESHOLD,
+            )
 
             # 显示帧计数和平均亮度, 方便观察画面是否持续变化
             cv2.putText(
@@ -128,6 +136,15 @@ def main() -> int:
                 1.0,                           # 字号
                 (0, 255, 0),                   # 颜色 (B, G, R) = 绿色
                 2,                             # 线宽
+            )
+            cv2.putText(
+                frame,
+                f"dark: {dark_ratio:.1f}%  bright: {bright_ratio:.1f}%",
+                (10, 65),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.8,
+                (0, 255, 255),
+                2,
             )
 
             cv2.imshow(WINDOW_NAME, frame)
