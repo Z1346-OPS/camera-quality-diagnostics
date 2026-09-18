@@ -1,0 +1,39 @@
+{
+  // ============================================================
+  //  VS Code 项目设置 —— 只对本项目生效, 不影响你的全局设置
+  // ============================================================
+
+  // 本文件编码固定为 UTF-8 (你全局设的是 gb18030, 这里覆盖掉)
+  "files.encoding": "utf8",
+
+  // ---------- Python 解释器 ----------
+  // 强制使用本项目 .venv 里的 Python, 而不是全局 Python
+  "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+  // 不在启动时弹窗问"选哪个解释器"
+  "python.terminal.activateEnvironment": true,
+
+  // ---------- 保存时自动整理 ----------
+  "editor.formatOnSave": true,
+  // 保存时删掉行尾多余空格、保证文件末尾有空行
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+
+  // ---------- 测试 (pytest) ----------
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
+
+  // ---------- 排除干扰 ----------
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/.pytest_cache": true
+  },
+  "search.exclude": {
+    "**/.venv": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // ============================================================
+      // 1) 调试主程序 src/main.py      <=== 按 F5 默认走这个
+      // ============================================================
+      "name": "调试主程序 (src/main.py)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\src\\main.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      // 用项目 .venv 里的 Python, 不用全局 Python
+      "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "justMyCode": true
+    },
+
+    {
+      // ============================================================
+      // 2) 调试当前打开的 Python 文件   (通用, 换文件不用改配置)
+      // ============================================================
+      "name": "调试当前文件 (当前打开的 .py)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "justMyCode": true
+    },
+
+    {
+      // ============================================================
+      // 3) 调试摄像头测试程序 src/camera_test.py
+      //    注意: 需要摄像头; 运行时会弹出一个 OpenCV 窗口, 按 q 退出
+      // ============================================================
+      "name": "调试摄像头测试 (src/camera_test.py)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\src\\camera_test.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "justMyCode": true
+    }
+  ]
+}
