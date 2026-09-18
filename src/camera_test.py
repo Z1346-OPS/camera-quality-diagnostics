@@ -17,6 +17,11 @@ import time
 
 import cv2
 
+if __package__:
+    from .metrics import calculate_mean_brightness
+else:
+    from metrics import calculate_mean_brightness
+
 # ---------------- 可调参数 ----------------
 CAMERA_INDEX = 0        # 0 号摄像头。如果有多个摄像头, 可以试 1、2
 WINDOW_NAME = "Camera Test - press q to quit"
@@ -112,11 +117,12 @@ def main() -> int:
                 break
 
             frame_count += 1
+            brightness = calculate_mean_brightness(frame)
 
-            # 在画面上显示一个计数, 让你能看出画面是"活的"
+            # 显示帧计数和平均亮度, 方便观察画面是否持续变化
             cv2.putText(
                 frame,
-                f"frame: {frame_count}",
+                f"frame: {frame_count}  brightness: {brightness:.1f}",
                 (10, 30),                      # 文字左下角坐标
                 cv2.FONT_HERSHEY_SIMPLEX,      # 字体
                 1.0,                           # 字号
