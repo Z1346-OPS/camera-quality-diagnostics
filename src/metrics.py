@@ -31,6 +31,13 @@ def calculate_mean_brightness(frame: np.ndarray) -> float:
     return float(gray.mean())
 
 
+def calculate_contrast(frame: np.ndarray) -> float:
+    """使用灰度标准差计算全局对比度分数。"""
+    gray = _to_grayscale(frame)
+
+    return float(gray.std())
+
+
 def calculate_sharpness(frame: np.ndarray) -> float:
     """使用拉普拉斯方差计算清晰度分数，分数越高通常表示边缘越丰富。"""
     gray = _to_grayscale(frame)

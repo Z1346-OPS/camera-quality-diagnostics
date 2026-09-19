@@ -19,12 +19,14 @@ import cv2
 
 if __package__:
     from .metrics import (
+        calculate_contrast,
         calculate_exposure_ratios,
         calculate_mean_brightness,
         calculate_sharpness,
     )
 else:
     from metrics import (
+        calculate_contrast,
         calculate_exposure_ratios,
         calculate_mean_brightness,
         calculate_sharpness,
@@ -129,6 +131,7 @@ def main() -> int:
             frame_count += 1
             gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             brightness = calculate_mean_brightness(gray_frame)
+            contrast = calculate_contrast(gray_frame)
             sharpness = calculate_sharpness(gray_frame)
             dark_ratio, bright_ratio = calculate_exposure_ratios(
                 gray_frame,
@@ -162,6 +165,15 @@ def main() -> int:
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.8,
                 (255, 255, 0),
+                2,
+            )
+            cv2.putText(
+                frame,
+                f"contrast: {contrast:.1f}",
+                (10, 135),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.8,
+                (255, 0, 255),
                 2,
             )
 

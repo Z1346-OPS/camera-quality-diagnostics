@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 
 from src.metrics import (
+    calculate_contrast,
     calculate_exposure_ratios,
     calculate_mean_brightness,
     calculate_sharpness,
@@ -33,6 +34,24 @@ def test_mean_brightness_rejects_empty_image():
 
     with pytest.raises(ValueError, match="图像不能为空"):
         calculate_mean_brightness(empty_image)
+
+
+def test_contrast_is_zero_for_uniform_image():
+    uniform_image = np.full((20, 20), 128, dtype=np.uint8)
+
+    assert calculate_contrast(uniform_image) == 0.0
+
+
+def test_contrast_is_higher_for_wider_gray_range():
+    low_contrast = np.array([[120, 136]], dtype=np.uint8)
+    high_contrast = np.array([[0, 255]], dtype=np.uint8)
+
+    low_score = calculate_contrast(low_contrast)
+    high_score = calculate_contrast(high_contrast)
+
+    assert low_score == 8.0
+    assert high_score == 127.5
+    assert high_score > low_score
 
 
 def test_sharpness_is_zero_for_uniform_image():
