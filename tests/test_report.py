@@ -1,6 +1,7 @@
 """CSV 质量报告测试。"""
 
 import csv
+import re
 
 from src.report import append_quality_record
 
@@ -21,7 +22,7 @@ def test_append_quality_record_creates_directory_and_csv(tmp_path):
     assert rows[0]["bright_ratio"] == "4.6"
     assert rows[0]["sharpness"] == "230.0"
     assert rows[0]["contrast"] == "33.4"
-    assert rows[0]["recorded_at"]
+    assert re.search(r"\.\d{3}[+-]\d{2}:\d{2}$", rows[0]["recorded_at"])
 
 
 def test_append_quality_record_reuses_header(tmp_path):

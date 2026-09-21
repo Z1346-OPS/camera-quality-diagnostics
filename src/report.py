@@ -25,7 +25,7 @@ def append_quality_record(
     needs_header = not report_path.exists() or report_path.stat().st_size == 0
 
     row = {
-        "recorded_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "recorded_at": datetime.now().astimezone().isoformat(timespec="milliseconds"),
         "frame_count": frame_count,
         "brightness": f"{brightness:.1f}",
         "dark_ratio": f"{dark_ratio:.1f}",
