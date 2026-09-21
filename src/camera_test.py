@@ -24,6 +24,7 @@ if __package__:
         calculate_mean_brightness,
         calculate_sharpness,
     )
+    from .report import append_quality_record
 else:
     from metrics import (
         calculate_contrast,
@@ -31,10 +32,11 @@ else:
         calculate_mean_brightness,
         calculate_sharpness,
     )
+    from report import append_quality_record
 
 # ---------------- 可调参数 ----------------
 CAMERA_INDEX = 0        # 0 号摄像头。如果有多个摄像头, 可以试 1、2
-WINDOW_NAME = "Camera Test - press q to quit"
+WINDOW_NAME = "Camera Test - press s to save, q to quit"
 DARK_THRESHOLD = 30     # 灰度值小于等于它, 暂时视为欠曝像素
 BRIGHT_THRESHOLD = 225  # 灰度值大于等于它, 暂时视为过曝像素
 
@@ -116,7 +118,7 @@ def main() -> int:
 
         print()
         print("-" * 58)
-        print(" 画面窗口已打开。请按键盘上的 q 键退出。")
+        print(" 画面窗口已打开。按 s 保存当前指标，按 q 退出。")
         print("-" * 58)
         print()
 
@@ -182,6 +184,17 @@ def main() -> int:
             # waitKey(1) = 等 1 毫秒, 同时读取键盘。
             # 返回的是按下键的 ASCII 码; 没按键时返回 -1。
             key = cv2.waitKey(1) & 0xFF
+
+            if key == ord("s"):
+                report_path = append_quality_record(
+                    frame_count,
+                    brightness,
+                    dark_ratio,
+                    bright_ratio,
+                    sharpness,
+                    contrast,
+                )
+                print(f"已保存当前帧指标: {report_path}")
 
             if key == ord("q"):
                 print(f"你按了 q, 正常退出。共显示 {frame_count} 帧。")

@@ -72,7 +72,7 @@ D:\DevTools\Python312\python.exe -m venv .venv
 # 环境自检
 .venv\Scripts\python.exe src\main.py
 
-# 摄像头连通性测试（会弹出画面窗口，按 q 退出）
+# 摄像头质量测试（按 s 保存当前指标，按 q 退出）
 .venv\Scripts\python.exe src\camera_test.py
 
 # 跑测试
@@ -140,7 +140,7 @@ D:\DevTools\Python312\python.exe -m venv .venv
 - [x] 清晰度分数：拉普拉斯方差（模糊阈值尚未标定）
 - [x] 对比度分数：灰度标准差（低对比度阈值尚未标定）
 - [ ] 直方图分析
-- [ ] 输出第一份质量报告（CSV）
+- [x] 按 `s` 输出单帧质量报告（CSV）
 
 **v0.3 —— 故障模式识别**
 - [ ] 脏污检测：通过局部对比度异常定位镜头脏点
