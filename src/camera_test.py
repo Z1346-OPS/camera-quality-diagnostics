@@ -21,6 +21,7 @@ if __package__:
     from .metrics import (
         calculate_contrast,
         calculate_exposure_ratios,
+        calculate_grayscale_histogram,
         calculate_mean_brightness,
         calculate_sharpness,
     )
@@ -29,6 +30,7 @@ else:
     from metrics import (
         calculate_contrast,
         calculate_exposure_ratios,
+        calculate_grayscale_histogram,
         calculate_mean_brightness,
         calculate_sharpness,
     )
@@ -134,6 +136,8 @@ def main() -> int:
             gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             brightness = calculate_mean_brightness(gray_frame)
             contrast = calculate_contrast(gray_frame)
+            histogram = calculate_grayscale_histogram(gray_frame)
+            histogram_peak = int(histogram.argmax())
             sharpness = calculate_sharpness(gray_frame)
             dark_ratio, bright_ratio = calculate_exposure_ratios(
                 gray_frame,
@@ -176,6 +180,15 @@ def main() -> int:
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.8,
                 (255, 0, 255),
+                2,
+            )
+            cv2.putText(
+                frame,
+                f"hist peak: {histogram_peak}",
+                (10, 170),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.8,
+                (0, 165, 255),
                 2,
             )
 

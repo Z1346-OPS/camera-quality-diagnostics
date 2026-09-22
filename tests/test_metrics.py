@@ -7,9 +7,31 @@ import pytest
 from src.metrics import (
     calculate_contrast,
     calculate_exposure_ratios,
+    calculate_grayscale_histogram,
     calculate_mean_brightness,
     calculate_sharpness,
 )
+
+
+def test_grayscale_histogram_counts_all_pixels():
+    image = np.full((4, 5), 128, dtype=np.uint8)
+
+    histogram = calculate_grayscale_histogram(image)
+
+    assert histogram.shape == (256,)
+    assert histogram.sum() == image.size
+    assert histogram[128] == image.size
+    assert np.count_nonzero(histogram) == 1
+
+
+def test_grayscale_histogram_counts_each_gray_level():
+    image = np.array([[0, 0, 128, 255]], dtype=np.uint8)
+
+    histogram = calculate_grayscale_histogram(image)
+
+    assert histogram[0] == 2
+    assert histogram[128] == 1
+    assert histogram[255] == 1
 
 
 @pytest.mark.parametrize(

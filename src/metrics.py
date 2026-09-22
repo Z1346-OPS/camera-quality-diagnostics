@@ -38,6 +38,13 @@ def calculate_contrast(frame: np.ndarray) -> float:
     return float(gray.std())
 
 
+def calculate_grayscale_histogram(frame: np.ndarray) -> np.ndarray:
+    """统计 0 到 255 每个灰度值的像素数量。"""
+    gray = _to_grayscale(frame)
+
+    return np.bincount(gray.ravel(), minlength=256)
+
+
 def calculate_sharpness(frame: np.ndarray) -> float:
     """使用拉普拉斯方差计算清晰度分数，分数越高通常表示边缘越丰富。"""
     gray = _to_grayscale(frame)
