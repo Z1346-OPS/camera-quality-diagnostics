@@ -25,7 +25,7 @@ if __package__:
         calculate_mean_brightness,
         calculate_sharpness,
     )
-    from .report import append_quality_record
+    from .report import append_camera_event, append_quality_record
 else:
     from metrics import (
         calculate_contrast,
@@ -34,7 +34,7 @@ else:
         calculate_mean_brightness,
         calculate_sharpness,
     )
-    from report import append_quality_record
+    from report import append_camera_event, append_quality_record
 
 # ---------------- 可调参数 ----------------
 CAMERA_INDEX = 0        # 0 号摄像头。如果有多个摄像头, 可以试 1、2
@@ -129,7 +129,14 @@ def main() -> int:
         while True:
             ok, frame = cap.read()
             if not ok:
-                print("读取画面失败, 可能是摄像头被拔掉了。退出。")
+                message = "读取画面失败，可能是摄像头被拔掉了。"
+                print(message)
+                event_path = append_camera_event(
+                    frame_count,
+                    "read_failed",
+                    message,
+                )
+                print(f"失败事件已记录: {event_path}")
                 break
 
             frame_count += 1
