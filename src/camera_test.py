@@ -138,6 +138,7 @@ def main() -> int:
             contrast = calculate_contrast(gray_frame)
             histogram = calculate_grayscale_histogram(gray_frame)
             histogram_peak = int(histogram.argmax())
+            histogram_peak_count = int(histogram[histogram_peak])
             sharpness = calculate_sharpness(gray_frame)
             dark_ratio, bright_ratio = calculate_exposure_ratios(
                 gray_frame,
@@ -184,7 +185,7 @@ def main() -> int:
             )
             cv2.putText(
                 frame,
-                f"hist peak: {histogram_peak}",
+                f"hist peak: {histogram_peak}  count: {histogram_peak_count}",
                 (10, 170),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.8,
