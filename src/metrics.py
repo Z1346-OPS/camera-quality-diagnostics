@@ -31,6 +31,22 @@ def calculate_mean_brightness(frame: np.ndarray) -> float:
     return float(gray.mean())
 
 
+def calculate_bgr_means(frame: np.ndarray) -> tuple[float, float, float]:
+    """返回 B、G、R 三个颜色通道的平均值。"""
+    if frame is None:
+        raise ValueError("图像不能是 None")
+    if not isinstance(frame, np.ndarray):
+        raise TypeError("图像必须是 NumPy 数组")
+    if frame.size == 0:
+        raise ValueError("图像不能为空")
+    if frame.ndim != 3 or frame.shape[2] != 3:
+        raise ValueError("颜色通道均值需要 BGR 三通道图")
+
+    blue_mean, green_mean, red_mean = frame.mean(axis=(0, 1))
+
+    return float(blue_mean), float(green_mean), float(red_mean)
+
+
 def calculate_contrast(frame: np.ndarray) -> float:
     """使用灰度标准差计算全局对比度分数。"""
     gray = _to_grayscale(frame)

@@ -5,12 +5,29 @@ import numpy as np
 import pytest
 
 from src.metrics import (
+    calculate_bgr_means,
     calculate_contrast,
     calculate_exposure_ratios,
     calculate_grayscale_histogram,
     calculate_mean_brightness,
     calculate_sharpness,
 )
+
+
+def test_bgr_means_preserve_opencv_channel_order():
+    image = np.zeros((2, 3, 3), dtype=np.uint8)
+    image[:, :, 0] = 10
+    image[:, :, 1] = 20
+    image[:, :, 2] = 30
+
+    assert calculate_bgr_means(image) == (10.0, 20.0, 30.0)
+
+
+def test_bgr_means_reject_grayscale_image():
+    grayscale = np.full((10, 10), 128, dtype=np.uint8)
+
+    with pytest.raises(ValueError, match="需要 BGR 三通道图"):
+        calculate_bgr_means(grayscale)
 
 
 def test_grayscale_histogram_counts_all_pixels():

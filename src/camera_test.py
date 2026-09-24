@@ -19,6 +19,7 @@ import cv2
 
 if __package__:
     from .metrics import (
+        calculate_bgr_means,
         calculate_contrast,
         calculate_exposure_ratios,
         calculate_grayscale_histogram,
@@ -28,6 +29,7 @@ if __package__:
     from .report import append_camera_event, append_quality_record
 else:
     from metrics import (
+        calculate_bgr_means,
         calculate_contrast,
         calculate_exposure_ratios,
         calculate_grayscale_histogram,
@@ -140,6 +142,7 @@ def main() -> int:
                 break
 
             frame_count += 1
+            blue_mean, green_mean, red_mean = calculate_bgr_means(frame)
             gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             brightness = calculate_mean_brightness(gray_frame)
             contrast = calculate_contrast(gray_frame)
@@ -197,6 +200,15 @@ def main() -> int:
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.8,
                 (0, 165, 255),
+                2,
+            )
+            cv2.putText(
+                frame,
+                f"B: {blue_mean:.1f}  G: {green_mean:.1f}  R: {red_mean:.1f}",
+                (10, 205),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.8,
+                (255, 255, 255),
                 2,
             )
 
