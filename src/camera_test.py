@@ -26,7 +26,7 @@ if __package__:
         calculate_mean_brightness,
         calculate_sharpness,
     )
-    from .report import append_camera_event, append_quality_record
+    from .report import append_camera_event, append_color_record, append_quality_record
 else:
     from metrics import (
         calculate_bgr_means,
@@ -36,7 +36,7 @@ else:
         calculate_mean_brightness,
         calculate_sharpness,
     )
-    from report import append_camera_event, append_quality_record
+    from report import append_camera_event, append_color_record, append_quality_record
 
 # ---------------- 可调参数 ----------------
 CAMERA_INDEX = 0        # 0 号摄像头。如果有多个摄像头, 可以试 1、2
@@ -231,6 +231,10 @@ def main() -> int:
                     contrast,
                 )
                 print(f"已保存当前帧指标: {report_path}")
+                color_path = append_color_record(
+                    frame_count, blue_mean, green_mean, red_mean
+                )
+                print(f"已保存当前帧颜色数据: {color_path}")
 
             if key == ord("q"):
                 print(f"你按了 q, 正常退出。共显示 {frame_count} 帧。")

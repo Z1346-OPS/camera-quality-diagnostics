@@ -3,7 +3,28 @@
 import csv
 import re
 
-from src.report import append_camera_event, append_quality_record
+from src.report import append_camera_event, append_color_record, append_quality_record
+
+
+def test_color_report_appends_records_with_one_header(tmp_path):
+    path = tmp_path / "reports" / "colors.csv"
+    assert append_color_record(10, 94.0, 104.2, 124.2, path) == path
+    append_color_record(20, 142.7, 142.4, 143.1, path)
+    with path.open(newline="", encoding="utf-8-sig") as report:
+        reader = csv.DictReader(report)
+        rows = list(reader)
+        assert reader.fieldnames == [
+            "recorded_at", "frame_count", "blue_mean", "green_mean",
+            "red_mean", "channel_spread",
+        ]
+    assert len(rows) == 2
+    assert rows[0]["blue_mean"] == "94.0"
+    assert rows[0]["green_mean"] == "104.2"
+    assert rows[0]["red_mean"] == "124.2"
+    assert rows[0]["channel_spread"] == "30.2"
+    assert rows[1]["channel_spread"] == "0.7"
+    assert rows[1]["frame_count"] == "20"
+    assert re.search(r"\.\d{3}[+-]\d{2}:\d{2}$", rows[1]["recorded_at"])
 
 
 def test_append_camera_event_creates_event_report(tmp_path):
