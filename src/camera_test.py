@@ -43,6 +43,12 @@ CAMERA_INDEX = 0        # 0 号摄像头。如果有多个摄像头, 可以试 1
 WINDOW_NAME = "Camera Test - press s to save, q to quit"
 DARK_THRESHOLD = 30     # 灰度值小于等于它, 暂时视为欠曝像素
 BRIGHT_THRESHOLD = 225  # 灰度值大于等于它, 暂时视为过曝像素
+SCENE_KEYS = {
+    ord("0"): "unspecified",
+    ord("1"): "white_paper",
+    ord("2"): "colored_object",
+    ord("3"): "white_restored",
+}
 
 # 最多尝试打开几次。设成 3 而不是"一直重试",
 # 是为了在摄像头有问题时快速失败, 而不是卡死在这里。
@@ -123,11 +129,13 @@ def main() -> int:
         print()
         print("-" * 58)
         print(" 画面窗口已打开。按 s 保存当前指标，按 q 退出。")
+        print(" 场景标签：0 未指定，1 白纸，2 彩色物体，3 恢复白纸。")
         print("-" * 58)
         print()
 
         # ---------- 主循环: 不断读帧并显示 ----------
         frame_count = 0
+        scene_label = "unspecified"
         while True:
             ok, frame = cap.read()
             if not ok:
@@ -215,11 +223,18 @@ def main() -> int:
                 2,
             )
 
+            cv2.putText(
+                frame, f"scene: {scene_label} (0/1/2/3)", (10, 240),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2,
+            )
             cv2.imshow(WINDOW_NAME, frame)
 
             # waitKey(1) = 等 1 毫秒, 同时读取键盘。
             # 返回的是按下键的 ASCII 码; 没按键时返回 -1。
             key = cv2.waitKey(1) & 0xFF
+            if key in SCENE_KEYS:
+                scene_label = SCENE_KEYS[key]
+                print(f"当前场景标签: {scene_label}")
 
             if key == ord("s"):
                 report_path = append_quality_record(
@@ -232,9 +247,10 @@ def main() -> int:
                 )
                 print(f"已保存当前帧指标: {report_path}")
                 color_path = append_color_record(
-                    frame_count, blue_mean, green_mean, red_mean
+                    frame_count, blue_mean, green_mean, red_mean,
+                    scene_label=scene_label,
                 )
-                print(f"已保存当前帧颜色数据: {color_path}")
+                print(f"已保存当前帧颜色数据 [{scene_label}]: {color_path}")
 
             if key == ord("q"):
                 print(f"你按了 q, 正常退出。共显示 {frame_count} 帧。")

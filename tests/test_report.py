@@ -2,8 +2,36 @@
 
 import csv
 import re
+import pytest
 
 from src.report import append_camera_event, append_color_record, append_quality_record
+
+
+def test_labeled_colors_preserve_labels_and_one_header(tmp_path):
+    path = tmp_path / "labeled.csv"
+    labels = ["unspecified", "white_paper", "colored_object", "white_restored"]
+    for frame_count, label in enumerate(labels, 1):
+        append_color_record(frame_count, 100, 110, 120, path, scene_label=label)
+    with path.open(newline="", encoding="utf-8-sig") as report:
+        rows = list(csv.DictReader(report))
+    assert [row["scene_label"] for row in rows] == labels
+    assert all(row["channel_spread"] == "20.0" for row in rows)
+
+
+def test_labeled_colors_reject_old_schema_without_changing_file(tmp_path):
+    path = tmp_path / "colors.csv"
+    append_color_record(1, 100, 110, 120, path)
+    before = path.read_bytes()
+    with pytest.raises(ValueError, match="表头不匹配"):
+        append_color_record(2, 100, 110, 120, path, scene_label="white_paper")
+    assert path.read_bytes() == before
+
+
+def test_color_report_rejects_unknown_scene(tmp_path):
+    path = tmp_path / "colors.csv"
+    with pytest.raises(ValueError, match="场景标签"):
+        append_color_record(1, 100, 110, 120, path, scene_label="=1+1")
+    assert not path.exists()
 
 
 def test_color_report_appends_records_with_one_header(tmp_path):

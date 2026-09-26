@@ -11,10 +11,17 @@ def append_color_record(
     green_mean: float,
     red_mean: float,
     report_path: Path | None = None,
+    *,
+    scene_label: str | None = None,
 ) -> Path:
     """追加颜色通道均值，通道差由未舍入的均值计算。"""
+    if scene_label is not None and scene_label not in (
+        "unspecified", "white_paper", "colored_object", "white_restored"
+    ):
+        raise ValueError("不支持的场景标签")
     if report_path is None:
-        report_path = Path(__file__).resolve().parents[1] / "data" / "reports" / "camera_colors.csv"
+        filename = "camera_colors.csv" if scene_label is None else "camera_colors_labeled.csv"
+        report_path = Path(__file__).resolve().parents[1] / "data" / "reports" / filename
     report_path = Path(report_path)
     report_path.parent.mkdir(parents=True, exist_ok=True)
     needs_header = not report_path.exists() or report_path.stat().st_size == 0
@@ -26,6 +33,12 @@ def append_color_record(
         "red_mean": f"{red_mean:.1f}",
         "channel_spread": f"{max(blue_mean, green_mean, red_mean) - min(blue_mean, green_mean, red_mean):.1f}",
     }
+    if scene_label is not None:
+        row["scene_label"] = scene_label
+    if not needs_header:
+        with report_path.open(newline="", encoding="utf-8-sig") as csv_file:
+            if next(csv.reader(csv_file), None) != list(row):
+                raise ValueError("颜色报告表头不匹配，请使用另一份报告文件")
     with report_path.open("a", newline="", encoding="utf-8-sig") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=row.keys())
         if needs_header:
