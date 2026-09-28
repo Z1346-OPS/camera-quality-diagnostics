@@ -76,6 +76,9 @@ D:\DevTools\Python312\python.exe -m venv .venv
 # 摄像头质量测试（按 s 保存当前指标，按 q 退出）
 .venv\Scripts\python.exe src\camera_test.py
 
+# 只读汇总带标签颜色报告（不打开摄像头，不修改 CSV）
+.\.venv\Scripts\python.exe -X utf8 .\src\summarize_colors.py
+
 # 跑测试
 .venv\Scripts\python.exe -m pytest
 ```
