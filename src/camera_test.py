@@ -14,6 +14,7 @@ camera_test.py —— USB 摄像头连通性测试
 
 import sys
 import time
+from uuid import uuid4
 
 import cv2
 
@@ -136,6 +137,8 @@ def main() -> int:
         # ---------- 主循环: 不断读帧并显示 ----------
         frame_count = 0
         scene_label = "unspecified"
+        run_id = uuid4().hex
+        print(f"本次运行批次 run_id: {run_id}")
         while True:
             ok, frame = cap.read()
             if not ok:
@@ -249,6 +252,7 @@ def main() -> int:
                 color_path = append_color_record(
                     frame_count, blue_mean, green_mean, red_mean,
                     scene_label=scene_label,
+                    run_id=run_id,
                 )
                 print(f"已保存当前帧颜色数据 [{scene_label}]: {color_path}")
 

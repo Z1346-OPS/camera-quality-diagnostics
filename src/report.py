@@ -3,6 +3,7 @@
 import csv
 from datetime import datetime
 from pathlib import Path
+from uuid import UUID
 
 
 def append_color_record(
@@ -13,14 +14,27 @@ def append_color_record(
     report_path: Path | None = None,
     *,
     scene_label: str | None = None,
+    run_id: str | None = None,
 ) -> Path:
     """追加颜色通道均值，通道差由未舍入的均值计算。"""
     if scene_label is not None and scene_label not in (
         "unspecified", "white_paper", "colored_object", "white_restored"
     ):
         raise ValueError("不支持的场景标签")
+    if run_id is not None:
+        if scene_label is None or not isinstance(run_id, str):
+            raise ValueError("批次记录必须包含场景标签和有效 run_id")
+        try:
+            if UUID(hex=run_id).hex != run_id:
+                raise ValueError("run_id 格式无效")
+        except ValueError as error:
+            raise ValueError("run_id 格式无效") from error
     if report_path is None:
-        filename = "camera_colors.csv" if scene_label is None else "camera_colors_labeled.csv"
+        filename = (
+            "camera_colors_runs.csv" if run_id is not None else
+            "camera_colors_labeled.csv" if scene_label is not None else
+            "camera_colors.csv"
+        )
         report_path = Path(__file__).resolve().parents[1] / "data" / "reports" / filename
     report_path = Path(report_path)
     report_path.parent.mkdir(parents=True, exist_ok=True)
@@ -35,6 +49,8 @@ def append_color_record(
     }
     if scene_label is not None:
         row["scene_label"] = scene_label
+    if run_id is not None:
+        row["run_id"] = run_id
     if not needs_header:
         with report_path.open(newline="", encoding="utf-8-sig") as csv_file:
             if next(csv.reader(csv_file), None) != list(row):

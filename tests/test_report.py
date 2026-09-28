@@ -3,8 +3,41 @@
 import csv
 import re
 import pytest
+from uuid import uuid4
 
 from src.report import append_camera_event, append_color_record, append_quality_record
+
+
+def test_run_report_keeps_batches_and_old_schema_separate(tmp_path):
+    run_path = tmp_path / "runs.csv"
+    old_path = tmp_path / "labeled.csv"
+    first_run, second_run = uuid4().hex, uuid4().hex
+    append_color_record(1, 100, 100, 102, old_path, scene_label="white_paper")
+    old_content = old_path.read_bytes()
+    append_color_record(1, 100, 100, 102, run_path,
+                        scene_label="white_paper", run_id=first_run)
+    append_color_record(2, 100, 100, 104, run_path,
+                        scene_label="white_paper", run_id=first_run)
+    append_color_record(1, 100, 100, 120, run_path,
+                        scene_label="white_paper", run_id=second_run)
+    with run_path.open(newline="", encoding="utf-8-sig") as report:
+        reader = csv.DictReader(report)
+        rows = list(reader)
+        assert reader.fieldnames[-2:] == ["scene_label", "run_id"]
+    assert [row["run_id"] for row in rows] == [first_run, first_run, second_run]
+    assert old_path.read_bytes() == old_content
+    with pytest.raises(ValueError, match="表头不匹配"):
+        append_color_record(3, 100, 100, 104, old_path,
+                            scene_label="white_paper", run_id=first_run)
+
+
+@pytest.mark.parametrize("invalid_run", ["bad", "=1+1", "", uuid4().hex.upper()])
+def test_run_report_rejects_invalid_id(tmp_path, invalid_run):
+    path = tmp_path / "runs.csv"
+    with pytest.raises(ValueError, match="run_id"):
+        append_color_record(1, 100, 100, 102, path,
+                            scene_label="white_paper", run_id=invalid_run)
+    assert not path.exists()
 
 
 def test_labeled_colors_preserve_labels_and_one_header(tmp_path):

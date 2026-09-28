@@ -3,9 +3,39 @@
 import csv
 
 import pytest
+from uuid import uuid4
 
 from src.report import append_color_record
-from src.summarize_colors import EXPECTED_FIELDS, main, summarize_color_report
+from src.summarize_colors import EXPECTED_FIELDS, RUN_FIELDS, main, summarize_color_report
+
+
+def test_run_summary_does_not_mix_restarted_frame_counts(tmp_path, capsys):
+    path = tmp_path / "runs.csv"
+    first_run, second_run = uuid4().hex, uuid4().hex
+    for frame, spread, run_id in [(1, 2, first_run), (2, 4, first_run),
+                                  (1, 20, second_run)]:
+        append_color_record(frame, 100, 100, 100 + spread, path,
+                            scene_label="white_paper", run_id=run_id)
+    before = path.read_bytes()
+    assert summarize_color_report(path) == {
+        (first_run, "white_paper"): {"count": 2, "mean": 3, "min": 2, "max": 4},
+        (second_run, "white_paper"): {"count": 1, "mean": 20, "min": 20, "max": 20},
+    }
+    assert main([str(path)]) == 0
+    output = capsys.readouterr().out
+    assert f"{first_run} | 白纸 (white_paper) | 2 | 3.0" in output
+    assert f"{second_run} | 白纸 (white_paper) | 1 | 20.0" in output
+    assert path.read_bytes() == before
+
+
+def test_run_summary_rejects_bad_id(tmp_path):
+    path = tmp_path / "runs.csv"
+    with path.open("w", newline="", encoding="utf-8-sig") as report:
+        writer = csv.writer(report)
+        writer.writerow(RUN_FIELDS)
+        writer.writerow(["time", 1, 100, 100, 110, 10, "white_paper", "=1+1"])
+    with pytest.raises(ValueError, match="run_id"):
+        summarize_color_report(path)
 
 
 def test_summary_groups_records_and_leaves_report_unchanged(tmp_path):

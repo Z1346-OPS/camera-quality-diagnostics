@@ -79,6 +79,9 @@ D:\DevTools\Python312\python.exe -m venv .venv
 # 只读汇总带标签颜色报告（不打开摄像头，不修改 CSV）
 .\.venv\Scripts\python.exe -X utf8 .\src\summarize_colors.py
 
+# 新批次报告产生后，按 run_id 和场景分别汇总（旧报告保持不变）
+.\.venv\Scripts\python.exe -X utf8 .\src\summarize_colors.py .\data\reports\camera_colors_runs.csv
+
 # 跑测试
 .venv\Scripts\python.exe -m pytest
 ```
