@@ -82,6 +82,8 @@ D:\DevTools\Python312\python.exe -m venv .venv
 # 新批次报告产生后，按 run_id 和场景分别汇总（旧报告保持不变）
 .\.venv\Scripts\python.exe -X utf8 .\src\summarize_colors.py .\data\reports\camera_colors_runs.csv
 
+# 同次按 s 的质量指标写入 camera_quality_runs.csv，与颜色批次报告共享 run_id 和 frame_count
+
 # 跑测试
 .venv\Scripts\python.exe -m pytest
 ```

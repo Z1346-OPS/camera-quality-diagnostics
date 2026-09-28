@@ -78,9 +78,24 @@ def append_quality_record(
     bright_ratio: float,
     sharpness: float,
     contrast: float,
-    report_path: Path = DEFAULT_REPORT_PATH,
+    report_path: Path | None = None,
+    *,
+    run_id: str | None = None,
 ) -> Path:
     """把当前帧的质量指标追加到 CSV，并返回报告路径。"""
+    if run_id is not None:
+        if not isinstance(run_id, str):
+            raise ValueError("run_id 格式无效")
+        try:
+            if UUID(hex=run_id).hex != run_id:
+                raise ValueError("run_id 格式无效")
+        except ValueError as error:
+            raise ValueError("run_id 格式无效") from error
+    if report_path is None:
+        report_path = (
+            DEFAULT_REPORT_PATH.parent / "camera_quality_runs.csv"
+            if run_id is not None else DEFAULT_REPORT_PATH
+        )
     report_path = Path(report_path)
     report_path.parent.mkdir(parents=True, exist_ok=True)
     needs_header = not report_path.exists() or report_path.stat().st_size == 0
@@ -94,6 +109,12 @@ def append_quality_record(
         "sharpness": f"{sharpness:.1f}",
         "contrast": f"{contrast:.1f}",
     }
+    if run_id is not None:
+        row["run_id"] = run_id
+    if not needs_header:
+        with report_path.open(newline="", encoding="utf-8-sig") as csv_file:
+            if next(csv.reader(csv_file), None) != list(row):
+                raise ValueError("质量报告表头不匹配，请使用另一份报告文件")
 
     with report_path.open("a", newline="", encoding="utf-8-sig") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=row.keys())

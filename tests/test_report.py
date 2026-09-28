@@ -152,3 +152,31 @@ def test_append_quality_record_reuses_header(tmp_path):
 
     assert len(lines) == 3
     assert lines[0].startswith("recorded_at,frame_count,brightness")
+
+
+def test_quality_run_report_keeps_old_schema_unchanged(tmp_path):
+    old_path = tmp_path / "quality.csv"
+    new_path = tmp_path / "quality_runs.csv"
+    run_id = uuid4().hex
+    append_quality_record(1, 100, 1, 2, 200, 20, old_path)
+    old_content = old_path.read_bytes()
+    append_quality_record(1, 110, 2, 3, 210, 21, new_path, run_id=run_id)
+    append_quality_record(2, 120, 3, 4, 220, 22, new_path, run_id=run_id)
+    with new_path.open(newline="", encoding="utf-8-sig") as report:
+        reader = csv.DictReader(report)
+        rows = list(reader)
+        assert reader.fieldnames[-1] == "run_id"
+    assert [row["frame_count"] for row in rows] == ["1", "2"]
+    assert [row["run_id"] for row in rows] == [run_id, run_id]
+    assert old_path.read_bytes() == old_content
+    with pytest.raises(ValueError, match="表头不匹配"):
+        append_quality_record(3, 130, 4, 5, 230, 23, old_path, run_id=run_id)
+    assert old_path.read_bytes() == old_content
+
+
+@pytest.mark.parametrize("invalid_run", ["bad", "=1+1", "", uuid4().hex.upper()])
+def test_quality_run_report_rejects_invalid_id(tmp_path, invalid_run):
+    path = tmp_path / "quality_runs.csv"
+    with pytest.raises(ValueError, match="run_id"):
+        append_quality_record(1, 100, 1, 2, 200, 20, path, run_id=invalid_run)
+    assert not path.exists()

@@ -247,6 +247,7 @@ def main() -> int:
                     bright_ratio,
                     sharpness,
                     contrast,
+                    run_id=run_id,
                 )
                 print(f"已保存当前帧指标: {report_path}")
                 color_path = append_color_record(
