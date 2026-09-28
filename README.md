@@ -84,6 +84,9 @@ D:\DevTools\Python312\python.exe -m venv .venv
 
 # 同次按 s 的质量指标写入 camera_quality_runs.csv，与颜色批次报告共享 run_id 和 frame_count
 
+# 只读检查两份批次报告是否存在单侧记录；有未配对记录时退出码为 1
+.\.venv\Scripts\python.exe -X utf8 .\src\check_reports.py
+
 # 跑测试
 .venv\Scripts\python.exe -m pytest
 ```
