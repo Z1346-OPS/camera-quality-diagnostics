@@ -28,6 +28,7 @@ if __package__:
         calculate_sharpness,
     )
     from .report import append_camera_event, append_color_record, append_quality_record
+    from .session_metadata import save_session_metadata
 else:
     from metrics import (
         calculate_bgr_means,
@@ -38,6 +39,7 @@ else:
         calculate_sharpness,
     )
     from report import append_camera_event, append_color_record, append_quality_record
+    from session_metadata import save_session_metadata
 
 # ---------------- 可调参数 ----------------
 CAMERA_INDEX = 0        # 0 号摄像头。如果有多个摄像头, 可以试 1、2
@@ -138,6 +140,7 @@ def main() -> int:
         frame_count = 0
         scene_label = "unspecified"
         run_id = uuid4().hex
+        metadata_saved = False
         print(f"本次运行批次 run_id: {run_id}")
         while True:
             ok, frame = cap.read()
@@ -256,6 +259,22 @@ def main() -> int:
                     run_id=run_id,
                 )
                 print(f"已保存当前帧颜色数据 [{scene_label}]: {color_path}")
+                if not metadata_saved:
+                    try:
+                        backend = cap.getBackendName()
+                    except (AttributeError, cv2.error):
+                        backend = None
+                    if not isinstance(backend, str) or not backend.strip():
+                        backend = None
+                    try:
+                        metadata_path = save_session_metadata(
+                            run_id, CAMERA_INDEX, backend, frame.shape[1], frame.shape[0]
+                        )
+                    except OSError as error:
+                        print(f"会话信息保存失败（CSV 已保存）: {error}")
+                    else:
+                        metadata_saved = True
+                        print(f"已保存会话信息: {metadata_path}")
 
             if key == ord("q"):
                 print(f"你按了 q, 正常退出。共显示 {frame_count} 帧。")
