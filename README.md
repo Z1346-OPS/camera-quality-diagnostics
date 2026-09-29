@@ -90,6 +90,9 @@ D:\DevTools\Python312\python.exe -m venv .venv
 # 只显示指定批次的配对情况；仍校验完整 CSV，不修改旧记录
 .\.venv\Scripts\python.exe -X utf8 .\src\check_reports.py --run-id 7bfd31a24dc64d96aa22311a78bf7200
 
+# 首次记录一个新批次时使用；此示例批次已创建备注，再运行会报“文件已存在”
+.\.venv\Scripts\python.exe -X utf8 .\src\record_conditions.py 7bfd31a24dc64d96aa22311a78bf7200 --note '采集后回忆：按2时换上了彩色物体，其他条件基本没变。光照、位置和纸张距离未量化；自动曝光状态未核实。'
+
 # 摄像头退出后，按批次导出完整配对的 JSON；替换成实际 run_id
 .\.venv\Scripts\python.exe -X utf8 .\src\export_pairs.py f1c6d22b952147bf91a2b3ac7c0cbc9b
 
