@@ -93,12 +93,16 @@ D:\DevTools\Python312\python.exe -m venv .venv
 # 只读汇总一个批次 JSON 中各场景的样本数与指标范围
 .\.venv\Scripts\python.exe -X utf8 .\src\summarize_pairs.py .\data\reports\camera_pair_f1c6d22b952147bf91a2b3ac7c0cbc9b.json
 
+# 只读比较同一批次的白纸与恢复白纸标签，显示后者减前者的均值差
+.\.venv\Scripts\python.exe -X utf8 .\src\compare_white.py .\data\reports\camera_pair_e5125e7c90fb4cfda143f2252b596fa0.json
+
 # 跑测试
 .venv\Scripts\python.exe -m pytest
 ```
 
 JSON 导出只处理指定批次；该批次若有未配对记录会失败。历史其他批次的单侧记录不会混入导出。结果保存为 `data/reports/camera_pair_<run_id>.json`，已存在时不会覆盖。JSON 只是结构化指标，不包含故障判断。
 JSON 汇总也只是描述性统计；单次或少量采样不能据此设定设备合格阈值。
+白纸标签差值也不能证明相机故障或恢复效果；场景标签由操作者手动选择，需结合拍摄条件解释。
 
 > ⚠️ **不要用全局 Python 跑这个项目。** 一律用 `.venv\Scripts\python.exe`，
 > 否则会出现"明明装了包却 import 不到"的问题。
