@@ -87,9 +87,14 @@ D:\DevTools\Python312\python.exe -m venv .venv
 # 只读检查两份批次报告是否存在单侧记录；有未配对记录时退出码为 1
 .\.venv\Scripts\python.exe -X utf8 .\src\check_reports.py
 
+# 摄像头退出后，按批次导出完整配对的 JSON；替换成实际 run_id
+.\.venv\Scripts\python.exe -X utf8 .\src\export_pairs.py f1c6d22b952147bf91a2b3ac7c0cbc9b
+
 # 跑测试
 .venv\Scripts\python.exe -m pytest
 ```
+
+JSON 导出只处理指定批次；该批次若有未配对记录会失败。历史其他批次的单侧记录不会混入导出。结果保存为 `data/reports/camera_pair_<run_id>.json`，已存在时不会覆盖。JSON 只是结构化指标，不包含故障判断。
 
 > ⚠️ **不要用全局 Python 跑这个项目。** 一律用 `.venv\Scripts\python.exe`，
 > 否则会出现"明明装了包却 import 不到"的问题。
