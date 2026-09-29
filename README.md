@@ -99,6 +99,9 @@ D:\DevTools\Python312\python.exe -m venv .venv
 # 只读汇总一个批次 JSON 中各场景的样本数与指标范围
 .\.venv\Scripts\python.exe -X utf8 .\src\summarize_pairs.py .\data\reports\camera_pair_f1c6d22b952147bf91a2b3ac7c0cbc9b.json
 
+# 只读核对三场景标签是否按白纸→彩色物体→恢复白纸各保存一次
+.\.venv\Scripts\python.exe -X utf8 .\src\validate_capture.py .\data\reports\camera_pair_7bfd31a24dc64d96aa22311a78bf7200.json
+
 # 只读比较同一批次的白纸与恢复白纸标签，显示后者减前者的均值差
 .\.venv\Scripts\python.exe -X utf8 .\src\compare_white.py .\data\reports\camera_pair_e5125e7c90fb4cfda143f2252b596fa0.json
 
