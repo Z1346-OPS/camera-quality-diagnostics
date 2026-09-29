@@ -96,6 +96,9 @@ D:\DevTools\Python312\python.exe -m venv .venv
 # 只读比较同一批次的白纸与恢复白纸标签，显示后者减前者的均值差
 .\.venv\Scripts\python.exe -X utf8 .\src\compare_white.py .\data\reports\camera_pair_e5125e7c90fb4cfda143f2252b596fa0.json
 
+# 跨批次汇总白纸差值；有更多批次时在命令末尾追加其 JSON 路径
+.\.venv\Scripts\python.exe -X utf8 .\src\summarize_white_runs.py .\data\reports\camera_pair_e5125e7c90fb4cfda143f2252b596fa0.json
+
 # 跑测试
 .venv\Scripts\python.exe -m pytest
 ```
@@ -103,6 +106,7 @@ D:\DevTools\Python312\python.exe -m venv .venv
 JSON 导出只处理指定批次；该批次若有未配对记录会失败。历史其他批次的单侧记录不会混入导出。结果保存为 `data/reports/camera_pair_<run_id>.json`，已存在时不会覆盖。JSON 只是结构化指标，不包含故障判断。
 JSON 汇总也只是描述性统计；单次或少量采样不能据此设定设备合格阈值。
 白纸标签差值也不能证明相机故障或恢复效果；场景标签由操作者手动选择，需结合拍摄条件解释。
+跨批次汇总会拒绝重复的 `run_id`；只有一个完整批次时不显示跨批次范围。多个批次也仍不足以自动设定合格阈值。
 
 > ⚠️ **不要用全局 Python 跑这个项目。** 一律用 `.venv\Scripts\python.exe`，
 > 否则会出现"明明装了包却 import 不到"的问题。
