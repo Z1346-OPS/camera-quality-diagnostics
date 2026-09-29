@@ -50,11 +50,23 @@ def read_report_keys(path: Path, expected_fields: list[str]) -> set[tuple[str, i
 
 
 def reconcile_reports(
-    quality_path: Path = QUALITY_PATH, color_path: Path = COLOR_PATH
+    quality_path: Path = QUALITY_PATH, color_path: Path = COLOR_PATH,
+    run_id: str | None = None,
 ) -> tuple[set, set, set]:
-    """返回匹配、仅质量、仅颜色的键集合，不修改报告。"""
+    """返回全量或所选批次的关联键；始终校验两份完整报告。"""
+    if run_id is not None:
+        try:
+            if not isinstance(run_id, str) or UUID(hex=run_id).hex != run_id:
+                raise ValueError
+        except ValueError as error:
+            raise ValueError("run_id 必须是 32 位小写十六进制 UUID") from error
     quality_keys = read_report_keys(quality_path, QUALITY_FIELDS)
     color_keys = read_report_keys(color_path, COLOR_FIELDS)
+    if run_id is not None:
+        quality_keys = {key for key in quality_keys if key[0] == run_id}
+        color_keys = {key for key in color_keys if key[0] == run_id}
+        if not quality_keys and not color_keys:
+            raise ValueError(f"所选批次没有记录: {run_id}")
     return (
         quality_keys & color_keys,
         quality_keys - color_keys,
@@ -66,12 +78,17 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("quality", nargs="?", type=Path, default=QUALITY_PATH)
     parser.add_argument("color", nargs="?", type=Path, default=COLOR_PATH)
+    parser.add_argument("--run-id", help="只报告指定的 32 位小写十六进制批次 ID")
     args = parser.parse_args(argv)
     try:
-        matched, quality_only, color_only = reconcile_reports(args.quality, args.color)
+        matched, quality_only, color_only = reconcile_reports(
+            args.quality, args.color, run_id=args.run_id
+        )
     except (OSError, UnicodeError, ValueError, csv.Error) as error:
         print(f"检查失败: {error}", file=sys.stderr)
         return 2
+    if args.run_id is not None:
+        print(f"检查批次: {args.run_id}")
     print(f"匹配: {len(matched)} 条；仅质量: {len(quality_only)} 条；仅颜色: {len(color_only)} 条")
     for name, keys in (("仅质量", quality_only), ("仅颜色", color_only)):
         for run_id, frame_count in sorted(keys):
@@ -79,7 +96,10 @@ def main(argv=None) -> int:
     if quality_only or color_only:
         print("存在未配对记录；可能是历史格式启用时间不同或部分保存，单凭此结果不能判断原因。")
         return 1
-    print("两份报告的 run_id 与帧号均一一对应。")
+    if args.run_id is None:
+        print("两份报告的 run_id 与帧号均一一对应。")
+    else:
+        print("所选批次的 run_id 与帧号均一一对应；不代表全部历史记录均配对。")
     return 0
 
 

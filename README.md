@@ -87,6 +87,9 @@ D:\DevTools\Python312\python.exe -m venv .venv
 # 只读检查两份批次报告是否存在单侧记录；有未配对记录时退出码为 1
 .\.venv\Scripts\python.exe -X utf8 .\src\check_reports.py
 
+# 只显示指定批次的配对情况；仍校验完整 CSV，不修改旧记录
+.\.venv\Scripts\python.exe -X utf8 .\src\check_reports.py --run-id 7bfd31a24dc64d96aa22311a78bf7200
+
 # 摄像头退出后，按批次导出完整配对的 JSON；替换成实际 run_id
 .\.venv\Scripts\python.exe -X utf8 .\src\export_pairs.py f1c6d22b952147bf91a2b3ac7c0cbc9b
 

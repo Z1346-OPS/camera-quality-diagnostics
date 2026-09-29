@@ -48,6 +48,67 @@ def test_reconcile_reports_all_matched(tmp_path, capsys):
     assert "一一对应" in capsys.readouterr().out
 
 
+def test_reconcile_reports_can_check_one_run_without_hiding_history(tmp_path, capsys):
+    quality = tmp_path / "quality.csv"
+    color = tmp_path / "color.csv"
+    selected, historical = uuid4().hex, uuid4().hex
+    append_quality_record(7, 100, 0, 0, 10, 10, quality, run_id=selected)
+    append_color_record(7, 100, 100, 100, color,
+                        scene_label="white_paper", run_id=selected)
+    append_color_record(8, 100, 100, 100, color,
+                        scene_label="unspecified", run_id=historical)
+    assert main([str(quality), str(color)]) == 1
+    capsys.readouterr()
+    assert reconcile_reports(quality, color, run_id=selected) == (
+        {(selected, 7)}, set(), set()
+    )
+    assert main(["--run-id", selected, str(quality), str(color)]) == 0
+    output = capsys.readouterr().out
+    assert f"检查批次: {selected}" in output
+    assert "不代表全部历史记录均配对" in output
+
+
+def test_selected_run_still_reports_missing_records(tmp_path, capsys):
+    quality = tmp_path / "quality.csv"
+    color = tmp_path / "color.csv"
+    run_id = uuid4().hex
+    append_quality_record(1, 100, 0, 0, 10, 10, quality, run_id=run_id)
+    append_color_record(2, 100, 100, 100, color,
+                        scene_label="white_paper", run_id=run_id)
+    assert main(["--run-id", run_id, str(quality), str(color)]) == 1
+    output = capsys.readouterr().out
+    assert "匹配: 0 条；仅质量: 1 条；仅颜色: 1 条" in output
+    assert f"仅质量: run_id={run_id} frame_count=1" in output
+    assert f"仅颜色: run_id={run_id} frame_count=2" in output
+
+
+def test_selected_run_rejects_unknown_or_invalid_id(tmp_path, capsys):
+    quality = tmp_path / "quality.csv"
+    color = tmp_path / "color.csv"
+    run_id = uuid4().hex
+    append_quality_record(1, 100, 0, 0, 10, 10, quality, run_id=run_id)
+    append_color_record(1, 100, 100, 100, color,
+                        scene_label="white_paper", run_id=run_id)
+    assert main(["--run-id", uuid4().hex, str(quality), str(color)]) == 2
+    assert "所选批次没有记录" in capsys.readouterr().err
+    assert main(["--run-id", "../bad", str(quality), str(color)]) == 2
+    assert "run_id 必须" in capsys.readouterr().err
+
+
+def test_selected_run_does_not_hide_invalid_history(tmp_path, capsys):
+    quality = tmp_path / "quality.csv"
+    color = tmp_path / "color.csv"
+    selected, historical = uuid4().hex, uuid4().hex
+    append_quality_record(1, 100, 0, 0, 10, 10, quality, run_id=selected)
+    append_color_record(1, 100, 100, 100, color,
+                        scene_label="white_paper", run_id=selected)
+    for _ in range(2):
+        append_color_record(2, 100, 100, 100, color,
+                            scene_label="unspecified", run_id=historical)
+    assert main(["--run-id", selected, str(quality), str(color)]) == 2
+    assert "重复" in capsys.readouterr().err
+
+
 @pytest.mark.parametrize("field,value", [
     ("frame_count", "0"), ("frame_count", "abc"),
     ("run_id", "=1+1"), ("run_id", ""),
