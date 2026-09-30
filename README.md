@@ -76,6 +76,9 @@ D:\DevTools\Python312\python.exe -m venv .venv
 # 摄像头质量测试（按 s 保存当前指标，按 q 退出）
 .venv\Scripts\python.exe src\camera_test.py
 
+# 可选：按 s 时额外保存未叠加文字的原始帧 PNG；画面可能含个人信息，默认不启用
+.venv\Scripts\python.exe src\camera_test.py --save-frames
+
 # 只读汇总带标签颜色报告（不打开摄像头，不修改 CSV）
 .\.venv\Scripts\python.exe -X utf8 .\src\summarize_colors.py
 
@@ -114,6 +117,7 @@ D:\DevTools\Python312\python.exe -m venv .venv
 
 JSON 导出只处理指定批次；该批次若有未配对记录会失败。历史其他批次的单侧记录不会混入导出。结果保存为 `data/reports/camera_pair_<run_id>.json`，已存在时不会覆盖。JSON 只是结构化指标，不包含故障判断。
 首次按 `s` 保存 CSV 后，还会尝试独立保存 `data/reports/camera_session_<run_id>.json`，记录配置的摄像头编号、OpenCV 报告的后端和当前帧尺寸；失败会在终端提示，CSV 仍保留。它不记录或推断光照、纸张距离和自动曝光状态，这些仍需人工备注。
+仅在显式添加 `--save-frames` 时，每次按 `s` 才会尝试保存 `data/reports/camera_frame_<run_id>_<frame_count>.png`。PNG 保留原始画面、没有指标文字，可能包含人脸或其他私人内容；文件只留在本机且被 Git 忽略，不应随意分享。保存失败会提示，已保存的 CSV 不会回滚。
 JSON 汇总也只是描述性统计；单次或少量采样不能据此设定设备合格阈值。
 白纸标签差值也不能证明相机故障或恢复效果；场景标签由操作者手动选择，需结合拍摄条件解释。
 跨批次汇总会拒绝重复的 `run_id`；只有一个完整批次时不显示跨批次范围。多个批次也仍不足以自动设定合格阈值。

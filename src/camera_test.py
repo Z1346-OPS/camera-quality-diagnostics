@@ -12,6 +12,7 @@ camera_test.py —— USB 摄像头连通性测试
     (不要直接点窗口右上角的 X —— 那样虽然也能关, 但优雅退出更规范)
 """
 
+import argparse
 import sys
 import time
 from uuid import uuid4
@@ -28,6 +29,7 @@ if __package__:
         calculate_sharpness,
     )
     from .report import append_camera_event, append_color_record, append_quality_record
+    from .frame_evidence import save_frame_evidence
     from .session_metadata import save_session_metadata
 else:
     from metrics import (
@@ -39,6 +41,7 @@ else:
         calculate_sharpness,
     )
     from report import append_camera_event, append_color_record, append_quality_record
+    from frame_evidence import save_frame_evidence
     from session_metadata import save_session_metadata
 
 # ---------------- 可调参数 ----------------
@@ -102,7 +105,7 @@ def open_camera():
     return None
 
 
-def main() -> int:
+def main(*, save_frames: bool = False) -> int:
     print("=" * 58)
     print(" 摄像头测试")
     print("=" * 58)
@@ -173,9 +176,11 @@ def main() -> int:
                 BRIGHT_THRESHOLD,
             )
 
+            # 留证模式只在显示副本上画字，按 s 保存的原始帧不含叠加文字。
+            display_frame = frame.copy() if save_frames else frame
             # 显示帧计数和平均亮度, 方便观察画面是否持续变化
             cv2.putText(
-                frame,
+                display_frame,
                 f"frame: {frame_count}  brightness: {brightness:.1f}",
                 (10, 30),                      # 文字左下角坐标
                 cv2.FONT_HERSHEY_SIMPLEX,      # 字体
@@ -184,7 +189,7 @@ def main() -> int:
                 2,                             # 线宽
             )
             cv2.putText(
-                frame,
+                display_frame,
                 f"dark: {dark_ratio:.1f}%  bright: {bright_ratio:.1f}%",
                 (10, 65),
                 cv2.FONT_HERSHEY_SIMPLEX,
@@ -193,7 +198,7 @@ def main() -> int:
                 2,
             )
             cv2.putText(
-                frame,
+                display_frame,
                 f"sharpness: {sharpness:.1f}",
                 (10, 100),
                 cv2.FONT_HERSHEY_SIMPLEX,
@@ -202,7 +207,7 @@ def main() -> int:
                 2,
             )
             cv2.putText(
-                frame,
+                display_frame,
                 f"contrast: {contrast:.1f}",
                 (10, 135),
                 cv2.FONT_HERSHEY_SIMPLEX,
@@ -211,7 +216,7 @@ def main() -> int:
                 2,
             )
             cv2.putText(
-                frame,
+                display_frame,
                 f"hist peak: {histogram_peak}  count: {histogram_peak_count}",
                 (10, 170),
                 cv2.FONT_HERSHEY_SIMPLEX,
@@ -220,7 +225,7 @@ def main() -> int:
                 2,
             )
             cv2.putText(
-                frame,
+                display_frame,
                 f"B: {blue_mean:.1f} G: {green_mean:.1f} R: {red_mean:.1f} spread: {channel_spread:.1f}",
                 (10, 205),
                 cv2.FONT_HERSHEY_SIMPLEX,
@@ -230,10 +235,10 @@ def main() -> int:
             )
 
             cv2.putText(
-                frame, f"scene: {scene_label} (0/1/2/3)", (10, 240),
+                display_frame, f"scene: {scene_label} (0/1/2/3)", (10, 240),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2,
             )
-            cv2.imshow(WINDOW_NAME, frame)
+            cv2.imshow(WINDOW_NAME, display_frame)
 
             # waitKey(1) = 等 1 毫秒, 同时读取键盘。
             # 返回的是按下键的 ASCII 码; 没按键时返回 -1。
@@ -275,6 +280,13 @@ def main() -> int:
                     else:
                         metadata_saved = True
                         print(f"已保存会话信息: {metadata_path}")
+                if save_frames:
+                    try:
+                        image_path = save_frame_evidence(frame, run_id, frame_count)
+                    except (OSError, ValueError, cv2.error) as error:
+                        print(f"原始帧保存失败（CSV 已保存）: {error}")
+                    else:
+                        print(f"已保存原始帧: {image_path}")
 
             if key == ord("q"):
                 print(f"你按了 q, 正常退出。共显示 {frame_count} 帧。")
@@ -309,4 +321,6 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    parser = argparse.ArgumentParser(description="摄像头图像质量采集")
+    parser.add_argument("--save-frames", action="store_true", help="按 s 时额外保存原始帧 PNG（可能含个人信息）")
+    sys.exit(main(save_frames=parser.parse_args().save_frames))
