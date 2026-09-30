@@ -1,6 +1,6 @@
 # camera-quality-diagnostics
 
-面向工业视觉场景的**图像质量检测与故障分析工具**。
+基于 Python 和 OpenCV 的**摄像头采集、图像质量指标记录与证据核对练习项目**。目前主要使用本机摄像头验证流程，不是已标定的工业相机诊断产品。
 
 ---
 
@@ -12,7 +12,7 @@
 
 ## 2. 项目目标
 
-在工业视觉场景里，摄像头拍出来的图**质量会变差**，但原因往往不好判断：
+在工业视觉场景里，摄像头拍出来的图**质量会变差**，但原因往往不好判断。例如：
 
 - 镜头脏了 → 画面整体发雾
 - 对焦跑了 → 边缘模糊
@@ -20,12 +20,9 @@
 - 传输丢包 → 画面出现马赛克、条纹
 - 相机过热 → 噪点变多
 
-本项目的目标是做一个**能自动判断"这张图哪里不对劲"的工具**，
-把上面这些问题从"靠人眼感觉"变成"有数字、有依据"。
+长期目标是逐步研究可复核的图像质量排查方法。**目前已实现**摄像头采集、亮度/曝光比例/清晰度/对比度等指标、颜色通道均值、读帧失败事件记录、按批次保存 CSV/JSON，以及可选原始帧 PNG 留证和数值复核。
 
-**当前阶段（v0.3，进行中）**：v0.2 基础质量指标和读帧失败事件记录已经完成，正在为基础故障模式识别补充颜色通道数据。
-
-目前还没有完成场景阈值标定和自动故障模式识别，因此这些指标只能用于观察和对照，不能直接判定工业相机是否合格。
+**尚未实现**脏污、条纹、噪点、偏色等故障的自动识别，也未完成具体场景阈值标定。现有数字用于观察和对照，不能直接判定工业相机是否合格或推断故障原因。场景标签由操作者按键选择，不是程序识别结果。
 
 ---
 
@@ -40,19 +37,18 @@
 | 虚拟环境 | `D:\Projects\Python\camera-quality-diagnostics\.venv` |
 | pip 缓存 | `D:\DevCache\pip` |
 
-> Python 3.12.10 是 **3.12 系列最后一个提供官方 Windows 安装包的版本**。
-> 3.12.11 及以后进入 security-only 阶段，只发源码包，没有 `.exe` 安装器。
+> 上表记录的是本机环境，不要求其他电脑使用完全相同的安装路径；重建环境前应核对项目依赖与本机 Python 版本。
 
 ### 如果要在别的电脑上重建
 
 ```powershell
-# 1. 安装官方 Python 3.12（从 python.org 下载 python-3.12.10-amd64.exe）
+# 1. 安装与依赖兼容的 Python 3.12，并确认 python 命令可用
 
 # 2. 建虚拟环境
-D:\DevTools\Python312\python.exe -m venv .venv
+python -m venv .venv
 
 # 3. 按清单装依赖
-.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
 ---
@@ -70,14 +66,17 @@ D:\DevTools\Python312\python.exe -m venv .venv
 ### 方式二：在终端里
 
 ```powershell
+# 本机示例：先进入项目根目录；其他电脑请换成实际路径
+Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
+
 # 环境自检
-.venv\Scripts\python.exe src\main.py
+.\.venv\Scripts\python.exe src\main.py
 
 # 摄像头质量测试（按 s 保存当前指标，按 q 退出）
-.venv\Scripts\python.exe src\camera_test.py
+.\.venv\Scripts\python.exe src\camera_test.py
 
 # 可选：按 s 时额外保存未叠加文字的原始帧 PNG；画面可能含个人信息，默认不启用
-.venv\Scripts\python.exe src\camera_test.py --save-frames
+.\.venv\Scripts\python.exe src\camera_test.py --save-frames
 
 # 只读汇总带标签颜色报告（不打开摄像头，不修改 CSV）
 .\.venv\Scripts\python.exe -X utf8 .\src\summarize_colors.py
@@ -92,6 +91,15 @@ D:\DevTools\Python312\python.exe -m venv .venv
 
 # 只显示指定批次的配对情况；仍校验完整 CSV，不修改旧记录
 .\.venv\Scripts\python.exe -X utf8 .\src\check_reports.py --run-id 7bfd31a24dc64d96aa22311a78bf7200
+
+# 只读检查指定批次的 PNG 是否存在且可解码
+.\.venv\Scripts\python.exe -X utf8 .\src\check_frame_evidence.py --run-id 9dd84fe9fbe24e32ab52ab0972e83ba3
+
+# 只读重算一张原始帧的 5 项质量指标，并与同帧 CSV 比较
+.\.venv\Scripts\python.exe -X utf8 .\src\verify_frame_metrics.py --run-id 9dd84fe9fbe24e32ab52ab0972e83ba3 --frame 306
+
+# 只读复核该批次全部已记录帧，逐帧报告一致、数值不同或无法复核
+.\.venv\Scripts\python.exe -X utf8 .\src\verify_run_metrics.py --run-id 9dd84fe9fbe24e32ab52ab0972e83ba3
 
 # 首次记录一个新批次时使用；此示例批次已创建备注，再运行会报“文件已存在”
 .\.venv\Scripts\python.exe -X utf8 .\src\record_conditions.py 7bfd31a24dc64d96aa22311a78bf7200 --note '采集后回忆：按2时换上了彩色物体，其他条件基本没变。光照、位置和纸张距离未量化；自动曝光状态未核实。'
@@ -112,8 +120,10 @@ D:\DevTools\Python312\python.exe -m venv .venv
 .\.venv\Scripts\python.exe -X utf8 .\src\summarize_white_runs.py .\data\reports\camera_pair_e5125e7c90fb4cfda143f2252b596fa0.json
 
 # 跑测试
-.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m pytest
 ```
+
+第一次尝试时，先在 PowerShell 进入项目根目录，再运行摄像头命令。窗口获得焦点后按 `0/1/2/3` 选择场景标签、按 `s` 保存、按 `q` 退出；关闭采集程序后再运行只读核对命令，并把示例中的 `run_id` 和帧号换成终端实际输出。只有显式使用 `--save-frames` 才会产生 PNG；不启用时，图片核对命令报告缺失是预期结果。图片可能包含私人画面，不必上传到聊天或提交 Git。
 
 JSON 导出只处理指定批次；该批次若有未配对记录会失败。历史其他批次的单侧记录不会混入导出。结果保存为 `data/reports/camera_pair_<run_id>.json`，已存在时不会覆盖。JSON 只是结构化指标，不包含故障判断。
 首次按 `s` 保存 CSV 后，还会尝试独立保存 `data/reports/camera_session_<run_id>.json`，记录配置的摄像头编号、OpenCV 报告的后端和当前帧尺寸；失败会在终端提示，CSV 仍保留。它不记录或推断光照、纸张距离和自动曝光状态，这些仍需人工备注。
@@ -122,7 +132,7 @@ JSON 汇总也只是描述性统计；单次或少量采样不能据此设定设
 白纸标签差值也不能证明相机故障或恢复效果；场景标签由操作者手动选择，需结合拍摄条件解释。
 跨批次汇总会拒绝重复的 `run_id`；只有一个完整批次时不显示跨批次范围。多个批次也仍不足以自动设定合格阈值。
 
-> ⚠️ **不要用全局 Python 跑这个项目。** 一律用 `.venv\Scripts\python.exe`，
+> ⚠️ **不要用全局 Python 跑这个项目。** 在 PowerShell 中从项目根目录使用 `.\.venv\Scripts\python.exe`，
 > 否则会出现"明明装了包却 import 不到"的问题。
 
 ---
@@ -189,6 +199,16 @@ JSON 汇总也只是描述性统计；单次或少量采样不能据此设定设
 
 > 当前电脑使用内置摄像头，因此没有进行真实硬件断连测试；集成流程通过安全的软件模拟验证。
 
+**后续完成的记录与核对能力：**
+
+- ✅ 同一次按 `s` 的质量与颜色记录用 `run_id`、帧号关联；可按批次导出配对 JSON
+- ✅ 人工场景标签、三场景顺序检查、白纸前后与跨批次的描述性比较
+- ✅ 首次保存时记录摄像头编号、OpenCV 后端与帧尺寸的会话 JSON
+- ✅ 显式启用后保存未叠字原始帧 PNG；真实摄像头批次已验证保存成功
+- ✅ 只读核对 PNG 与 CSV 的关联、可解码性，以及单帧或整批次的 5 项指标数值一致性
+
+> 已完成的“核对”不是自动场景识别。真实留证批次只验证了少量手动保存帧；不能据此声称检测准确率或设备故障识别能力。
+
 ---
 
 ## 7. 后续计划
@@ -213,7 +233,7 @@ JSON 汇总也只是描述性统计；单次或少量采样不能据此设定设
 - [ ] 实时监控模式（连续检测并画趋势曲线）
 - [ ] 阈值可配置（不同场景不同标准）
 - [ ] 报告可视化（Matplotlib 出图）
-- [ ] 批量分析历史图片
+- [ ] 对任意历史图片做批量质量分析（现有批次复核只处理本项目已保存、已关联 CSV 的 PNG）
 
 **v1.0 —— 可用工具**
 - [ ] 打包成可执行文件，不装 Python 也能用
@@ -230,19 +250,21 @@ camera-quality-diagnostics\
 │   ├── settings.json       ← 让 VS Code 用 .venv
 │   └── launch.json         ← F5 调试配置
 ├── src\
-│   ├── __init__.py
-│   ├── main.py             ← 主程序 / 环境自检
-│   ├── camera_test.py      ← 摄像头采集、实时显示和按键流程
+│   ├── main.py             ← 环境自检
+│   ├── camera_test.py      ← 摄像头采集、显示、按键和保存入口
 │   ├── metrics.py          ← 图像质量指标计算
-│   └── report.py           ← CSV 报告保存
-├── tests\
-│   ├── test_environment.py ← 环境测试
-│   ├── test_metrics.py     ← 图像质量指标测试
-│   └── test_report.py      ← CSV 报告测试
+│   ├── report.py           ← CSV 报告保存
+│   ├── frame_evidence.py   ← 可选原始帧 PNG 保存
+│   ├── check_reports.py    ← 两份 CSV 的关联键核对
+│   ├── check_frame_evidence.py ← PNG 是否存在且可解码
+│   ├── verify_frame_metrics.py ← 单帧 PNG 指标重算核对
+│   ├── verify_run_metrics.py   ← 整批次 PNG 指标重算核对
+│   └── ...                 ← JSON 导出、场景与跨批次描述性分析
+├── tests\                 ← 指标、报告、采集流程及各核对命令的自动测试
 ├── data\
 │   ├── samples\            ← 样本图片（会提交）
 │   └── reports\            ← 生成的报告（不提交）
-├── docs\                   ← 分阶段学习记录和 v0.2 总结
+├── docs\                   ← 分阶段学习记录、真实验证证据和阶段总结
 ├── .gitignore
 ├── README.md               ← 本文件
 └── requirements.txt        ← 依赖清单
@@ -268,5 +290,5 @@ camera-quality-diagnostics\
 
 ### 装了包但 import 不到
 
-确认命令用的是 `.venv\Scripts\python.exe -m pip install xxx`。
+确认命令用的是 `.\.venv\Scripts\python.exe -m pip install xxx`。
 如果直接敲 `pip install xxx`，可能装到了全局 Python。
