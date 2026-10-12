@@ -16,11 +16,17 @@ jobs:
         with:
           python-version: "3.12"
 
+      # Project rule: always use .venv, never the system Python (see AGENTS.md).
+      # tests/test_environment.py asserts it runs inside a virtual environment.
+      - name: Create virtual environment
+        run: |
+          python -m venv .venv
+
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/python -m pip install -r requirements.txt
 
       - name: Run tests
         run: |
-          python -m pytest -q
+          .venv/bin/python -m pytest -q
