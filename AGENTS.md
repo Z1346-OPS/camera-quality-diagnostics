@@ -47,6 +47,8 @@
 ## 文档编号规范
 
 - `stage-NN-*.md` 里的 NN 只表示「这是第几份记录」，**不表示业务阶段**。
+- **适用范围**：本规范只管 `docs/` 顶层的阶段性设计、验证、总结文档；
+  `docs/tasks/` 保持任务管理格式，**不受 stage 编号约束**。
 - NN 用两位数，从 `01` 起，只增不改；作废的编号不复用（在文档正文里注明作废即可）。
 - 业务阶段号只能写在标题或正文，且必须同时给出文档序号，例如：
   `业务阶段 1（文档 31）：通用图片分析入口`。
@@ -79,3 +81,6 @@
 3. 改完运行 `.\.venv\Scripts\python.exe -m pytest -q`；
 4. 行为变更同步更新 `docs/` 与 `README.md`；
 5. 报告如实写测试结果：失败就贴输出，跳过的步骤就说明跳过。
+6. **提交信息统一用英文 conventional commit**：格式 `type(scope): description`，
+   类型用 `feat` / `fix` / `docs` / `test` / `chore`；例如
+   `docs(stage): add documentation consistency report`。历史提交不重写。
