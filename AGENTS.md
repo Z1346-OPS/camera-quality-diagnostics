@@ -40,9 +40,23 @@
 
 - `src/` — 入口与实现（`analyze_image.py`、`analyze_label.py`、`camera_test.py`、`main.py` …）
 - `tests/` — pytest 用例，与 `src/` 模块同名对应
-- `docs/` — 分阶段记录 `stage-XX-*.md`，编号递增
+- `docs/` — 记录文件 `stage-NN-*.md`；NN 是**文档序号**，不是业务阶段号（见下节）
 - `data/reports/` — 生成的 JSON / CSV；`data/samples/` — 合成样例
 - `photo/` — 实拍原图
+
+## 文档编号规范
+
+- `stage-NN-*.md` 里的 NN 只表示「这是第几份记录」，**不表示业务阶段**。
+- NN 用两位数，从 `01` 起，只增不改；作废的编号不复用（在文档正文里注明作废即可）。
+- 业务阶段号只能写在标题或正文，且必须同时给出文档序号，例如：
+  `业务阶段 1（文档 31）：通用图片分析入口`。
+- 新增文档：NN = `docs/` 下已有 `stage-NN-*` 的最大 NN + 1（截至 2026-10-12 为 `stage-32-`）。
+- 引用历史文档时**只写文件名**，不要用「阶段 N」指代。
+- 已知历史偏差（**不改文件名、不重写历史**）：
+  - `stage-0-design-and-learning.md`、`stage-1-local-input-verification.md`、
+    `stage-2-roi-qr-baseline.md` 用一位数编号；
+  - `stage-31-local-image-analysis.md` 文件序号是 31、正文却自称「阶段 1」；
+  - `pixel-limit-assessment.md` 没有序号前缀，属遗留文件。
 
 ## 不可违反的约束
 
