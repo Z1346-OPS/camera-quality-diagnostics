@@ -21,7 +21,8 @@
 
 判断某项能力是否已实现时，**以最新的核对/设计记录为准**：能力边界看
 `docs/stage-32-docs-vs-code-consistency.md`，数据集与 CI 回归看
-`docs/stage-33-synthetic-regression-dataset.md`。
+`docs/stage-33-synthetic-regression-dataset.md`；**项目数字（提交数、用例数、仓库体积等）
+看 `docs/stage-34-project-capability-matrix.md`，不要凭记忆说数字。**
 不要依据 `docs/label-reading-project-design.md`（2026-10-01 的历史记录）或旧提交信息。
 
 已实现能力的准确位置：
