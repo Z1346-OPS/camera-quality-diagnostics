@@ -1,7 +1,7 @@
 # camera-quality-diagnostics — 项目规则
 
 > 项目专属规则。跨项目通用约束见 `C:\Users\zex\.codex\AGENTS.md`。
-> 下面的路径与命令均已在本机实测（2026-10-12，pytest 收集 283 项，exit 0）。
+> 下面的路径与命令均已在本机实测（2026-10-12，pytest 收集 285 项，exit 0）。
 
 ## 项目定位
 
@@ -30,6 +30,10 @@
 
 改动上述模块时，必须同时更新 `docs/` 与 `README.md`（见「修改流程」第 4 条）。
 
+回归基线：`data/manifests/evaluation-synthetic-expectations.json` —— 合成数据集
+（`data/samples/synthetic-qr-v1/`）的**精确期望值**，由 CI 闸门每次提交校验。行为变化必须
+`--refresh` 并人工确认后提交；**不要用阈值或容差放宽它**。
+
 ## 环境与命令（实测）
 
 - Python **3.12.10**，虚拟环境在项目根的 `.venv`。一律使用 `.venv`，不要用系统 Python。
@@ -37,8 +41,14 @@
   **会话 cwd 必须 = 项目根**（见全局规则中的沙箱说明）。
 
 ```powershell
-# 测试（283 项）
+# 测试（285 项，含合成数据集的 2 个期望用例）
 .\.venv\Scripts\python.exe -m pytest -q
+
+# 重新生成合成回归数据集（重写样例目录与两份清单；稳定后不要反复重生成）
+.\.venv\Scripts\python.exe -X utf8 tools\generate_synthetic_samples.py
+
+# 校验评测结果与入库期望一致（行为确实变了才用 --refresh，并需人工确认后提交）
+.\.venv\Scripts\python.exe -X utf8 tools\check_evaluation_expectations.py
 
 # 摄像头采集
 .\.venv\Scripts\python.exe src\main.py
@@ -55,8 +65,10 @@
 
 - `src/` — 入口与实现（`analyze_image.py`、`analyze_label.py`、`camera_test.py`、`main.py` …）
 - `tests/` — pytest 用例，与 `src/` 模块同名对应
+- `tools/` — 辅助**生成、校验、维护**数据与开发流程的脚本（如合成数据集生成、评测期望闸门）；
+  **不是产品入口**，不要当作业务代码，也不要让 `src/` 依赖它
 - `docs/` — 记录文件 `stage-NN-*.md`；NN 是**文档序号**，不是业务阶段号（见下节）
-- `data/reports/` — 生成的 JSON / CSV；`data/samples/` — 合成样例
+- `data/reports/` — 生成的 JSON / CSV；`data/samples/` — 合成样例；`data/manifests/` — 入库的评测清单与期望值
 - `photo/` — 实拍原图
 
 ## 文档编号规范
@@ -67,7 +79,7 @@
 - NN 用两位数，从 `01` 起，只增不改；作废的编号不复用（在文档正文里注明作废即可）。
 - 业务阶段号只能写在标题或正文，且必须同时给出文档序号，例如：
   `业务阶段 1（文档 31）：通用图片分析入口`。
-- 新增文档：NN = `docs/` 下已有 `stage-NN-*` 的最大 NN + 1（截至 2026-10-12 为 `stage-32-`）。
+- 新增文档：NN = `docs/` 下已有 `stage-NN-*` 的最大 NN + 1（截至 2026-10-12 为 `stage-33-`）。
 - 引用历史文档时**只写文件名**，不要用「阶段 N」指代。
 - 已知历史偏差（**不改文件名、不重写历史**）：
   - `stage-0-design-and-learning.md`、`stage-1-local-input-verification.md`、

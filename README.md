@@ -55,15 +55,40 @@ ROI 为左上角 `x y` 和 `width height`，右/下边界不包含，必须完�
 
 评测报告里的 `evaluation_policy` 会显式声明统计口径，例如候选选择**不使用真值**（`selection_uses_truth: false`）、正确率分母规则（`all_manifest_samples_with_truth_including_failures`），以及 `independence` 说明——它只做分组检查，**拍摄历史与答案独立性仍需人工确认**。
 
-> ⚠️ 目前只有 1 份 `development` 清单、1 个样本，**没有 `test` 样本**。因此本项目**不能声称任何识读率、准确率或泛化能力**。
+> ⚠️ 上表中那份**实拍**清单只有 1 个 `development` 样本、没有 `test` 样本，因此**不能用它**声称任何识读率、准确率或泛化能力。可复现的 `test` split 现在是合成数据集（见下节），它同样只描述受控退化下的行为。
 
 ### 测试与验证体系
 
-- **pytest 自动化回归**：283 项用例、20 个测试文件；用时受运行环境影响，本机实测约 12–16 秒
+- **pytest 自动化回归**：285 项用例、21 个测试文件；用时受运行环境影响，本机实测约 17–20 秒
 - **输入校验与错误分类**：非法参数、边界与资源上限、业务结果与程序执行异常分开处理
 - **证据核对**：原始帧留证、指标重算、跨报告关联键核对、留证 PNG 可解码性
 - **非破坏性输出**：`--output` 独占新建、不覆盖；历史报告与历史 JSON 的字段含义不改写；只读命令不修改 CSV
 - **可复现口径**：报告记录源码 SHA-256、实现版本、Git 提交与运行库版本
+
+### 合成回归数据集与 CI 期望闸门
+
+**为什么存在**：唯一能证明「基线失败 → 内部降采样搜索救回」的原始证据是实拍图 `photo/A7.jpg`，而该照片被 `.gitignore` 忽略、进不了 CI。合成数据集把这条恢复路径变成**每次提交都能重复验证**的样本。
+
+**覆盖什么**：`data/samples/synthetic-qr-v1/`，`development` 与 `test` 各 23 个受控退化样本（clean / downscale / blur / brightness / rotation / jpeg / occlusion / **noise-large**）。两个 split 的载荷完全不相交（`SYNTH-DEV-*` 与 `SYNTH-TEST-*`），因此不存在标签、批次或答案跨组泄漏。其中 `noise-large`（大像素模块 + 传感器噪声 + JPEG）是唯一能复现真实拍摄失败形态的一族。
+
+**当前行为**（`data/manifests/evaluation-synthetic-expectations.json`，**精确值而非阈值**）：
+
+| split | 基线 | 降采样搜索 | paired_change |
+| --- | --- | --- | --- |
+| development | 18/23 | 21/23 | improved=3 degraded=0 |
+| test | 18/23 | 21/23 | improved=3 degraded=0 |
+
+**CI 验证什么**：`GitHub Actions` 每次提交执行 `.venv/bin/python -m pytest -q`（285 项）与 `tools/check_evaluation_expectations.py`。闸门**不依赖退出码**——评测器对「程序故障」与「有样本按预期读不出」都返回 2，因此它把报告 JSON 与入库期望逐项精确比对。行为确实变了必须 `--refresh` 并经人工确认后提交。
+
+```powershell
+# 重新生成数据集（重写样例目录与两份清单；稳定后不要反复重生成）
+.\.venv\Scripts\python.exe -X utf8 tools\generate_synthetic_samples.py
+
+# 校验评测结果与入库期望是否一致
+.\.venv\Scripts\python.exe -X utf8 tools\check_evaluation_expectations.py
+```
+
+> ⚠️ 该数据集**只能**说明「受控退化下的行为」，**不能**用于声称识读率、准确率或泛化能力。详见[文档 33](docs/stage-33-synthetic-regression-dataset.md)。
 
 ### 能力与文档的一致性
 
