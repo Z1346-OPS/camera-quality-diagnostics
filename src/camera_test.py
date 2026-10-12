@@ -20,6 +20,7 @@ from uuid import uuid4
 import cv2
 
 if __package__:
+    from .analysis_config import BRIGHT_THRESHOLD, DARK_THRESHOLD
     from .metrics import (
         calculate_bgr_means,
         calculate_contrast,
@@ -32,6 +33,7 @@ if __package__:
     from .frame_evidence import save_frame_evidence
     from .session_metadata import save_session_metadata
 else:
+    from analysis_config import BRIGHT_THRESHOLD, DARK_THRESHOLD
     from metrics import (
         calculate_bgr_means,
         calculate_contrast,
@@ -47,8 +49,6 @@ else:
 # ---------------- 可调参数 ----------------
 CAMERA_INDEX = 0        # 0 号摄像头。如果有多个摄像头, 可以试 1、2
 WINDOW_NAME = "Camera Test - press s to save, q to quit"
-DARK_THRESHOLD = 30     # 灰度值小于等于它, 暂时视为欠曝像素
-BRIGHT_THRESHOLD = 225  # 灰度值大于等于它, 暂时视为过曝像素
 SCENE_KEYS = {
     ord("0"): "unspecified",
     ord("1"): "white_paper",

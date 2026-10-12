@@ -9,14 +9,14 @@ import cv2
 import numpy as np
 
 try:
-    from .camera_test import BRIGHT_THRESHOLD, DARK_THRESHOLD
+    from .analysis_config import BRIGHT_THRESHOLD, DARK_THRESHOLD
     from .check_reports import COLOR_PATH, QUALITY_PATH, REPORT_DIR, reconcile_reports
     from .metrics import (
         calculate_contrast, calculate_exposure_ratios,
         calculate_mean_brightness, calculate_sharpness,
     )
 except ImportError:
-    from camera_test import BRIGHT_THRESHOLD, DARK_THRESHOLD
+    from analysis_config import BRIGHT_THRESHOLD, DARK_THRESHOLD
     from check_reports import COLOR_PATH, QUALITY_PATH, REPORT_DIR, reconcile_reports
     from metrics import (
         calculate_contrast, calculate_exposure_ratios,

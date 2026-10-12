@@ -18,9 +18,13 @@ __pycache__/
 .pytest_cache/
 
 # ---------- 生成的检测报告 ----------
-data/reports/*.csv
-data/reports/*.png
-data/reports/*.json
+# 运行产物目录：整目录忽略。
+# 原写法按扩展名列举（*.csv/*.png/*.json），将来出现 .txt/.md/.svg 报告会漏掉。
+# 需要版本化的基准结果请放 data/baselines/，不要放这里。
+data/reports/
+
+# ---------- 用户本地图片（原件不提交 Git） ----------
+/photo/
 
 # ---------- 编辑器本地文件 ----------
 .vscode/*.log

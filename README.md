@@ -2,6 +2,36 @@
 
 基于 Python 和 OpenCV 的**摄像头采集、图像质量指标记录与证据核对练习项目**。目前主要使用本机摄像头验证流程，不是已标定的工业相机诊断产品。
 
+2026-10-01 的后续方向：逐步接入手机图片上传、标签可读性检查和服务化存储。详见[项目方向转变与迁移计划](docs/project-direction-and-migration-plan.md)。该文档区分现有能力与规划；手机服务、数据库和条码识别尚未实现。
+
+阶段 1 已新增本地 JPEG/PNG 图片分析入口（仍无手机上传）：
+
+2026-10-02 的入口核验已补充错误码、JSON 格式版本 2、分析 ID、配置与源码哈希、运行库版本及 Git 状态。原有指标字段保留，旧 JSON 不改写。真实手机照片已由用户确认实拍来源及正确方向；验证与操作步骤见[阶段 1 核验记录](docs/stage-1-local-input-verification.md)。
+
+```powershell
+Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
+.\.venv\Scripts\python.exe -X utf8 .\src\analyze_image.py 'D:\Photos\label.jpg' --output '.\data\reports\label-analysis-001.json'
+```
+
+结果同时打印 JSON。`--output` 可省略，此时只打印，不保存结果；指定的 JSON 路径必须是新文件，重新分析请换新文件名。原图只读、不覆盖。程序按图片内容识别 JPEG/PNG，接受 8 位灰度、RGB、带透明度及调色板图；16 位等模式明确拒绝。EXIF 方向 1–8 按定义处理；方向值 0 保留原始像素排列，并在 JSON 的 `warnings` 中提示人工核对方向，其他无效值仍拒绝。透明像素以白色背景合成，结果记录原图 SHA-256、预处理、全图分析区域和阈值。单文件上限 25 MiB，像素上限 1600 万；超限图片会明确报错。指标仅描述整张照片，不做标签可读性或合格判定；详见[阶段 1 记录](docs/stage-31-local-image-analysis.md)。
+
+### 阶段 2：本地 QR 基线与人工 ROI
+
+新增独立入口，不改变历史图片分析报告格式。阶段 1 实拍已验收；阶段 2 的代码、合成测试和本地运行已验证，真实纸质 QR 的已知答案验收仍待用户操作。仅支持 QR Code，未接入增强、网页或数据库，详见[阶段 2 记录](docs/stage-2-roi-qr-baseline.md)。
+
+```powershell
+# 内容预先确定的合成样例：可打印此 PNG 后用手机拍摄
+.\.venv\Scripts\python.exe -X utf8 .\src\analyze_label.py '.\data\samples\stage2-known-qr.png' --expected-file '.\data\samples\stage2-known-qr.expected.txt' --truth-source '项目样例预先指定的生成内容 STAGE2-SMOKE-001' --output '.\data\reports\qr-synthetic-001.json'
+
+# 实拍图未知内容时，只报告是否读出，不能称为正确
+.\.venv\Scripts\python.exe -X utf8 .\src\analyze_label.py '.\photo\A1.jpg' --output '.\data\reports\qr-photo-001.json'
+
+# 人工 ROI 示例（必须替换为照片实际区域，坐标基于 EXIF 处理后的图像）
+.\.venv\Scripts\python.exe -X utf8 .\src\analyze_label.py '.\photo\label.jpg' --roi 100 200 600 600 --output '.\data\reports\qr-roi-001.json'
+```
+
+ROI 为左上角 `x y` 和 `width height`，右/下边界不包含，必须完整位于图内，不补边。结果 `attempts` 始终含整图；指定 ROI 时另加该区域。各自记录指标、位置、解码耗时与状态。`decoded` 表示读出，`not_decoded` 表示未读出，`ambiguous` 表示多候选，`decode_error` 表示候选解码失败，`execution_error` 表示执行异常/依赖不可用。无真值时 `truth_check.status` 为 `not_provided`；仅单一有效码与独立已知答案逐字节相同才为 `correct`。答案文件使用 UTF-8，不自动去除 BOM、换行或空格。未读出、歧义或答案不匹配不属于程序执行异常；候选解码/执行错误返回退出码 2，并保留结构化结果。输出仅新建，不自动打开 QR 内链接。
+
 ---
 
 ## 1. 项目名称
