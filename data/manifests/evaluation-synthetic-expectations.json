@@ -1,0 +1,86 @@
+{
+  "note": "合成数据集 synthetic-qr-v1 的入库评测期望。由 tools/check_evaluation_expectations.py --refresh 生成；数值变化必须由人工确认后随提交更新。",
+  "schema_version": 1,
+  "splits": {
+    "development": {
+      "methods": {
+        "baseline": {
+          "denominator": 23,
+          "outcomes": {
+            "ambiguous": 0,
+            "conflict": 0,
+            "correct": 18,
+            "decode_error": 1,
+            "decoded_unverified": 0,
+            "execution_error": 0,
+            "incorrect": 0,
+            "input_error": 0,
+            "not_decoded": 4
+          }
+        },
+        "with_downscale_search": {
+          "denominator": 23,
+          "outcomes": {
+            "ambiguous": 0,
+            "conflict": 0,
+            "correct": 21,
+            "decode_error": 1,
+            "decoded_unverified": 0,
+            "execution_error": 0,
+            "incorrect": 0,
+            "input_error": 0,
+            "not_decoded": 1
+          }
+        }
+      },
+      "paired_change": {
+        "degraded": 0,
+        "denominator": 23,
+        "excluded_unknown_truth_or_input_execution_error": 0,
+        "improved": 3
+      },
+      "status": "completed_with_errors",
+      "total_samples": 23
+    },
+    "test": {
+      "methods": {
+        "baseline": {
+          "denominator": 23,
+          "outcomes": {
+            "ambiguous": 1,
+            "conflict": 0,
+            "correct": 18,
+            "decode_error": 0,
+            "decoded_unverified": 0,
+            "execution_error": 0,
+            "incorrect": 0,
+            "input_error": 0,
+            "not_decoded": 4
+          }
+        },
+        "with_downscale_search": {
+          "denominator": 23,
+          "outcomes": {
+            "ambiguous": 1,
+            "conflict": 0,
+            "correct": 21,
+            "decode_error": 0,
+            "decoded_unverified": 0,
+            "execution_error": 0,
+            "incorrect": 0,
+            "input_error": 0,
+            "not_decoded": 1
+          }
+        }
+      },
+      "paired_change": {
+        "degraded": 0,
+        "denominator": 23,
+        "excluded_unknown_truth_or_input_execution_error": 0,
+        "improved": 3
+      },
+      "status": "completed",
+      "total_samples": 23
+    }
+  }
+}

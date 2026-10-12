@@ -30,3 +30,10 @@ jobs:
       - name: Run tests
         run: |
           .venv/bin/python -m pytest -q
+
+      # The evaluator exits 2 both for a crash and for the business outcome
+      # "completed_with_errors", so the gate judges the JSON report against committed
+      # expectations instead of the exit code.
+      - name: Gate label evaluation on the synthetic dataset
+        run: |
+          .venv/bin/python -X utf8 tools/check_evaluation_expectations.py
