@@ -19,7 +19,9 @@
 
 ## 能力状态判断（防误判）
 
-判断某项能力是否已实现时，**以 `docs/stage-32-docs-vs-code-consistency.md` 为准**；
+判断某项能力是否已实现时，**以最新的核对/设计记录为准**：能力边界看
+`docs/stage-32-docs-vs-code-consistency.md`，数据集与 CI 回归看
+`docs/stage-33-synthetic-regression-dataset.md`。
 不要依据 `docs/label-reading-project-design.md`（2026-10-01 的历史记录）或旧提交信息。
 
 已实现能力的准确位置：
