@@ -2,7 +2,7 @@
 
 基于 Python 和 OpenCV 的**摄像头采集、图像质量指标记录与证据核对练习项目**。目前主要使用本机摄像头验证流程，不是已标定的工业相机诊断产品。
 
-2026-10-01 的后续方向：逐步接入手机图片上传、标签可读性检查和服务化存储。详见[项目方向转变与迁移计划](docs/project-direction-and-migration-plan.md)。该文档区分现有能力与规划；手机服务、数据库和条码识别尚未实现。
+2026-10-01 的后续方向：逐步接入手机图片上传、标签可读性检查和服务化存储。详见[项目方向转变与迁移计划](docs/project-direction-and-migration-plan.md)。该文档区分现有能力与规划。当前状态：**手机服务与数据库尚未实现**；**QR 解码、人工 ROI 与按清单批量评测已实现**（见下方「阶段 2」与[文档 32 文档与实现一致性核对](docs/stage-32-docs-vs-code-consistency.md)）。
 
 阶段 1 已新增本地 JPEG/PNG 图片分析入口（仍无手机上传）：
 
@@ -17,7 +17,7 @@ Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
 
 ### 阶段 2：本地 QR 基线与人工 ROI
 
-新增独立入口，不改变历史图片分析报告格式。阶段 1 实拍已验收；阶段 2 的代码、合成测试和本地运行已验证，真实纸质 QR 的已知答案验收仍待用户操作。仅支持 QR Code，未接入增强、网页或数据库，详见[阶段 2 记录](docs/stage-2-roi-qr-baseline.md)。
+新增独立入口，不改变历史图片分析报告格式。阶段 1 实拍已验收。**阶段 2 的实拍 + 已知答案验收已于 2026-10-09 完成**：`photo/A7.jpg` 基线读出失败（`decode_error`），启用降采样搜索后读出，且与预先固定的答案逐字节相同（`truth_check.status=correct`），结果见 `data/reports/qr-A7-downscale-001.json`。仅支持 QR Code，未接入增强、网页或数据库，详见[阶段 2 记录](docs/stage-2-roi-qr-baseline.md)。
 
 ```powershell
 # 内容预先确定的合成样例：可打印此 PNG 后用手机拍摄
@@ -31,6 +31,43 @@ Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
 ```
 
 ROI 为左上角 `x y` 和 `width height`，右/下边界不包含，必须完整位于图内，不补边。结果 `attempts` 始终含整图；指定 ROI 时另加该区域。各自记录指标、位置、解码耗时与状态。`decoded` 表示读出，`not_decoded` 表示未读出，`ambiguous` 表示多候选，`decode_error` 表示候选解码失败，`execution_error` 表示执行异常/依赖不可用。无真值时 `truth_check.status` 为 `not_provided`；仅单一有效码与独立已知答案逐字节相同才为 `correct`。答案文件使用 UTF-8，不自动去除 BOM、换行或空格。未读出、歧义或答案不匹配不属于程序执行异常；候选解码/执行错误返回退出码 2，并保留结构化结果。输出仅新建，不自动打开 QR 内链接。
+
+汇总层另有 `conflict`；评测层另有 `decoded_unverified` 与 `input_error`（各状态定义见源码与[文档 32](docs/stage-32-docs-vs-code-consistency.md)）。
+
+### 失败补救：内部降采样搜索
+
+整图或指定 ROI 读不出时，加 `--try-downscale` 会**保留原基线**、额外尝试解码器内部降采样搜索：
+
+```powershell
+.\.venv\Scripts\python.exe -X utf8 .\src\analyze_label.py '.\photo\A7.jpg' --try-downscale --output '.\data\reports\qr-A7-downscale-001.json'
+```
+
+两条 profile（`baseline` 与 `internal_downscale_search`）的结果、选中索引与失败索引都会写进报告，便于定位「哪条路径读出、哪条失败」，而不是只知道最终成功或失败。
+
+### 按清单批量评测
+
+`src/evaluate_labels.py` 按冻结清单批量评测：清单要求 8 个必填字段（`id`、`image`、`sha256`、`label_id`、`batch_id`、`split`、`source_kind`、`source`）与 4 个可选字段（`expected_file`、`expected_sha256`、`truth_source`、`roi`）。固定答案逐字节校验，失败样本**留在正确率分母内**，无真值样本单独统计，并做分组泄漏检查（同一 `label_id`、`batch_id` 或 `expected_sha256` 不允许同时出现在 `development` 与 `test`）。
+
+```powershell
+# 清单位于本机 photo\ 下（该目录被 Git 忽略），需自行准备
+.\.venv\Scripts\python.exe -X utf8 .\src\evaluate_labels.py '.\photo\evaluation-development-001.json' --split development --output '.\data\reports\eval-001.json'
+```
+
+评测报告里的 `evaluation_policy` 会显式声明统计口径，例如候选选择**不使用真值**（`selection_uses_truth: false`）、正确率分母规则（`all_manifest_samples_with_truth_including_failures`），以及 `independence` 说明——它只做分组检查，**拍摄历史与答案独立性仍需人工确认**。
+
+> ⚠️ 目前只有 1 份 `development` 清单、1 个样本，**没有 `test` 样本**。因此本项目**不能声称任何识读率、准确率或泛化能力**。
+
+### 测试与验证体系
+
+- **pytest 自动化回归**：283 项用例、20 个测试文件（2026-10-12 实测 `283 passed in 15.53s`）
+- **输入校验与错误分类**：非法参数、边界与资源上限、业务结果与程序执行异常分开处理
+- **证据核对**：原始帧留证、指标重算、跨报告关联键核对、留证 PNG 可解码性
+- **非破坏性输出**：`--output` 独占新建、不覆盖；历史报告与历史 JSON 的字段含义不改写；只读命令不修改 CSV
+- **可复现口径**：报告记录源码 SHA-256、实现版本、Git 提交与运行库版本
+
+### 能力与文档的一致性
+
+上面的能力描述已与代码对齐，核对过程与逐条证据见[文档 32 文档与实现一致性核对](docs/stage-32-docs-vs-code-consistency.md)。**未实现的能力不要写成已实现**；判断某能力是否已实现，以该文档为准。
 
 ---
 
@@ -238,6 +275,17 @@ JSON 汇总也只是描述性统计；单次或少量采样不能据此设定设
 - ✅ 只读核对 PNG 与 CSV 的关联、可解码性，以及单帧或整批次的 5 项指标数值一致性
 
 > 已完成的“核对”不是自动场景识别。真实留证批次只验证了少量手动保存帧；不能据此声称检测准确率或设备故障识别能力。
+
+**标签读码与独立评测阶段，已完成：**
+
+- ✅ 本地 QR 解码入口 `src/analyze_label.py`：整图与人工 ROI，依赖 `zxing-cpp`
+- ✅ 失败补救：`--try-downscale` 内部降采样搜索，两条 profile 与失败索引写入报告
+- ✅ 独立答案核对：仅单一有效码与预先固定的答案逐字节相同才判 `correct`；无真值时为 `not_provided`
+- ✅ 按清单批量评测 `src/evaluate_labels.py`：清单契约、分组泄漏检查、失败样本留在正确率分母、无真值样本单独统计
+- ✅ 实拍排障记录：`photo/A7.jpg` 基线 `decode_error` → 降采样读出 → 与预设答案逐字节相同
+- ✅ 评测闭环已实测（2026-10-12）：`exit=0`、`status=completed`、`selection_uses_truth: false`、运行前后仓库无改动
+
+> 评测**机制**已经具备，但目前只有 1 份 `development` 清单、1 个样本，**没有 `test` 样本**；现有数字是过程记录，不能当作识读率或准确率结论。
 
 ---
 

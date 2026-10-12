@@ -10,10 +10,25 @@
 
 **已实现**：摄像头采集；亮度/曝光比例/清晰度/对比度等指标；颜色通道均值；
 读帧失败事件记录；按批次保存 CSV/JSON；可选原始帧 PNG 留证与数值复核；
-本地 JPEG/PNG 图片分析；QR 基线解码与人工 ROI。
+本地 JPEG/PNG 图片分析；QR 解码（整图 / 人工 ROI / `--try-downscale` 降采样搜索）；
+按清单批量评测（固定答案逐字节校验、失败样本留证、分组泄漏检查）。
 
 **尚未实现**：脏污/条纹/噪点/偏色等故障的自动识别；场景阈值标定；
-手机上传、数据库、服务化；标签可读性的合格判定。
+手机上传、数据库、服务化；标签可读性的合格判定；离线 HTML 报告导出；
+批量图片质量分析入口；结构化设备/拍摄条件字段。
+
+## 能力状态判断（防误判）
+
+判断某项能力是否已实现时，**以 `docs/stage-32-docs-vs-code-consistency.md` 为准**；
+不要依据 `docs/label-reading-project-design.md`（2026-10-01 的历史记录）或旧提交信息。
+
+已实现能力的准确位置：
+
+- QR 解码与降采样搜索：`src/analyze_label.py`、`src/label_analysis.py`
+- 批量评测与清单契约：`src/evaluate_labels.py`、`src/label_evaluation.py`
+- 图像质量分析：`src/analyze_image.py`
+
+改动上述模块时，必须同时更新 `docs/` 与 `README.md`（见「修改流程」第 4 条）。
 
 ## 环境与命令（实测）
 
