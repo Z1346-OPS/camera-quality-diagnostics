@@ -1,0 +1,2581 @@
+{
+  "kind": "qr_stable_fields_oracle",
+  "phase": "4.2",
+  "generated_at_utc": "2026-10-12T11:52:04.114023+00:00",
+  "generated_by": "docs/tasks/evidence/phase-4.2-quality-qr-association/extract_qr_stable_fields.py",
+  "generator_source_sha256": "c5dac7f0bb1acf618616a60028720cff38f30506cff7bca30fc1e73a2c032fac",
+  "code_baseline": "用改动前的 src/analyze_label.py + src/label_analysis.py 生成；未导入待实现模块",
+  "volatile_paths": [
+    {
+      "path": "analysis_id",
+      "reason": "每次调用生成的随机 ID（uuid4），必然变化"
+    },
+    {
+      "path": "analyzed_at",
+      "reason": "墙上时间戳，必然变化"
+    },
+    {
+      "path": "analysis_duration_seconds",
+      "reason": "耗时，必然变化"
+    },
+    {
+      "path": "provenance.git",
+      "reason": "commit / working_tree_dirty / status 随提交与工作区状态变化；Phase 4.1 若先提交，commit 会变，故整体排除"
+    },
+    {
+      "path": "attempts[].decode.duration_seconds",
+      "reason": "单次解码耗时，必然变化"
+    }
+  ],
+  "comparison_rule": "逐 fixture、逐路径比较 stable 子树；volatile_paths 中的路径不比较。任何其他路径的差异都算回归。",
+  "records": [
+    {
+      "name": "stage2_full_no_downscale",
+      "note": "真实 PNG；Phase 4.1 A16 冒烟样本；有独立答案；单 profile",
+      "image": "data/samples/stage2-known-qr.png",
+      "image_sha256": "465430ebb73219885b8c42380aed1df3d1b9866e4b795a83602c102647257198",
+      "roi": null,
+      "expected_file": "data/samples/stage2-known-qr.expected.txt",
+      "try_downscale": false,
+      "stable": {
+        "schema_version": 2,
+        "report_type": "label_baseline",
+        "status": "completed",
+        "provenance": {
+          "implementation_version": "local-label-analysis-2",
+          "source_sha256": {
+            "analyze_image.py": "dd246c36102f5c02331e26ba3862e4bdc86d0114c683030f460d3d2560cda9cb",
+            "analysis_config.py": "fd04ccd4c4efa84aa9799daa2c174996e89e4926b8d25572d01811ec4f26eb41",
+            "metrics.py": "aacc4977661250244222159ced96a2c023a00b8519c03de798dac731865c5cb9",
+            "analyze_label.py": "0cf29b0bbf400bb49359201f9bad2d8e3f9d0f037fa00e5345f6637fedeed35c",
+            "label_analysis.py": "d27deae803ccb70bfc451e4ce27e64cb2f5d45f819ccbe3f78458c49a4ad565f"
+          },
+          "runtime": {
+            "python": "3.12.10",
+            "opencv": "5.0.0",
+            "numpy": "2.5.3",
+            "pillow": "12.3.0"
+          }
+        },
+        "warnings": [],
+        "source": {
+          "path": "D:\\Projects\\Python\\camera-quality-diagnostics\\data\\samples\\stage2-known-qr.png",
+          "format": "PNG",
+          "bytes": 778,
+          "sha256": "465430ebb73219885b8c42380aed1df3d1b9866e4b795a83602c102647257198",
+          "width": 264,
+          "height": 264,
+          "mode": "L"
+        },
+        "preprocessing": {
+          "exif_orientation": 1,
+          "exif_transposed": false,
+          "exif_orientation_handling": "apply_exif_orientation",
+          "channel_conversion": "L_to_RGB_to_BGR",
+          "dtype": "uint8",
+          "analysis_color_order": "BGR",
+          "analysis_width": 264,
+          "analysis_height": 264,
+          "region": "full_image",
+          "color_profile_conversion": "none"
+        },
+        "analysis_config": {
+          "image": {
+            "dark_threshold_inclusive": 30,
+            "bright_threshold_inclusive": 225,
+            "sharpness": "variance_of_grayscale_laplacian",
+            "contrast": "grayscale_standard_deviation",
+            "max_file_bytes": 26214400,
+            "max_pixels": 16000000,
+            "supported_formats": [
+              "JPEG",
+              "PNG"
+            ],
+            "supported_modes": [
+              "L",
+              "LA",
+              "P",
+              "RGB",
+              "RGBA"
+            ],
+            "alpha_background_rgb": [
+              255,
+              255,
+              255
+            ],
+            "resize": "none",
+            "color_profile_conversion": "none",
+            "exif_orientation_policy": "apply_1_to_8;zero_no_transform_with_warning;reject_other"
+          },
+          "decoder": {
+            "formats": [
+              "QRCode"
+            ],
+            "try_rotate": true,
+            "try_downscale": false,
+            "try_invert": false,
+            "text_mode": "Plain",
+            "binarizer": "LocalAverage",
+            "is_pure": false,
+            "return_errors": true,
+            "external_enhancement": "none"
+          },
+          "roi": {
+            "kind": "full_image",
+            "x": 0,
+            "y": 0,
+            "width": 264,
+            "height": 264
+          },
+          "roi_coordinates": "exif_normalized_image;xywh;right_bottom_exclusive",
+          "expected_comparison": "exact_payload_bytes",
+          "max_expected_bytes": 65536,
+          "additional_downscale_search": false,
+          "decode_summary_policy": "execution_error_then_ambiguity_then_payload_consensus",
+          "decoder_attempts": [
+            {
+              "profile": "baseline",
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": false,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            }
+          ]
+        },
+        "config_sha256": "35d5fbc0ca65d612b385814ead06d6aee30191772eef76dce7b266f6a807fa73",
+        "known_truth": {
+          "status": "provided",
+          "source_description": "stage2 入库独立答案文件（非解码器输出）",
+          "sha256": "a014ba8a13f5c86fe003e65c80c3ad3b345ddc2369393f8c307addb871681781",
+          "text": "STAGE2-SMOKE-001",
+          "encoding": "utf-8",
+          "verification": "user_asserted_independent"
+        },
+        "attempts": [
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "profile": "baseline",
+            "metrics": {
+              "brightness": 200.20661157024793,
+              "dark_ratio_percent": 21.487603305785125,
+              "bright_ratio_percent": 78.51239669421489,
+              "sharpness": 7907.941632231405,
+              "contrast": 104.73776126103273,
+              "histogram_peak": 255,
+              "histogram_peak_count": 54720,
+              "bgr_means": {
+                "blue": 200.20661157024793,
+                "green": 200.20661157024793,
+                "red": 200.20661157024793
+              }
+            },
+            "decode": {
+              "status": "decoded",
+              "symbols": [
+                {
+                  "valid": true,
+                  "format": "QR Code",
+                  "text": "STAGE2-SMOKE-001",
+                  "payload_base64": "U1RBR0UyLVNNT0tFLTAwMQ==",
+                  "position_region": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "position_analysis_image": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "error": null
+                }
+              ],
+              "error": null,
+              "decoder": {
+                "name": "zxing-cpp",
+                "version": "3.1.1"
+              },
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": false,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            "truth_check": {
+              "status": "correct",
+              "comparison": "exact_payload_bytes"
+            }
+          }
+        ],
+        "decode_summaries": [
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "attempt_indices": [
+              0
+            ],
+            "decode": {
+              "status": "decoded",
+              "symbols": [
+                {
+                  "valid": true,
+                  "format": "QR Code",
+                  "text": "STAGE2-SMOKE-001",
+                  "payload_base64": "U1RBR0UyLVNNT0tFLTAwMQ==",
+                  "position_region": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "position_analysis_image": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "error": null
+                }
+              ],
+              "selected_attempt_index": 0,
+              "failed_attempt_indices": []
+            },
+            "truth_check": {
+              "status": "correct",
+              "comparison": "exact_payload_bytes"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "stage2_roi_with_downscale",
+      "note": "同一原图 + ROI；两个 region × 两个 profile；验证 ROI 不串配",
+      "image": "data/samples/stage2-known-qr.png",
+      "image_sha256": "465430ebb73219885b8c42380aed1df3d1b9866e4b795a83602c102647257198",
+      "roi": [
+        66,
+        66,
+        132,
+        132
+      ],
+      "expected_file": "data/samples/stage2-known-qr.expected.txt",
+      "try_downscale": true,
+      "stable": {
+        "schema_version": 2,
+        "report_type": "label_baseline",
+        "status": "completed",
+        "provenance": {
+          "implementation_version": "local-label-analysis-2",
+          "source_sha256": {
+            "analyze_image.py": "dd246c36102f5c02331e26ba3862e4bdc86d0114c683030f460d3d2560cda9cb",
+            "analysis_config.py": "fd04ccd4c4efa84aa9799daa2c174996e89e4926b8d25572d01811ec4f26eb41",
+            "metrics.py": "aacc4977661250244222159ced96a2c023a00b8519c03de798dac731865c5cb9",
+            "analyze_label.py": "0cf29b0bbf400bb49359201f9bad2d8e3f9d0f037fa00e5345f6637fedeed35c",
+            "label_analysis.py": "d27deae803ccb70bfc451e4ce27e64cb2f5d45f819ccbe3f78458c49a4ad565f"
+          },
+          "runtime": {
+            "python": "3.12.10",
+            "opencv": "5.0.0",
+            "numpy": "2.5.3",
+            "pillow": "12.3.0"
+          }
+        },
+        "warnings": [],
+        "source": {
+          "path": "D:\\Projects\\Python\\camera-quality-diagnostics\\data\\samples\\stage2-known-qr.png",
+          "format": "PNG",
+          "bytes": 778,
+          "sha256": "465430ebb73219885b8c42380aed1df3d1b9866e4b795a83602c102647257198",
+          "width": 264,
+          "height": 264,
+          "mode": "L"
+        },
+        "preprocessing": {
+          "exif_orientation": 1,
+          "exif_transposed": false,
+          "exif_orientation_handling": "apply_exif_orientation",
+          "channel_conversion": "L_to_RGB_to_BGR",
+          "dtype": "uint8",
+          "analysis_color_order": "BGR",
+          "analysis_width": 264,
+          "analysis_height": 264,
+          "region": "full_image",
+          "color_profile_conversion": "none"
+        },
+        "analysis_config": {
+          "image": {
+            "dark_threshold_inclusive": 30,
+            "bright_threshold_inclusive": 225,
+            "sharpness": "variance_of_grayscale_laplacian",
+            "contrast": "grayscale_standard_deviation",
+            "max_file_bytes": 26214400,
+            "max_pixels": 16000000,
+            "supported_formats": [
+              "JPEG",
+              "PNG"
+            ],
+            "supported_modes": [
+              "L",
+              "LA",
+              "P",
+              "RGB",
+              "RGBA"
+            ],
+            "alpha_background_rgb": [
+              255,
+              255,
+              255
+            ],
+            "resize": "none",
+            "color_profile_conversion": "none",
+            "exif_orientation_policy": "apply_1_to_8;zero_no_transform_with_warning;reject_other"
+          },
+          "decoder": {
+            "formats": [
+              "QRCode"
+            ],
+            "try_rotate": true,
+            "try_downscale": false,
+            "try_invert": false,
+            "text_mode": "Plain",
+            "binarizer": "LocalAverage",
+            "is_pure": false,
+            "return_errors": true,
+            "external_enhancement": "none"
+          },
+          "roi": {
+            "kind": "roi",
+            "x": 66,
+            "y": 66,
+            "width": 132,
+            "height": 132
+          },
+          "roi_coordinates": "exif_normalized_image;xywh;right_bottom_exclusive",
+          "expected_comparison": "exact_payload_bytes",
+          "max_expected_bytes": 65536,
+          "additional_downscale_search": true,
+          "decode_summary_policy": "execution_error_then_ambiguity_then_payload_consensus",
+          "decoder_attempts": [
+            {
+              "profile": "baseline",
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": false,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            {
+              "profile": "internal_downscale_search",
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": true,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            }
+          ]
+        },
+        "config_sha256": "99354cbea629069a3d22a6c2b2060c3ecdb1ca1afccd1070a40ebb23bea136b8",
+        "known_truth": {
+          "status": "provided",
+          "source_description": "stage2 入库独立答案文件（非解码器输出）",
+          "sha256": "a014ba8a13f5c86fe003e65c80c3ad3b345ddc2369393f8c307addb871681781",
+          "text": "STAGE2-SMOKE-001",
+          "encoding": "utf-8",
+          "verification": "user_asserted_independent"
+        },
+        "attempts": [
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "profile": "baseline",
+            "metrics": {
+              "brightness": 200.20661157024793,
+              "dark_ratio_percent": 21.487603305785125,
+              "bright_ratio_percent": 78.51239669421489,
+              "sharpness": 7907.941632231405,
+              "contrast": 104.73776126103273,
+              "histogram_peak": 255,
+              "histogram_peak_count": 54720,
+              "bgr_means": {
+                "blue": 200.20661157024793,
+                "green": 200.20661157024793,
+                "red": 200.20661157024793
+              }
+            },
+            "decode": {
+              "status": "decoded",
+              "symbols": [
+                {
+                  "valid": true,
+                  "format": "QR Code",
+                  "text": "STAGE2-SMOKE-001",
+                  "payload_base64": "U1RBR0UyLVNNT0tFLTAwMQ==",
+                  "position_region": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "position_analysis_image": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "error": null
+                }
+              ],
+              "error": null,
+              "decoder": {
+                "name": "zxing-cpp",
+                "version": "3.1.1"
+              },
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": false,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            "truth_check": {
+              "status": "correct",
+              "comparison": "exact_payload_bytes"
+            }
+          },
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "profile": "internal_downscale_search",
+            "metrics": {
+              "brightness": 200.20661157024793,
+              "dark_ratio_percent": 21.487603305785125,
+              "bright_ratio_percent": 78.51239669421489,
+              "sharpness": 7907.941632231405,
+              "contrast": 104.73776126103273,
+              "histogram_peak": 255,
+              "histogram_peak_count": 54720,
+              "bgr_means": {
+                "blue": 200.20661157024793,
+                "green": 200.20661157024793,
+                "red": 200.20661157024793
+              }
+            },
+            "decode": {
+              "status": "decoded",
+              "symbols": [
+                {
+                  "valid": true,
+                  "format": "QR Code",
+                  "text": "STAGE2-SMOKE-001",
+                  "payload_base64": "U1RBR0UyLVNNT0tFLTAwMQ==",
+                  "position_region": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "position_analysis_image": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "error": null
+                }
+              ],
+              "error": null,
+              "decoder": {
+                "name": "zxing-cpp",
+                "version": "3.1.1"
+              },
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": true,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            "truth_check": {
+              "status": "correct",
+              "comparison": "exact_payload_bytes"
+            }
+          },
+          {
+            "region": {
+              "kind": "roi",
+              "x": 66,
+              "y": 66,
+              "width": 132,
+              "height": 132
+            },
+            "profile": "baseline",
+            "metrics": {
+              "brightness": 123.16804407713498,
+              "dark_ratio_percent": 51.69880624426079,
+              "bright_ratio_percent": 48.301193755739206,
+              "sharpness": 17450.464876033056,
+              "contrast": 127.42638721192071,
+              "histogram_peak": 0,
+              "histogram_peak_count": 9008,
+              "bgr_means": {
+                "blue": 123.16804407713498,
+                "green": 123.16804407713498,
+                "red": 123.16804407713498
+              }
+            },
+            "decode": {
+              "status": "not_decoded",
+              "symbols": [],
+              "error": null,
+              "decoder": {
+                "name": "zxing-cpp",
+                "version": "3.1.1"
+              },
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": false,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            "truth_check": {
+              "status": "not_decoded",
+              "comparison": "exact_payload_bytes"
+            }
+          },
+          {
+            "region": {
+              "kind": "roi",
+              "x": 66,
+              "y": 66,
+              "width": 132,
+              "height": 132
+            },
+            "profile": "internal_downscale_search",
+            "metrics": {
+              "brightness": 123.16804407713498,
+              "dark_ratio_percent": 51.69880624426079,
+              "bright_ratio_percent": 48.301193755739206,
+              "sharpness": 17450.464876033056,
+              "contrast": 127.42638721192071,
+              "histogram_peak": 0,
+              "histogram_peak_count": 9008,
+              "bgr_means": {
+                "blue": 123.16804407713498,
+                "green": 123.16804407713498,
+                "red": 123.16804407713498
+              }
+            },
+            "decode": {
+              "status": "not_decoded",
+              "symbols": [],
+              "error": null,
+              "decoder": {
+                "name": "zxing-cpp",
+                "version": "3.1.1"
+              },
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": true,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            "truth_check": {
+              "status": "not_decoded",
+              "comparison": "exact_payload_bytes"
+            }
+          }
+        ],
+        "decode_summaries": [
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "attempt_indices": [
+              0,
+              1
+            ],
+            "decode": {
+              "status": "decoded",
+              "symbols": [
+                {
+                  "valid": true,
+                  "format": "QR Code",
+                  "text": "STAGE2-SMOKE-001",
+                  "payload_base64": "U1RBR0UyLVNNT0tFLTAwMQ==",
+                  "position_region": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "position_analysis_image": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "error": null
+                }
+              ],
+              "selected_attempt_index": 0,
+              "failed_attempt_indices": []
+            },
+            "truth_check": {
+              "status": "correct",
+              "comparison": "exact_payload_bytes"
+            }
+          },
+          {
+            "region": {
+              "kind": "roi",
+              "x": 66,
+              "y": 66,
+              "width": 132,
+              "height": 132
+            },
+            "attempt_indices": [
+              2,
+              3
+            ],
+            "decode": {
+              "status": "not_decoded",
+              "symbols": [],
+              "selected_attempt_index": null,
+              "failed_attempt_indices": []
+            },
+            "truth_check": {
+              "status": "not_decoded",
+              "comparison": "exact_payload_bytes"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "dev01_clean_decoded",
+      "note": "清晰样本；decoded + correct",
+      "image": "data/samples/synthetic-qr-v1/development/dev-01-clean-module8-A.png",
+      "image_sha256": "9b1ff8d038e8beab1d39924b97dc57abda4d05a06f1b38d9f7e09eccd9363c57",
+      "roi": null,
+      "expected_file": "data/samples/synthetic-qr-v1/development/answers/A.txt",
+      "try_downscale": false,
+      "stable": {
+        "schema_version": 2,
+        "report_type": "label_baseline",
+        "status": "completed",
+        "provenance": {
+          "implementation_version": "local-label-analysis-2",
+          "source_sha256": {
+            "analyze_image.py": "dd246c36102f5c02331e26ba3862e4bdc86d0114c683030f460d3d2560cda9cb",
+            "analysis_config.py": "fd04ccd4c4efa84aa9799daa2c174996e89e4926b8d25572d01811ec4f26eb41",
+            "metrics.py": "aacc4977661250244222159ced96a2c023a00b8519c03de798dac731865c5cb9",
+            "analyze_label.py": "0cf29b0bbf400bb49359201f9bad2d8e3f9d0f037fa00e5345f6637fedeed35c",
+            "label_analysis.py": "d27deae803ccb70bfc451e4ce27e64cb2f5d45f819ccbe3f78458c49a4ad565f"
+          },
+          "runtime": {
+            "python": "3.12.10",
+            "opencv": "5.0.0",
+            "numpy": "2.5.3",
+            "pillow": "12.3.0"
+          }
+        },
+        "warnings": [],
+        "source": {
+          "path": "D:\\Projects\\Python\\camera-quality-diagnostics\\data\\samples\\synthetic-qr-v1\\development\\dev-01-clean-module8-A.png",
+          "format": "PNG",
+          "bytes": 789,
+          "sha256": "9b1ff8d038e8beab1d39924b97dc57abda4d05a06f1b38d9f7e09eccd9363c57",
+          "width": 264,
+          "height": 264,
+          "mode": "L"
+        },
+        "preprocessing": {
+          "exif_orientation": 1,
+          "exif_transposed": false,
+          "exif_orientation_handling": "apply_exif_orientation",
+          "channel_conversion": "L_to_RGB_to_BGR",
+          "dtype": "uint8",
+          "analysis_color_order": "BGR",
+          "analysis_width": 264,
+          "analysis_height": 264,
+          "region": "full_image",
+          "color_profile_conversion": "none"
+        },
+        "analysis_config": {
+          "image": {
+            "dark_threshold_inclusive": 30,
+            "bright_threshold_inclusive": 225,
+            "sharpness": "variance_of_grayscale_laplacian",
+            "contrast": "grayscale_standard_deviation",
+            "max_file_bytes": 26214400,
+            "max_pixels": 16000000,
+            "supported_formats": [
+              "JPEG",
+              "PNG"
+            ],
+            "supported_modes": [
+              "L",
+              "LA",
+              "P",
+              "RGB",
+              "RGBA"
+            ],
+            "alpha_background_rgb": [
+              255,
+              255,
+              255
+            ],
+            "resize": "none",
+            "color_profile_conversion": "none",
+            "exif_orientation_policy": "apply_1_to_8;zero_no_transform_with_warning;reject_other"
+          },
+          "decoder": {
+            "formats": [
+              "QRCode"
+            ],
+            "try_rotate": true,
+            "try_downscale": false,
+            "try_invert": false,
+            "text_mode": "Plain",
+            "binarizer": "LocalAverage",
+            "is_pure": false,
+            "return_errors": true,
+            "external_enhancement": "none"
+          },
+          "roi": {
+            "kind": "full_image",
+            "x": 0,
+            "y": 0,
+            "width": 264,
+            "height": 264
+          },
+          "roi_coordinates": "exif_normalized_image;xywh;right_bottom_exclusive",
+          "expected_comparison": "exact_payload_bytes",
+          "max_expected_bytes": 65536,
+          "additional_downscale_search": false,
+          "decode_summary_policy": "execution_error_then_ambiguity_then_payload_consensus",
+          "decoder_attempts": [
+            {
+              "profile": "baseline",
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": false,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            }
+          ]
+        },
+        "config_sha256": "35d5fbc0ca65d612b385814ead06d6aee30191772eef76dce7b266f6a807fa73",
+        "known_truth": {
+          "status": "provided",
+          "source_description": "合成数据集独立答案 A.txt（编码器输入，早于解码）",
+          "sha256": "eb53e7bb0c7b54e3d3e96d6d464de0daebf3e5ce1df8db6639aec6935d63a801",
+          "text": "SYNTH-DEV-A",
+          "encoding": "utf-8",
+          "verification": "user_asserted_independent"
+        },
+        "attempts": [
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "profile": "baseline",
+            "metrics": {
+              "brightness": 198.80165289256198,
+              "dark_ratio_percent": 22.03856749311295,
+              "bright_ratio_percent": 77.96143250688705,
+              "sharpness": 7314.56611570248,
+              "contrast": 105.69921615030363,
+              "histogram_peak": 255,
+              "histogram_peak_count": 54336,
+              "bgr_means": {
+                "blue": 198.80165289256198,
+                "green": 198.80165289256198,
+                "red": 198.80165289256198
+              }
+            },
+            "decode": {
+              "status": "decoded",
+              "symbols": [
+                {
+                  "valid": true,
+                  "format": "QR Code",
+                  "text": "SYNTH-DEV-A",
+                  "payload_base64": "U1lOVEgtREVWLUE=",
+                  "position_region": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "position_analysis_image": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "error": null
+                }
+              ],
+              "error": null,
+              "decoder": {
+                "name": "zxing-cpp",
+                "version": "3.1.1"
+              },
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": false,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            "truth_check": {
+              "status": "correct",
+              "comparison": "exact_payload_bytes"
+            }
+          }
+        ],
+        "decode_summaries": [
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "attempt_indices": [
+              0
+            ],
+            "decode": {
+              "status": "decoded",
+              "symbols": [
+                {
+                  "valid": true,
+                  "format": "QR Code",
+                  "text": "SYNTH-DEV-A",
+                  "payload_base64": "U1lOVEgtREVWLUE=",
+                  "position_region": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "position_analysis_image": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "error": null
+                }
+              ],
+              "selected_attempt_index": 0,
+              "failed_attempt_indices": []
+            },
+            "truth_check": {
+              "status": "correct",
+              "comparison": "exact_payload_bytes"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "dev07_blur5_decode_error",
+      "note": "模糊 sigma5；decode_error 状态",
+      "image": "data/samples/synthetic-qr-v1/development/dev-07-blur-sigma5-C.png",
+      "image_sha256": "edcf1de1549f4e6dde8f2cb4c4090134a42f04fd6ac671b4a75411d7bca6817a",
+      "roi": null,
+      "expected_file": "data/samples/synthetic-qr-v1/development/answers/C.txt",
+      "try_downscale": true,
+      "stable": {
+        "schema_version": 2,
+        "report_type": "label_baseline",
+        "status": "completed_with_errors",
+        "provenance": {
+          "implementation_version": "local-label-analysis-2",
+          "source_sha256": {
+            "analyze_image.py": "dd246c36102f5c02331e26ba3862e4bdc86d0114c683030f460d3d2560cda9cb",
+            "analysis_config.py": "fd04ccd4c4efa84aa9799daa2c174996e89e4926b8d25572d01811ec4f26eb41",
+            "metrics.py": "aacc4977661250244222159ced96a2c023a00b8519c03de798dac731865c5cb9",
+            "analyze_label.py": "0cf29b0bbf400bb49359201f9bad2d8e3f9d0f037fa00e5345f6637fedeed35c",
+            "label_analysis.py": "d27deae803ccb70bfc451e4ce27e64cb2f5d45f819ccbe3f78458c49a4ad565f"
+          },
+          "runtime": {
+            "python": "3.12.10",
+            "opencv": "5.0.0",
+            "numpy": "2.5.3",
+            "pillow": "12.3.0"
+          }
+        },
+        "warnings": [
+          {
+            "code": "decode_attempt_errors",
+            "message": "部分解码尝试失败，详见 attempts",
+            "attempt_indices": [
+              0,
+              1
+            ]
+          }
+        ],
+        "source": {
+          "path": "D:\\Projects\\Python\\camera-quality-diagnostics\\data\\samples\\synthetic-qr-v1\\development\\dev-07-blur-sigma5-C.png",
+          "format": "PNG",
+          "bytes": 13092,
+          "sha256": "edcf1de1549f4e6dde8f2cb4c4090134a42f04fd6ac671b4a75411d7bca6817a",
+          "width": 264,
+          "height": 264,
+          "mode": "L"
+        },
+        "preprocessing": {
+          "exif_orientation": 1,
+          "exif_transposed": false,
+          "exif_orientation_handling": "apply_exif_orientation",
+          "channel_conversion": "L_to_RGB_to_BGR",
+          "dtype": "uint8",
+          "analysis_color_order": "BGR",
+          "analysis_width": 264,
+          "analysis_height": 264,
+          "region": "full_image",
+          "color_profile_conversion": "none"
+        },
+        "analysis_config": {
+          "image": {
+            "dark_threshold_inclusive": 30,
+            "bright_threshold_inclusive": 225,
+            "sharpness": "variance_of_grayscale_laplacian",
+            "contrast": "grayscale_standard_deviation",
+            "max_file_bytes": 26214400,
+            "max_pixels": 16000000,
+            "supported_formats": [
+              "JPEG",
+              "PNG"
+            ],
+            "supported_modes": [
+              "L",
+              "LA",
+              "P",
+              "RGB",
+              "RGBA"
+            ],
+            "alpha_background_rgb": [
+              255,
+              255,
+              255
+            ],
+            "resize": "none",
+            "color_profile_conversion": "none",
+            "exif_orientation_policy": "apply_1_to_8;zero_no_transform_with_warning;reject_other"
+          },
+          "decoder": {
+            "formats": [
+              "QRCode"
+            ],
+            "try_rotate": true,
+            "try_downscale": false,
+            "try_invert": false,
+            "text_mode": "Plain",
+            "binarizer": "LocalAverage",
+            "is_pure": false,
+            "return_errors": true,
+            "external_enhancement": "none"
+          },
+          "roi": {
+            "kind": "full_image",
+            "x": 0,
+            "y": 0,
+            "width": 264,
+            "height": 264
+          },
+          "roi_coordinates": "exif_normalized_image;xywh;right_bottom_exclusive",
+          "expected_comparison": "exact_payload_bytes",
+          "max_expected_bytes": 65536,
+          "additional_downscale_search": true,
+          "decode_summary_policy": "execution_error_then_ambiguity_then_payload_consensus",
+          "decoder_attempts": [
+            {
+              "profile": "baseline",
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": false,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            {
+              "profile": "internal_downscale_search",
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": true,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            }
+          ]
+        },
+        "config_sha256": "6595cb0a0b7a897b2769475226abb2d1957636160267b3401c7698427794b2bd",
+        "known_truth": {
+          "status": "provided",
+          "source_description": "合成数据集独立答案 C.txt（编码器输入，早于解码）",
+          "sha256": "5d6a9cb19322f57935b6867e67571c799f91c8ea13e38be05af14c0a33b61d0d",
+          "text": "SYNTH-DEV-C",
+          "encoding": "utf-8",
+          "verification": "user_asserted_independent"
+        },
+        "attempts": [
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "profile": "baseline",
+            "metrics": {
+              "brightness": 202.54709022038568,
+              "dark_ratio_percent": 0.9240128558310378,
+              "bright_ratio_percent": 56.23852157943067,
+              "sharpness": 4.077106290174472,
+              "contrast": 65.04687084309349,
+              "histogram_peak": 255,
+              "histogram_peak_count": 32396,
+              "bgr_means": {
+                "blue": 202.54709022038568,
+                "green": 202.54709022038568,
+                "red": 202.54709022038568
+              }
+            },
+            "decode": {
+              "status": "decode_error",
+              "symbols": [
+                {
+                  "valid": false,
+                  "format": "QR Code",
+                  "text": "",
+                  "payload_base64": "",
+                  "position_region": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      216
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "position_analysis_image": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      216
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "error": {
+                    "type": "ErrorType.Checksum",
+                    "message": ""
+                  }
+                }
+              ],
+              "error": {
+                "code": "symbol_decode_error",
+                "message": "检测到候选码但解码报告错误"
+              },
+              "decoder": {
+                "name": "zxing-cpp",
+                "version": "3.1.1"
+              },
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": false,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            "truth_check": {
+              "status": "decode_error",
+              "comparison": "exact_payload_bytes"
+            }
+          },
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "profile": "internal_downscale_search",
+            "metrics": {
+              "brightness": 202.54709022038568,
+              "dark_ratio_percent": 0.9240128558310378,
+              "bright_ratio_percent": 56.23852157943067,
+              "sharpness": 4.077106290174472,
+              "contrast": 65.04687084309349,
+              "histogram_peak": 255,
+              "histogram_peak_count": 32396,
+              "bgr_means": {
+                "blue": 202.54709022038568,
+                "green": 202.54709022038568,
+                "red": 202.54709022038568
+              }
+            },
+            "decode": {
+              "status": "decode_error",
+              "symbols": [
+                {
+                  "valid": false,
+                  "format": "QR Code",
+                  "text": "",
+                  "payload_base64": "",
+                  "position_region": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      216
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "position_analysis_image": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      216
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "error": {
+                    "type": "ErrorType.Checksum",
+                    "message": ""
+                  }
+                }
+              ],
+              "error": {
+                "code": "symbol_decode_error",
+                "message": "检测到候选码但解码报告错误"
+              },
+              "decoder": {
+                "name": "zxing-cpp",
+                "version": "3.1.1"
+              },
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": true,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            "truth_check": {
+              "status": "decode_error",
+              "comparison": "exact_payload_bytes"
+            }
+          }
+        ],
+        "decode_summaries": [
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "attempt_indices": [
+              0,
+              1
+            ],
+            "decode": {
+              "status": "decode_error",
+              "symbols": [],
+              "selected_attempt_index": null,
+              "failed_attempt_indices": [
+                0,
+                1
+              ]
+            },
+            "truth_check": {
+              "status": "decode_error",
+              "comparison": "exact_payload_bytes"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "dev08_blur8_not_decoded",
+      "note": "模糊 sigma8；not_decoded 状态",
+      "image": "data/samples/synthetic-qr-v1/development/dev-08-blur-sigma8-D.png",
+      "image_sha256": "487371ee086509e152f9b2a551874529a79f4b91d7cc237a9ea03f7bb0ae72a4",
+      "roi": null,
+      "expected_file": "data/samples/synthetic-qr-v1/development/answers/D.txt",
+      "try_downscale": true,
+      "stable": {
+        "schema_version": 2,
+        "report_type": "label_baseline",
+        "status": "completed",
+        "provenance": {
+          "implementation_version": "local-label-analysis-2",
+          "source_sha256": {
+            "analyze_image.py": "dd246c36102f5c02331e26ba3862e4bdc86d0114c683030f460d3d2560cda9cb",
+            "analysis_config.py": "fd04ccd4c4efa84aa9799daa2c174996e89e4926b8d25572d01811ec4f26eb41",
+            "metrics.py": "aacc4977661250244222159ced96a2c023a00b8519c03de798dac731865c5cb9",
+            "analyze_label.py": "0cf29b0bbf400bb49359201f9bad2d8e3f9d0f037fa00e5345f6637fedeed35c",
+            "label_analysis.py": "d27deae803ccb70bfc451e4ce27e64cb2f5d45f819ccbe3f78458c49a4ad565f"
+          },
+          "runtime": {
+            "python": "3.12.10",
+            "opencv": "5.0.0",
+            "numpy": "2.5.3",
+            "pillow": "12.3.0"
+          }
+        },
+        "warnings": [],
+        "source": {
+          "path": "D:\\Projects\\Python\\camera-quality-diagnostics\\data\\samples\\synthetic-qr-v1\\development\\dev-08-blur-sigma8-D.png",
+          "format": "PNG",
+          "bytes": 12066,
+          "sha256": "487371ee086509e152f9b2a551874529a79f4b91d7cc237a9ea03f7bb0ae72a4",
+          "width": 264,
+          "height": 264,
+          "mode": "L"
+        },
+        "preprocessing": {
+          "exif_orientation": 1,
+          "exif_transposed": false,
+          "exif_orientation_handling": "apply_exif_orientation",
+          "channel_conversion": "L_to_RGB_to_BGR",
+          "dtype": "uint8",
+          "analysis_color_order": "BGR",
+          "analysis_width": 264,
+          "analysis_height": 264,
+          "region": "full_image",
+          "color_profile_conversion": "none"
+        },
+        "analysis_config": {
+          "image": {
+            "dark_threshold_inclusive": 30,
+            "bright_threshold_inclusive": 225,
+            "sharpness": "variance_of_grayscale_laplacian",
+            "contrast": "grayscale_standard_deviation",
+            "max_file_bytes": 26214400,
+            "max_pixels": 16000000,
+            "supported_formats": [
+              "JPEG",
+              "PNG"
+            ],
+            "supported_modes": [
+              "L",
+              "LA",
+              "P",
+              "RGB",
+              "RGBA"
+            ],
+            "alpha_background_rgb": [
+              255,
+              255,
+              255
+            ],
+            "resize": "none",
+            "color_profile_conversion": "none",
+            "exif_orientation_policy": "apply_1_to_8;zero_no_transform_with_warning;reject_other"
+          },
+          "decoder": {
+            "formats": [
+              "QRCode"
+            ],
+            "try_rotate": true,
+            "try_downscale": false,
+            "try_invert": false,
+            "text_mode": "Plain",
+            "binarizer": "LocalAverage",
+            "is_pure": false,
+            "return_errors": true,
+            "external_enhancement": "none"
+          },
+          "roi": {
+            "kind": "full_image",
+            "x": 0,
+            "y": 0,
+            "width": 264,
+            "height": 264
+          },
+          "roi_coordinates": "exif_normalized_image;xywh;right_bottom_exclusive",
+          "expected_comparison": "exact_payload_bytes",
+          "max_expected_bytes": 65536,
+          "additional_downscale_search": true,
+          "decode_summary_policy": "execution_error_then_ambiguity_then_payload_consensus",
+          "decoder_attempts": [
+            {
+              "profile": "baseline",
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": false,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            {
+              "profile": "internal_downscale_search",
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": true,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            }
+          ]
+        },
+        "config_sha256": "6595cb0a0b7a897b2769475226abb2d1957636160267b3401c7698427794b2bd",
+        "known_truth": {
+          "status": "provided",
+          "source_description": "合成数据集独立答案 D.txt（编码器输入，早于解码）",
+          "sha256": "9a9dfb0c878bdff1ee5e4a3cad0160ff8a5e3a8f4c8c1fb606016ae790e0013b",
+          "text": "SYNTH-DEV-D",
+          "encoding": "utf-8",
+          "verification": "user_asserted_independent"
+        },
+        "attempts": [
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "profile": "baseline",
+            "metrics": {
+              "brightness": 200.20454545454547,
+              "dark_ratio_percent": 0.0,
+              "bright_ratio_percent": 53.1120867768595,
+              "sharpness": 2.454258494031221,
+              "contrast": 60.46344156843338,
+              "histogram_peak": 255,
+              "histogram_peak_count": 26213,
+              "bgr_means": {
+                "blue": 200.20454545454547,
+                "green": 200.20454545454547,
+                "red": 200.20454545454547
+              }
+            },
+            "decode": {
+              "status": "not_decoded",
+              "symbols": [],
+              "error": null,
+              "decoder": {
+                "name": "zxing-cpp",
+                "version": "3.1.1"
+              },
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": false,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            "truth_check": {
+              "status": "not_decoded",
+              "comparison": "exact_payload_bytes"
+            }
+          },
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "profile": "internal_downscale_search",
+            "metrics": {
+              "brightness": 200.20454545454547,
+              "dark_ratio_percent": 0.0,
+              "bright_ratio_percent": 53.1120867768595,
+              "sharpness": 2.454258494031221,
+              "contrast": 60.46344156843338,
+              "histogram_peak": 255,
+              "histogram_peak_count": 26213,
+              "bgr_means": {
+                "blue": 200.20454545454547,
+                "green": 200.20454545454547,
+                "red": 200.20454545454547
+              }
+            },
+            "decode": {
+              "status": "not_decoded",
+              "symbols": [],
+              "error": null,
+              "decoder": {
+                "name": "zxing-cpp",
+                "version": "3.1.1"
+              },
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": true,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            "truth_check": {
+              "status": "not_decoded",
+              "comparison": "exact_payload_bytes"
+            }
+          }
+        ],
+        "decode_summaries": [
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "attempt_indices": [
+              0,
+              1
+            ],
+            "decode": {
+              "status": "not_decoded",
+              "symbols": [],
+              "selected_attempt_index": null,
+              "failed_attempt_indices": []
+            },
+            "truth_check": {
+              "status": "not_decoded",
+              "comparison": "exact_payload_bytes"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "test07_blur5_ambiguous",
+      "note": "test split；ambiguous 状态",
+      "image": "data/samples/synthetic-qr-v1/test/test-07-blur-sigma5-C.png",
+      "image_sha256": "919be069fd62eecd8a8f32d635fe857a02670568a2d331b4d15113c76543d079",
+      "roi": null,
+      "expected_file": "data/samples/synthetic-qr-v1/test/answers/C.txt",
+      "try_downscale": true,
+      "stable": {
+        "schema_version": 2,
+        "report_type": "label_baseline",
+        "status": "completed",
+        "provenance": {
+          "implementation_version": "local-label-analysis-2",
+          "source_sha256": {
+            "analyze_image.py": "dd246c36102f5c02331e26ba3862e4bdc86d0114c683030f460d3d2560cda9cb",
+            "analysis_config.py": "fd04ccd4c4efa84aa9799daa2c174996e89e4926b8d25572d01811ec4f26eb41",
+            "metrics.py": "aacc4977661250244222159ced96a2c023a00b8519c03de798dac731865c5cb9",
+            "analyze_label.py": "0cf29b0bbf400bb49359201f9bad2d8e3f9d0f037fa00e5345f6637fedeed35c",
+            "label_analysis.py": "d27deae803ccb70bfc451e4ce27e64cb2f5d45f819ccbe3f78458c49a4ad565f"
+          },
+          "runtime": {
+            "python": "3.12.10",
+            "opencv": "5.0.0",
+            "numpy": "2.5.3",
+            "pillow": "12.3.0"
+          }
+        },
+        "warnings": [],
+        "source": {
+          "path": "D:\\Projects\\Python\\camera-quality-diagnostics\\data\\samples\\synthetic-qr-v1\\test\\test-07-blur-sigma5-C.png",
+          "format": "PNG",
+          "bytes": 12866,
+          "sha256": "919be069fd62eecd8a8f32d635fe857a02670568a2d331b4d15113c76543d079",
+          "width": 264,
+          "height": 264,
+          "mode": "L"
+        },
+        "preprocessing": {
+          "exif_orientation": 1,
+          "exif_transposed": false,
+          "exif_orientation_handling": "apply_exif_orientation",
+          "channel_conversion": "L_to_RGB_to_BGR",
+          "dtype": "uint8",
+          "analysis_color_order": "BGR",
+          "analysis_width": 264,
+          "analysis_height": 264,
+          "region": "full_image",
+          "color_profile_conversion": "none"
+        },
+        "analysis_config": {
+          "image": {
+            "dark_threshold_inclusive": 30,
+            "bright_threshold_inclusive": 225,
+            "sharpness": "variance_of_grayscale_laplacian",
+            "contrast": "grayscale_standard_deviation",
+            "max_file_bytes": 26214400,
+            "max_pixels": 16000000,
+            "supported_formats": [
+              "JPEG",
+              "PNG"
+            ],
+            "supported_modes": [
+              "L",
+              "LA",
+              "P",
+              "RGB",
+              "RGBA"
+            ],
+            "alpha_background_rgb": [
+              255,
+              255,
+              255
+            ],
+            "resize": "none",
+            "color_profile_conversion": "none",
+            "exif_orientation_policy": "apply_1_to_8;zero_no_transform_with_warning;reject_other"
+          },
+          "decoder": {
+            "formats": [
+              "QRCode"
+            ],
+            "try_rotate": true,
+            "try_downscale": false,
+            "try_invert": false,
+            "text_mode": "Plain",
+            "binarizer": "LocalAverage",
+            "is_pure": false,
+            "return_errors": true,
+            "external_enhancement": "none"
+          },
+          "roi": {
+            "kind": "full_image",
+            "x": 0,
+            "y": 0,
+            "width": 264,
+            "height": 264
+          },
+          "roi_coordinates": "exif_normalized_image;xywh;right_bottom_exclusive",
+          "expected_comparison": "exact_payload_bytes",
+          "max_expected_bytes": 65536,
+          "additional_downscale_search": true,
+          "decode_summary_policy": "execution_error_then_ambiguity_then_payload_consensus",
+          "decoder_attempts": [
+            {
+              "profile": "baseline",
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": false,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            {
+              "profile": "internal_downscale_search",
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": true,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            }
+          ]
+        },
+        "config_sha256": "6595cb0a0b7a897b2769475226abb2d1957636160267b3401c7698427794b2bd",
+        "known_truth": {
+          "status": "provided",
+          "source_description": "合成数据集独立答案 C.txt（编码器输入，早于解码）",
+          "sha256": "fe62ef0cf4f619443a3139e345badab1e50e03be73a1c57588085c865a7e1dbf",
+          "text": "SYNTH-TEST-C",
+          "encoding": "utf-8",
+          "verification": "user_asserted_independent"
+        },
+        "attempts": [
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "profile": "baseline",
+            "metrics": {
+              "brightness": 200.67424242424244,
+              "dark_ratio_percent": 0.8465335169880625,
+              "bright_ratio_percent": 56.808138200183656,
+              "sharpness": 4.003271349862259,
+              "contrast": 67.56181423787366,
+              "histogram_peak": 255,
+              "histogram_peak_count": 32634,
+              "bgr_means": {
+                "blue": 200.67424242424244,
+                "green": 200.67424242424244,
+                "red": 200.67424242424244
+              }
+            },
+            "decode": {
+              "status": "ambiguous",
+              "symbols": [
+                {
+                  "valid": false,
+                  "format": "QR Code",
+                  "text": "SZNT7RSPST-C03",
+                  "payload_base64": "U1pOVDdSU1BTVC1DMDM=",
+                  "position_region": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      217,
+                      48
+                    ],
+                    [
+                      216,
+                      216
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "position_analysis_image": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      217,
+                      48
+                    ],
+                    [
+                      216,
+                      216
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "error": {
+                    "type": "ErrorType.Checksum",
+                    "message": ""
+                  }
+                },
+                {
+                  "valid": false,
+                  "format": "QR Code",
+                  "text": "",
+                  "payload_base64": "",
+                  "position_region": [
+                    [
+                      50,
+                      50
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      228,
+                      228
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "position_analysis_image": [
+                    [
+                      50,
+                      50
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      228,
+                      228
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "error": {
+                    "type": "ErrorType.Checksum",
+                    "message": ""
+                  }
+                }
+              ],
+              "error": null,
+              "decoder": {
+                "name": "zxing-cpp",
+                "version": "3.1.1"
+              },
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": false,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            "truth_check": {
+              "status": "ambiguous",
+              "comparison": "exact_payload_bytes"
+            }
+          },
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "profile": "internal_downscale_search",
+            "metrics": {
+              "brightness": 200.67424242424244,
+              "dark_ratio_percent": 0.8465335169880625,
+              "bright_ratio_percent": 56.808138200183656,
+              "sharpness": 4.003271349862259,
+              "contrast": 67.56181423787366,
+              "histogram_peak": 255,
+              "histogram_peak_count": 32634,
+              "bgr_means": {
+                "blue": 200.67424242424244,
+                "green": 200.67424242424244,
+                "red": 200.67424242424244
+              }
+            },
+            "decode": {
+              "status": "ambiguous",
+              "symbols": [
+                {
+                  "valid": false,
+                  "format": "QR Code",
+                  "text": "SZNT7RSPST-C03",
+                  "payload_base64": "U1pOVDdSU1BTVC1DMDM=",
+                  "position_region": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      217,
+                      48
+                    ],
+                    [
+                      216,
+                      216
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "position_analysis_image": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      217,
+                      48
+                    ],
+                    [
+                      216,
+                      216
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "error": {
+                    "type": "ErrorType.Checksum",
+                    "message": ""
+                  }
+                },
+                {
+                  "valid": false,
+                  "format": "QR Code",
+                  "text": "",
+                  "payload_base64": "",
+                  "position_region": [
+                    [
+                      50,
+                      50
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      228,
+                      228
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "position_analysis_image": [
+                    [
+                      50,
+                      50
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      228,
+                      228
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "error": {
+                    "type": "ErrorType.Checksum",
+                    "message": ""
+                  }
+                }
+              ],
+              "error": null,
+              "decoder": {
+                "name": "zxing-cpp",
+                "version": "3.1.1"
+              },
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": true,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            "truth_check": {
+              "status": "ambiguous",
+              "comparison": "exact_payload_bytes"
+            }
+          }
+        ],
+        "decode_summaries": [
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "attempt_indices": [
+              0,
+              1
+            ],
+            "decode": {
+              "status": "ambiguous",
+              "symbols": [],
+              "selected_attempt_index": null,
+              "failed_attempt_indices": []
+            },
+            "truth_check": {
+              "status": "ambiguous",
+              "comparison": "exact_payload_bytes"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "dev01_clean_no_truth",
+      "note": "无独立答案；truth_check 必须为 not_provided，不得称正确",
+      "image": "data/samples/synthetic-qr-v1/development/dev-01-clean-module8-A.png",
+      "image_sha256": "9b1ff8d038e8beab1d39924b97dc57abda4d05a06f1b38d9f7e09eccd9363c57",
+      "roi": null,
+      "expected_file": null,
+      "try_downscale": false,
+      "stable": {
+        "schema_version": 2,
+        "report_type": "label_baseline",
+        "status": "completed",
+        "provenance": {
+          "implementation_version": "local-label-analysis-2",
+          "source_sha256": {
+            "analyze_image.py": "dd246c36102f5c02331e26ba3862e4bdc86d0114c683030f460d3d2560cda9cb",
+            "analysis_config.py": "fd04ccd4c4efa84aa9799daa2c174996e89e4926b8d25572d01811ec4f26eb41",
+            "metrics.py": "aacc4977661250244222159ced96a2c023a00b8519c03de798dac731865c5cb9",
+            "analyze_label.py": "0cf29b0bbf400bb49359201f9bad2d8e3f9d0f037fa00e5345f6637fedeed35c",
+            "label_analysis.py": "d27deae803ccb70bfc451e4ce27e64cb2f5d45f819ccbe3f78458c49a4ad565f"
+          },
+          "runtime": {
+            "python": "3.12.10",
+            "opencv": "5.0.0",
+            "numpy": "2.5.3",
+            "pillow": "12.3.0"
+          }
+        },
+        "warnings": [],
+        "source": {
+          "path": "D:\\Projects\\Python\\camera-quality-diagnostics\\data\\samples\\synthetic-qr-v1\\development\\dev-01-clean-module8-A.png",
+          "format": "PNG",
+          "bytes": 789,
+          "sha256": "9b1ff8d038e8beab1d39924b97dc57abda4d05a06f1b38d9f7e09eccd9363c57",
+          "width": 264,
+          "height": 264,
+          "mode": "L"
+        },
+        "preprocessing": {
+          "exif_orientation": 1,
+          "exif_transposed": false,
+          "exif_orientation_handling": "apply_exif_orientation",
+          "channel_conversion": "L_to_RGB_to_BGR",
+          "dtype": "uint8",
+          "analysis_color_order": "BGR",
+          "analysis_width": 264,
+          "analysis_height": 264,
+          "region": "full_image",
+          "color_profile_conversion": "none"
+        },
+        "analysis_config": {
+          "image": {
+            "dark_threshold_inclusive": 30,
+            "bright_threshold_inclusive": 225,
+            "sharpness": "variance_of_grayscale_laplacian",
+            "contrast": "grayscale_standard_deviation",
+            "max_file_bytes": 26214400,
+            "max_pixels": 16000000,
+            "supported_formats": [
+              "JPEG",
+              "PNG"
+            ],
+            "supported_modes": [
+              "L",
+              "LA",
+              "P",
+              "RGB",
+              "RGBA"
+            ],
+            "alpha_background_rgb": [
+              255,
+              255,
+              255
+            ],
+            "resize": "none",
+            "color_profile_conversion": "none",
+            "exif_orientation_policy": "apply_1_to_8;zero_no_transform_with_warning;reject_other"
+          },
+          "decoder": {
+            "formats": [
+              "QRCode"
+            ],
+            "try_rotate": true,
+            "try_downscale": false,
+            "try_invert": false,
+            "text_mode": "Plain",
+            "binarizer": "LocalAverage",
+            "is_pure": false,
+            "return_errors": true,
+            "external_enhancement": "none"
+          },
+          "roi": {
+            "kind": "full_image",
+            "x": 0,
+            "y": 0,
+            "width": 264,
+            "height": 264
+          },
+          "roi_coordinates": "exif_normalized_image;xywh;right_bottom_exclusive",
+          "expected_comparison": "exact_payload_bytes",
+          "max_expected_bytes": 65536,
+          "additional_downscale_search": false,
+          "decode_summary_policy": "execution_error_then_ambiguity_then_payload_consensus",
+          "decoder_attempts": [
+            {
+              "profile": "baseline",
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": false,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            }
+          ]
+        },
+        "config_sha256": "35d5fbc0ca65d612b385814ead06d6aee30191772eef76dce7b266f6a807fa73",
+        "known_truth": {
+          "status": "not_provided"
+        },
+        "attempts": [
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "profile": "baseline",
+            "metrics": {
+              "brightness": 198.80165289256198,
+              "dark_ratio_percent": 22.03856749311295,
+              "bright_ratio_percent": 77.96143250688705,
+              "sharpness": 7314.56611570248,
+              "contrast": 105.69921615030363,
+              "histogram_peak": 255,
+              "histogram_peak_count": 54336,
+              "bgr_means": {
+                "blue": 198.80165289256198,
+                "green": 198.80165289256198,
+                "red": 198.80165289256198
+              }
+            },
+            "decode": {
+              "status": "decoded",
+              "symbols": [
+                {
+                  "valid": true,
+                  "format": "QR Code",
+                  "text": "SYNTH-DEV-A",
+                  "payload_base64": "U1lOVEgtREVWLUE=",
+                  "position_region": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "position_analysis_image": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "error": null
+                }
+              ],
+              "error": null,
+              "decoder": {
+                "name": "zxing-cpp",
+                "version": "3.1.1"
+              },
+              "config": {
+                "formats": [
+                  "QRCode"
+                ],
+                "try_rotate": true,
+                "try_downscale": false,
+                "try_invert": false,
+                "text_mode": "Plain",
+                "binarizer": "LocalAverage",
+                "is_pure": false,
+                "return_errors": true,
+                "external_enhancement": "none"
+              }
+            },
+            "truth_check": {
+              "status": "not_provided",
+              "comparison": "exact_payload_bytes"
+            }
+          }
+        ],
+        "decode_summaries": [
+          {
+            "region": {
+              "kind": "full_image",
+              "x": 0,
+              "y": 0,
+              "width": 264,
+              "height": 264
+            },
+            "attempt_indices": [
+              0
+            ],
+            "decode": {
+              "status": "decoded",
+              "symbols": [
+                {
+                  "valid": true,
+                  "format": "QR Code",
+                  "text": "SYNTH-DEV-A",
+                  "payload_base64": "U1lOVEgtREVWLUE=",
+                  "position_region": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "position_analysis_image": [
+                    [
+                      48,
+                      48
+                    ],
+                    [
+                      216,
+                      48
+                    ],
+                    [
+                      217,
+                      217
+                    ],
+                    [
+                      48,
+                      216
+                    ]
+                  ],
+                  "error": null
+                }
+              ],
+              "selected_attempt_index": 0,
+              "failed_attempt_indices": []
+            },
+            "truth_check": {
+              "status": "not_provided",
+              "comparison": "exact_payload_bytes"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
