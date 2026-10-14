@@ -57,9 +57,137 @@ ROI 为左上角 `x y` 和 `width height`，右/下边界不包含，必须完�
 
 > ⚠️ 上表中那份**实拍**清单只有 1 个 `development` 样本、没有 `test` 样本，因此**不能用它**声称任何识读率、准确率或泛化能力。可复现的 `test` split 现在是合成数据集（见下节），它同样只描述受控退化下的行为。
 
+### 独立质量测量模块（业务阶段 4.1）
+
+新增数组级函数 `analyze_quality(image, roi=None)`（`src/quality_analysis.py`），对**整图或人工 ROI** 返回：
+
+- `metrics`：清晰度（复用拉普拉斯方差）、亮度（灰度均值）、对比度（灰度总体标准差），以及
+  **固定 4×4 分块**的亮度均衡（16 个块均值、`mean_range`、`mean_std`）；基础指标**复用** `src/metrics.py`，未重新实现
+- `applicability`：四项测量是否都满足本接口的空间条件；区域任一边 <3 时清晰度为 `null`，任一边 <4 时亮度均衡为 `null`，
+  并给出稳定原因码（`sharpness_insufficient_dimensions` / `uniformity_insufficient_dimensions`）
+- `warnings`：只有三种白名单提示——`measurement_scope`（始终）、`constant_region`（区域灰度恒定）、
+  `insufficient_spatial_support`（存在不可计算项）
+
+```python
+from src.quality_analysis import analyze_quality
+result = analyze_quality(bgr, roi=(100, 200, 600, 600))  # roi 为 x y width height，右/下边界不包含
+```
+
+> ⚠️ 输出的是**测量事实**，不是质量评分：没有合格判定、故障类别或自动重拍动作。
+> **正常的块间亮度差异不会产生警告**——`mean_range > 0` 只是测量结果，块间差异可能来自图案内容、颜色或阴影，
+> 不能直接称为光照故障。固定网格不保证发现块内部的局部暗点，也不保证不同场景/尺寸之间可比。
+> `valid=true` 不代表清晰、曝光正常或工业合格。本模块尚未接入 CLI、批量入口或现有报告。详见[文档 35](docs/stage-35-evidence-based-quality-analysis.md)。
+
+### QR 结果与质量测量的关联层（业务阶段 4.2）
+
+新增 `analyze_quality_and_qr(path, roi=None, expected_file=None, truth_source=None, *, try_downscale=False)`
+（`src/quality_qr_analysis.py`）。它是一次调用的**外围组合**：对**同一张图、同一个区域**同时取得 QR 结果
+与质量测量，把既有 `analyze_label` 的完整输出作为子对象 `qr_report` **原样保留**，把 `analyze_quality`
+的测量放在旁边，再用读取一致性、区域对应与 profile 归并把两者关联成一条可追溯的记录。
+
+```python
+from src.quality_qr_analysis import analyze_quality_and_qr
+
+result = analyze_quality_and_qr('data/samples/stage2-known-qr.png', roi=(66, 66, 132, 132))
+result['measurements']   # 每个 region 恰一条：整图与 ROI 分别测量
+result['associations']   # 每个 (region, profile) 恰一条，用 measurement_id 引用测量
+result['qr_report']      # 既有 analyze_label 的完整输出，逐字段原样
+```
+
+- **`basis` 恒为 `original_normalized_image_region`**：测量始终在标准化后的**原图区域**上完成，不是解码器
+  内部降采样图。`try_downscale` 只影响解码 profile，不影响 `basis` / `region` / `quality`。
+- **同一区域的多个 profile 共用一条测量记录**，不会被计成多个独立样本。
+- **三处 warnings 归属分明**：`qr_report.warnings` 与 `measurements[].quality.warnings` 原样保留，
+  关联层自己的 `warnings` 首版恒为 `[]`。
+- **总耗时覆盖到返回前**：包含读图、解码、质量测量、来源摘要与运行库版本收集，以及报告组装。
+- **只有 `QualityAnalysisError` 会转成 `quality_error` 并保留 QR 结果**；`MemoryError`、`cv2.error` 等
+  继续抛出，不会被说成图像质量问题。
+
+> ⚠️ **能力边界（不得夸大）**：本模块**读取两次**（一次供质量测量，一次由 `analyze_label` 内部读取）。
+> 它只提供 `read_consistency.checked_fields` 列出的 8 个字段在两次读取中相同的证据——**不声称**单次读取，
+> **不声称**文件始终未变化，**不声称**检查范围之外的差异不存在。它**不是**质量评分：没有合格判定、
+> 故障分类、阈值或自动重拍建议，也不新增状态词、不改既有报告字段含义。尚未接入 CLI 或批量入口。
+> 详见[文档 36](docs/stage-36-quality-qr-association.md)。
+
+### 固定矩阵模糊实验（业务阶段 4.3）
+
+用一次固定的受控实验回答一个问题：同一张 QR 基图施加不同强度的高斯模糊后，质量测量怎么变，
+基线解码、内部降采样搜索与最终汇总分别是什么结果。
+
+```powershell
+# 开发组与验证组分别执行；每轮新建 <run-id> 目录，已存在即拒绝覆盖
+.\.venv\Scripts\python.exe -X utf8 tools\run_blur_experiment.py --group development
+.\.venv\Scripts\python.exe -X utf8 tools\run_blur_experiment.py --group test
+```
+
+固定协议（不可调参）：4 张既有 clean 灰度 PNG（264×264 模块 8 px、198×198 模块 6 px，各两组）
+× σ ∈ {0,1,3,5,8}，共 **20 个条件**；σ=0 直接引用原图，σ>0 每次从**原图**独立生成
+（`GaussianBlur`、`ksize=(0,0)`、`sigmaX=sigmaY=σ`、`BORDER_REFLECT_101`、灰度 PNG 压缩 6），
+新增 16 张退化 PNG；每条件调用一次 `analyze_quality_and_qr(..., try_downscale=True)`。
+独立答案直接取清单的 `expected_file`/`expected_sha256`/`truth_source`。
+分析返回后核对报告中实际使用的图片与答案摘要；与计划不一致即中断，不将该条件计为完成。
+
+实测（2026-10-13）：清晰度随 σ 急剧下降（约 7300–10300 → 约 2.3–4.2），亮度基本不变，
+对比度单调下降。σ=0/1 全部 `decoded`+`correct`，σ=3 有 3 个 `correct`、`test-02` 为
+`decode_error`，共 11 个条件为 `correct`；σ=5 的失败形态因基图而异
+（`ambiguous` / `decode_error` / `not_decoded`），σ=8 全部 `not_decoded`。
+**基线解码与内部降采样搜索在全部 20 个条件中状态逐一相同**——本矩阵中没有出现降采样恢复。
+
+> ⚠️ **能力边界**：只做固定矩阵的模糊实验，不含其他退化类型、多因素组合或 ROI 实验。
+> 不输出准确率、通用阈值、故障原因或跨场景有效性结论；状态数量只描述这 20 个条件与 4 张基图，
+> **不能外推**。验证组（`test` split）已在历史回归中出现，**不是盲测**。
+> 产物仅新建于 `data/experiments/phase-4.3-blur-v1/<run-id>`，不覆盖。
+> 详见[Phase 4.3 记录](docs/tasks/phase-4.3-blur-experiment.md)。
+
+### 定时采集与间隔留证（业务阶段 4.4）
+
+无预览的定时采集入口：按固定间隔从单个摄像头采样，只对选中帧测量、保存并留证，
+最后发布一份任务报告。首版只做运行保护，**不做质量评分或故障判定，也不保证严格到时退出**
+（同步读取、测量与保存都可能阻塞；报告记录的是实际时长）。
+
+```powershell
+.\.venv\Scripts\python.exe -X utf8 src\run_capture.py --camera-index 0 --duration 30 --interval 5 --output-dir data\reports\timed-capture\trial-001
+```
+
+- 参数：`--camera-index`（默认 0）、`--duration`（默认 30，1～3600 秒）、
+  `--interval`（默认 5，1～3600 秒）、`--output-dir`（必填的新目录，已存在即拒绝）。
+  理论采样点数 `ceil(duration/interval)` 不得超过 120；`interval` 大于 `duration` 时只有一个理论采样点。
+  3600 秒与 120 个采样点是**首版运行保护策略**，不是相机或质量阈值。
+- 采样规则：打开成功后取单调时钟起点 `t0`；每次 `read()` 前检查截止时间；
+  有效帧按 `floor(elapsed/interval)` 归属区间，**同一区间最多一个样本，跨过的旧区间不补采**；
+  截止后返回的有效帧计入有效帧数但不保存。读取失败或无效图像优先作为错误，
+  不因已经超时而掩盖失败。
+- 每个新任务目录含 `camera_quality_runs.csv`、`camera_colors_runs.csv`、
+  `camera_frame_<run_id>_<frame_count>.png` 与 `capture_task.json`。
+  `run_id` 由程序生成（32 位小写十六进制 UUID，不接受 CLI 输入）；颜色记录
+  `scene_label` 固定为 `unspecified`；不写历史公共 CSV，也不生成旧会话 JSON。
+- 一次采样的顺序为：计算指标 → 质量 CSV → 颜色 CSV → PNG → PNG 的 SHA-256。
+  任一步失败立即停止，已有成功内容保留，不回滚、不删除、不追加伪成功记录。
+- 退出码：正常完成 0；参数错误与已定义的采集失败 2；`KeyboardInterrupt` 130；
+  其他未预期异常保留回溯和非零退出（不会「打印错误但返回 0」）。
+- 报告 `capture_task.json` 为严格 JSON（不允许 NaN/Infinity），记录状态、停止原因、
+  计数、逐样本记录、设备信息（取不到时写 null，不猜测）、来源文件 SHA-256 与运行库版本；
+  正式报告先写同目录临时文件、完整关闭后再发布，目标已存在即拒绝。
+
+**实机验收（2026-10-14，本机内置摄像头，`.venv`；下表的两个目录对应最终源码版本）**：
+
+| 运行 | 目录 | 请求 | `capture_elapsed_seconds` | 计划/实际样本 | 结果 |
+| --- | --- | --- | --- | --- | --- |
+| 1 | `data/reports/timed-capture/trial-003` | 30 秒 / 5 秒 | 30.0 秒 | 6 / 6 | `completed`，6 个样本 5 项指标逐帧复核一致 |
+| 2 | `data/reports/timed-capture/trial-004` | 10 秒 / 5 秒 | 10.0 秒 | 2 / 2 | `completed`，设备可再次打开，2 个样本复核一致 |
+
+（「实际时长」是报告里的 `capture_elapsed_seconds`，只含采集与逐样本处理／保存，
+不含打开与释放设备；两次进程的总耗时分别约 31.7 秒与 11.6 秒。
+更早的 `trial-001`、`trial-002` 是修复前版本的运行，原样保留、未改写，
+其报告中的源码摘要对应旧源码，不作为最终版本证据。）
+
+> ⚠️ **能力边界**：只做本机单设备的固定间隔采样；不做重试、不切换后端、不自动重连，
+> 也不做并发或断点续跑。实机结果**不构成**硬实时、工业稳定性或识读准确率结论。
+> 产物仅新建于指定任务目录，不覆盖。详见[Phase 4.4 记录](docs/tasks/phase-4.4-timed-capture.md)。
+
 ### 测试与验证体系
 
-- **pytest 自动化回归**：285 项用例、21 个测试文件；用时受运行环境影响，本机实测约 17–20 秒
+- **pytest 自动化回归**：454 项用例、26 个测试文件；用时受运行环境影响，本次复验 21.11 秒
 - **输入校验与错误分类**：非法参数、边界与资源上限、业务结果与程序执行异常分开处理
 - **证据核对**：原始帧留证、指标重算、跨报告关联键核对、留证 PNG 可解码性
 - **非破坏性输出**：`--output` 独占新建、不覆盖；历史报告与历史 JSON 的字段含义不改写；只读命令不修改 CSV
@@ -78,7 +206,11 @@ ROI 为左上角 `x y` 和 `width height`，右/下边界不包含，必须完�
 | development | 18/23 | 21/23 | improved=3 degraded=0 |
 | test | 18/23 | 21/23 | improved=3 degraded=0 |
 
-**CI 验证什么**：`GitHub Actions` 每次提交执行 `.venv/bin/python -m pytest -q`（285 项）与 `tools/check_evaluation_expectations.py`。闸门**不依赖退出码**——评测器对「程序故障」与「有样本按预期读不出」都返回 2，因此它把报告 JSON 与入库期望逐项精确比对。行为确实变了必须 `--refresh` 并经人工确认后提交。
+**CI 验证什么**：`GitHub Actions` 在 push 和 pull request 时执行完整 pytest 测试（`.venv/bin/python -m pytest -q`）与 `tools/check_evaluation_expectations.py`。当前本地测试数量与验证记录见[能力矩阵](docs/stage-34-project-capability-matrix.md)；本地通过不代表远程 CI 已通过，远程执行结果以对应提交的 Actions 记录为准。闸门**不依赖退出码**——评测器对「程序故障」与「有样本按预期读不出」都返回 2，因此它把报告 JSON 与入库期望逐项精确比对。行为确实变了必须 `--refresh` 并经人工确认后提交。
+
+关联层的通用 pytest 将图片绝对路径、运行库版本与解码器版本按当前环境独立校验，
+其余稳定字段仍与冻结 oracle 精确比较；本机冻结环境的严格复算保持不变。
+路径/版本适配不等于忽略这些字段，也不扩大 volatile 白名单。验证记录见文档 36。
 
 ```powershell
 # 重新生成数据集（重写样例目录与两份清单；稳定后不要反复重生成）
@@ -169,6 +301,9 @@ Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
 
 # 可选：按 s 时额外保存未叠加文字的原始帧 PNG；画面可能含个人信息，默认不启用
 .\.venv\Scripts\python.exe src\camera_test.py --save-frames
+
+# 无预览定时采集：按间隔采样并留证；输出目录必须是新目录，已存在即拒绝
+.\.venv\Scripts\python.exe -X utf8 src\run_capture.py --camera-index 0 --duration 30 --interval 5 --output-dir data\reports\timed-capture\trial-001
 
 # 只读汇总带标签颜色报告（不打开摄像头，不修改 CSV）
 .\.venv\Scripts\python.exe -X utf8 .\src\summarize_colors.py
@@ -312,6 +447,18 @@ JSON 汇总也只是描述性统计；单次或少量采样不能据此设定设
 
 > 评测**机制**已经具备；**实拍**方向目前只有 1 份 `development` 清单、1 个样本，可复现的 `test` split 由合成数据集提供（见上文「合成回归数据集与 CI 期望闸门」）。现有数字都是过程记录，不能当作识读率或准确率结论。
 
+**定时采集与间隔留证，已完成（业务阶段 4.4）：**
+
+- ✅ 无预览定时采集入口 `src/run_capture.py`：按间隔采样，只对选中帧测量与保存
+- ✅ 可注入的摄像头工厂与单调时钟；模拟设备与可控时钟下不等待真实时间即可验证调度
+- ✅ 严格区间调度：同一区间最多一个样本、跨过的旧区间不补采、截止后有效帧计入但不保存
+- ✅ 每个任务独占新目录，含质量 CSV、颜色 CSV、留证 PNG 与 `capture_task.json`
+- ✅ 报告为严格 JSON：状态、停止原因、计数、逐样本状态与 SHA-256、来源摘要与运行库版本
+- ✅ 报告先写同目录临时文件、完整关闭后再发布；目标已存在即拒绝，不留半截报告
+- ✅ 异常与清理：保留原异常类型、优先释放设备、报告发布失败不覆盖原始执行异常
+
+> 只做本机单设备的固定间隔采样。不保证严格到时退出，实机结果不构成硬实时、工业稳定性或识读准确率结论。
+
 ---
 
 ## 7. 后续计划
@@ -355,7 +502,11 @@ camera-quality-diagnostics\
 ├── src\
 │   ├── main.py             ← 环境自检
 │   ├── camera_test.py      ← 摄像头采集、显示、按键和保存入口
+│   ├── run_capture.py      ← 无预览定时采集入口（按间隔采样并留证）
+│   ├── capture_task.py     ← 定时采集的配置、调度、测量、保存与任务报告
 │   ├── metrics.py          ← 图像质量指标计算
+│   ├── quality_analysis.py ← 独立质量测量（ROI / 固定 4×4 分块 / 结构化测量限制）
+│   ├── quality_qr_analysis.py ← QR 报告与质量测量的关联层（外围组合，读取一致性）
 │   ├── report.py           ← CSV 报告保存
 │   ├── frame_evidence.py   ← 可选原始帧 PNG 保存
 │   ├── check_reports.py    ← 两份 CSV 的关联键核对

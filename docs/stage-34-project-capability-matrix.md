@@ -7,7 +7,16 @@
 - 本文不是又一份总结：它把**已有能力**翻译成可对外表述的语句，并为每句话标注**证据位置**与**不可声称的边界**
 - **本文是项目数字的唯一事实来源**。其他文档与本表冲突时以本表为准，并应修正那份文档
 
-## 0. 项目当前状态快照（全部为 2026-10-12 实测）
+## 0. 项目当前状态快照（2026-10-12 实测；标 † 的行为 2026-10-13 重测）
+
+> 2026-10-13 说明：Phase 4.2（文档 36）与 Phase 4.3（任务文档 `docs/tasks/phase-4.3-blur-experiment.md`）
+> 实施后只重测了**受影响**的两行（测试、源模块/工具/文档），并新增能力行 §1-9、§1-10。
+> 其余各行**保持原测量日期**，未在后续任务中重新测量——这些任务未提交、未改依赖、未改数据集，
+> 这些行不因改动而失效。历史版本测试行依次记的是 285 / 299 / 323 / 326 项。
+>
+> 2026-10-14 说明：Phase 4.4（任务文档 `docs/tasks/phase-4.4-timed-capture.md`）实施后，
+> 同样只重测**受影响**的两行（测试、源模块/工具/文档）并新增能力行 §1-11；
+> 其余各行保持原测量日期。未提交、未改依赖、未改数据集、未刷新评测期望。
 
 | 项 | 实测值 |
 | --- | --- |
@@ -16,11 +25,11 @@
 | 入库文件 | **155** 个（`data` 59、`docs` 42、`src` 24、`tests` 21、根 4、`.vscode` 2、`tools` 2、`.github` 1） |
 | 仓库体积 | `.git` **4.92 MB** |
 | 工作区体积 | **20.59 MB / 268 个文件**（其中约 15 MB 是**未入库**的 `photo/` 实拍原图与 `data/reports/` 产物） |
-| 测试 | **285 项 / 21 个测试文件**；本机实测 17.32 s / 17.72 s / 20.27 s 三次 |
+| 测试 † | **454 项 / 26 个测试文件**（2026-10-14；Phase 4.4 新增 `tests/test_capture_task.py` + `tests/test_run_capture.py` 共 111 项，其中本轮修复复验新增 8 项；此前 343 项 / 24 文件） |
 | CI | GitHub Actions，5 个步骤，最近三次运行 34–37 秒，结论 success |
 | 合成数据集 | `data/samples/synthetic-qr-v1/`，**46 张图 / 4.23 MB**，8 类受控退化 |
 | 评测清单 | 3 份（`development`、`test`、`expectations`） |
-| 源模块 / 工具脚本 / 文档 | `src` 24 / `tools` 2 / `docs` 42 份 markdown |
+| 源模块 / 工具脚本 / 文档 † | 入库 `src` 24 / `tools` 2 / `docs` 43；**工作区**另有未入库的 `src/quality_analysis.py`、`src/quality_qr_analysis.py`、`src/capture_task.py`、`src/run_capture.py`、`tests/test_quality_analysis.py`、`tests/test_quality_qr_analysis.py`、`tests/test_blur_experiment.py`、`tests/test_capture_task.py`、`tests/test_run_capture.py`、`tools/run_blur_experiment.py`、`docs/stage-35-*.md`、`docs/stage-36-*.md` 及 Phase 4.1/4.2/4.3/4.4 任务与证据文件、`data/experiments/` 产物（`docs` 下共 **56** 份 markdown，2026-10-14 实测） |
 
 ### 为什么会需要这张表
 
@@ -38,7 +47,7 @@
 git rev-list --count HEAD                                                  # 提交数
 git ls-files | Measure-Object                                              # 入库文件数
 (Get-ChildItem .git -Recurse -File | Measure-Object Length -Sum).Sum/1MB   # 仓库体积
-.\.venv\Scripts\python.exe -m pytest -q                                    # 285 passed
+.\.venv\Scripts\python.exe -m pytest -q                                    # 454 passed
 .\.venv\Scripts\python.exe -X utf8 tools\check_evaluation_expectations.py  # 评测闸门
 ```
 
@@ -48,17 +57,22 @@ git ls-files | Measure-Object                                              # 入
 
 | # | 能力 | 实现位置 | 验证方式 | 可对外表述 | 不可声称 |
 | --- | --- | --- | --- | --- | --- |
-| 1 | QR 解码链路：整图 / 人工 ROI / 内部降采样搜索，双 profile 并存 | `src/analyze_label.py`、`src/label_analysis.py` | 285 项 pytest；`photo/A7.jpg` 实拍报告；46 个合成样本 | 「构建二维码识读链路的自动化验证流程，可定位基线失败并验证补救路径」 | 不能说识读率、不能说工业现场有效 |
+| 1 | QR 解码链路：整图 / 人工 ROI / 内部降采样搜索，双 profile 并存 | `src/analyze_label.py`、`src/label_analysis.py` | 454 项 pytest（见第 0 节）；`photo/A7.jpg` 实拍报告；46 个合成样本 | 「构建二维码识读链路的自动化验证流程，可定位基线失败并验证补救路径」 | 不能说识读率、不能说工业现场有效 |
 | 2 | 按清单批量评测：8 必填 + 4 可选字段契约、真值逐字节校验、分组泄漏检查、分母口径 | `src/evaluate_labels.py`、`src/label_evaluation.py` | 两份清单共 46 样本；`evaluation_policy` 自述口径 | 「设计带真值校验与分组泄漏检查的批量评测流程」 | 不能说统计显著的识别率 |
 | 3 | 精确期望值回归闸门（不看退出码，比对报告 JSON） | `tools/check_evaluation_expectations.py`、`tests/test_synthetic_dataset_expectations.py` | CI 每次提交；已做反向测试（改坏期望 → exit 1） | 「建立精确期望值的回归闸门，行为变化必须显式确认」 | 不能说"零缺陷" |
 | 4 | 受控退化测试集与生成脚本（确定性、哈希自洽） | `tools/generate_synthetic_samples.py`、`data/samples/synthetic-qr-v1/` | 8 类退化 × 2 split；`noise-large` 复现真实拍摄失败形态 | 「设计可复现的受控退化测试集，覆盖边界与失败恢复路径」 | 不能说覆盖真实场景分布 |
 | 5 | 图像质量指标、报告留证与数值复核 | `src/metrics.py`、`src/report.py`、`src/frame_evidence.py`、`src/verify_*.py`、`src/check_*.py` | pytest + 真实摄像头批次报告 | 「图像指标记录、留证与逐帧数值复核」 | 不能做合格判定或故障归因 |
-| 6 | 持续集成 | `.github/workflows/tests.yml`（5 步） | 每次 push 自动执行 285 项 + 评测闸门 | 「搭建自动化回归：提交即验证测试与评测行为」 | 不能说已做发布流程 |
+| 6 | 持续集成 | `.github/workflows/tests.yml`（5 步） | 每次 push 自动执行 454 项 + 评测闸门 | 「搭建自动化回归：提交即验证测试与评测行为」 | 不能说已做发布流程 |
 | 7 | 文档-实现一致性治理（四状态：已实现 / 已实现但文档缺失 / 规划中未实现 / 无法确认） | `docs/stage-32-*`、`docs/stage-33-*`、`AGENTS.md` | 审计 + 逐条源码核对 | 「建立文档与实现的一致性核对机制，区分事实、规划与未知」 | 不能说文档永远同步 |
+| 8 | 独立质量测量模块：ROI/整图的固定 4×4 分块亮度均衡 + 结构化测量限制（无评分） | `src/quality_analysis.py` | `tests/test_quality_analysis.py` 14 项；A01–A16 逐条验收 | 「实现只输出测量事实与适用性限制、不输出质量结论的图像质量测量接口」 | 不能做合格判定、故障归因或跨场景可比性结论；固定网格不保证发现块内局部变化 |
+| 9 | QR 报告与质量测量的关联层：同一图/同一区域的外围组合、读取一致性、区域对应与 profile 归并 | `src/quality_qr_analysis.py` | `tests/test_quality_qr_analysis.py` 27 项；B01–B18 与两项修复回归；本机严格 oracle 及跨环境身份校验（未覆盖冻结版本） | 「用外围组合把两条既有链路的证据按同一区域关联，并显式检测两次读取的一致性，不重写任一链路」 | **读取两次**，不声称单次读取、不声称文件全程未变、不声称检查范围之外的差异不存在；不新增状态词、不做质量评分或合格判定、不改既有报告字段含义 |
+| 10 | 固定矩阵模糊实验：4 基图 × σ∈{0,1,3,5,8} 的最小受控实验，复用 Phase 4.2 关联层 | `tools/run_blur_experiment.py`、`tests/test_blur_experiment.py` | 20/20 条件；17 项测试；逐条件与独立 `analyze_quality`/`analyze_label` 调用对照；生成反例可被独立复算捕获 | 「用固定协议的最小受控实验定位退化强度与测量/解码行为的对应关系，并如实记录负结果」 | 只覆盖 4 张合成基图与**模糊**一种退化；不输出准确率、阈值、故障原因或跨场景结论；验证组已在历史回归中出现，**不是盲测**；不建设通用实验平台 |
+| 11 | 定时采集与间隔留证：无预览、可注入摄像头与单调时钟的固定间隔采样，逐样本测量/保存/留证与严格 JSON 任务报告 | `src/capture_task.py`、`src/run_capture.py` | `tests/test_capture_task.py` + `tests/test_run_capture.py` 共 111 项；实机 30 秒/5 秒与 10 秒/5 秒各一次，样本经既有 `verify_run_metrics` 逐帧复核一致 | 「实现可注入时钟与设备、只对选中帧测量留证、并按严格契约发布任务报告的定时采样流程」 | 采用**同步**读取、测量与保存，可能阻塞，**不保证严格到时退出**、不做硬实时或工业稳定性结论；只做本机单设备的固定间隔采样；不重试、不切换后端、不自动重连、不并发、不断点续跑；不生成质量评分或故障判定 |
 
 ## 2. 测试能力映射（岗位语言）
 
-测试维度按**用例名关键字归类**（同一用例可计入多类，因此合计大于 285）：
+测试维度按**用例名关键字归类**（同一用例可计入多类，因此合计大于总用例数）。
+> ⚠️ 下表的分项数字是在 **285 项**时测得的，**未随 Phase 4.1 的 14 项、Phase 4.2 的 27 项、Phase 4.3 的 17 项与 Phase 4.4 的 111 项重算**；总数见第 0 节（454）。
 
 | 维度 | 实测用例数 | 对应岗位语言 |
 | --- | --- | --- |
@@ -120,7 +134,7 @@ git ls-files | Measure-Object                                              # 入
 
 **已具备（有代码 + 测试/产物证据）**
 
-- 自动化测试体系：285 项，覆盖输入边界、错误分类、非破坏性输出、可追溯
+- 自动化测试体系：454 项，覆盖输入边界、错误分类、非破坏性输出、可追溯
 - 图像处理与指标：EXIF 处理、像素级校验、质量指标与报告
 - QR 识读验证：整图 / ROI / 降采样搜索，真值逐字节核对
 - 数据驱动测试：清单契约、分组泄漏检查、失败样本留在分母
@@ -140,7 +154,7 @@ git ls-files | Measure-Object                                              # 入
 
 | 通用要求 | 项目对应 | 证据 |
 | --- | --- | --- |
-| 测试用例设计 | 285 项，含 128 输入校验 / 58 错误分类 / 35 非破坏性 | `tests/` 21 个文件 |
+| 测试用例设计 | 285 项时测得，含 128 输入校验 / 58 错误分类 / 35 非破坏性（分项未重算；总数见第 0 节） | `tests/` 24 个文件 |
 | 自动化测试 | pytest + GitHub Actions，提交即验证 | `.github/workflows/tests.yml` |
 | 图像/算法效果验证 | QR 评测：真值逐字节校验、分母口径、分组泄漏检查 | `src/evaluate_labels.py` |
 | 问题定位能力 | A7 降采样恢复案例（现象→分析→处置→验证） | 本文故事 1 |
