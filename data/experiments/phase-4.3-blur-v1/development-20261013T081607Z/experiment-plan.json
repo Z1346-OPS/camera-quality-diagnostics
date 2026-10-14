@@ -1,0 +1,393 @@
+{
+  "protocol_version": "phase-4.3-blur-v1",
+  "experiment_id": "development-20261013T081607Z",
+  "group": "development",
+  "generated_at_utc": "2026-10-13T08:16:07.238426+00:00",
+  "project_root": "D:\\Projects\\Python\\camera-quality-diagnostics",
+  "implementation": {
+    "module": "tools/run_blur_experiment.py",
+    "source_sha256": "05f7d02a6828e43c1e838122426c978cfd3945c7a106837283ba8462c7e8aa59"
+  },
+  "environment": {
+    "python": "3.12.10",
+    "opencv": "5.0.0",
+    "numpy": "2.5.3",
+    "pillow": "12.3.0",
+    "zxing_cpp": "3.1.1"
+  },
+  "fixed_protocol": {
+    "sigmas": [
+      0,
+      1,
+      3,
+      5,
+      8
+    ],
+    "sigma_0": "references the original image unchanged",
+    "generation": {
+      "operation": "cv2.GaussianBlur",
+      "ksize": [
+        0,
+        0
+      ],
+      "sigma_x": "sigma",
+      "sigma_y": "sigma",
+      "border_type": "BORDER_REFLECT_101",
+      "png_compression": 6,
+      "source": "each version generated from the original base image, never chained"
+    },
+    "analysis": {
+      "function": "quality_qr_analysis.analyze_quality_and_qr",
+      "roi": null,
+      "try_downscale": true,
+      "expected_file": "manifest expected_file",
+      "truth_source": "manifest truth_source"
+    }
+  },
+  "conditions": [
+    {
+      "condition_id": "synthetic-qr-v1-development-01-sigma0",
+      "group": "development",
+      "sigma": 0,
+      "base": {
+        "sample_id": "synthetic-qr-v1-development-01",
+        "group": "development",
+        "module_px": 8,
+        "size": [
+          264,
+          264
+        ],
+        "image": "data/samples/synthetic-qr-v1/development/dev-01-clean-module8-A.png",
+        "image_sha256": "9b1ff8d038e8beab1d39924b97dc57abda4d05a06f1b38d9f7e09eccd9363c57"
+      },
+      "expected": {
+        "path": "data/samples/synthetic-qr-v1/development/answers/A.txt",
+        "sha256": "eb53e7bb0c7b54e3d3e96d6d464de0daebf3e5ce1df8db6639aec6935d63a801",
+        "truth_source": "tools/generate_synthetic_samples.py 预先固定的载荷文本，与解码输出无关"
+      },
+      "generation": {
+        "applied": false,
+        "source": "original_base_image",
+        "reason": "sigma=0 直接引用原图：不模糊、不重新编码"
+      },
+      "image_path": "data/samples/synthetic-qr-v1/development/dev-01-clean-module8-A.png",
+      "image_sha256": "9b1ff8d038e8beab1d39924b97dc57abda4d05a06f1b38d9f7e09eccd9363c57"
+    },
+    {
+      "condition_id": "synthetic-qr-v1-development-01-sigma1",
+      "group": "development",
+      "sigma": 1,
+      "base": {
+        "sample_id": "synthetic-qr-v1-development-01",
+        "group": "development",
+        "module_px": 8,
+        "size": [
+          264,
+          264
+        ],
+        "image": "data/samples/synthetic-qr-v1/development/dev-01-clean-module8-A.png",
+        "image_sha256": "9b1ff8d038e8beab1d39924b97dc57abda4d05a06f1b38d9f7e09eccd9363c57"
+      },
+      "expected": {
+        "path": "data/samples/synthetic-qr-v1/development/answers/A.txt",
+        "sha256": "eb53e7bb0c7b54e3d3e96d6d464de0daebf3e5ce1df8db6639aec6935d63a801",
+        "truth_source": "tools/generate_synthetic_samples.py 预先固定的载荷文本，与解码输出无关"
+      },
+      "generation": {
+        "applied": true,
+        "source": "original_base_image",
+        "operation": "cv2.GaussianBlur",
+        "ksize": [
+          0,
+          0
+        ],
+        "sigma_x": 1,
+        "sigma_y": 1,
+        "border_type": "BORDER_REFLECT_101",
+        "png_compression": 6
+      },
+      "image_path": "data/experiments/phase-4.3-blur-v1/development-20261013T081607Z/degraded/synthetic-qr-v1-development-01-sigma1.png",
+      "image_sha256": "17fa421cbb3759918ab7a7e021178176ab20e3a446dfbda3eaf40d992c3ad686"
+    },
+    {
+      "condition_id": "synthetic-qr-v1-development-01-sigma3",
+      "group": "development",
+      "sigma": 3,
+      "base": {
+        "sample_id": "synthetic-qr-v1-development-01",
+        "group": "development",
+        "module_px": 8,
+        "size": [
+          264,
+          264
+        ],
+        "image": "data/samples/synthetic-qr-v1/development/dev-01-clean-module8-A.png",
+        "image_sha256": "9b1ff8d038e8beab1d39924b97dc57abda4d05a06f1b38d9f7e09eccd9363c57"
+      },
+      "expected": {
+        "path": "data/samples/synthetic-qr-v1/development/answers/A.txt",
+        "sha256": "eb53e7bb0c7b54e3d3e96d6d464de0daebf3e5ce1df8db6639aec6935d63a801",
+        "truth_source": "tools/generate_synthetic_samples.py 预先固定的载荷文本，与解码输出无关"
+      },
+      "generation": {
+        "applied": true,
+        "source": "original_base_image",
+        "operation": "cv2.GaussianBlur",
+        "ksize": [
+          0,
+          0
+        ],
+        "sigma_x": 3,
+        "sigma_y": 3,
+        "border_type": "BORDER_REFLECT_101",
+        "png_compression": 6
+      },
+      "image_path": "data/experiments/phase-4.3-blur-v1/development-20261013T081607Z/degraded/synthetic-qr-v1-development-01-sigma3.png",
+      "image_sha256": "5e0a1693d7941f9f8b093bf187f07510bf03bdd2f244cd01a1d7dffe8531dfc8"
+    },
+    {
+      "condition_id": "synthetic-qr-v1-development-01-sigma5",
+      "group": "development",
+      "sigma": 5,
+      "base": {
+        "sample_id": "synthetic-qr-v1-development-01",
+        "group": "development",
+        "module_px": 8,
+        "size": [
+          264,
+          264
+        ],
+        "image": "data/samples/synthetic-qr-v1/development/dev-01-clean-module8-A.png",
+        "image_sha256": "9b1ff8d038e8beab1d39924b97dc57abda4d05a06f1b38d9f7e09eccd9363c57"
+      },
+      "expected": {
+        "path": "data/samples/synthetic-qr-v1/development/answers/A.txt",
+        "sha256": "eb53e7bb0c7b54e3d3e96d6d464de0daebf3e5ce1df8db6639aec6935d63a801",
+        "truth_source": "tools/generate_synthetic_samples.py 预先固定的载荷文本，与解码输出无关"
+      },
+      "generation": {
+        "applied": true,
+        "source": "original_base_image",
+        "operation": "cv2.GaussianBlur",
+        "ksize": [
+          0,
+          0
+        ],
+        "sigma_x": 5,
+        "sigma_y": 5,
+        "border_type": "BORDER_REFLECT_101",
+        "png_compression": 6
+      },
+      "image_path": "data/experiments/phase-4.3-blur-v1/development-20261013T081607Z/degraded/synthetic-qr-v1-development-01-sigma5.png",
+      "image_sha256": "7497d2c70e905f1df568b722325d4c5b7a1d6b13fbd6d919abd3b0f14fd167b0"
+    },
+    {
+      "condition_id": "synthetic-qr-v1-development-01-sigma8",
+      "group": "development",
+      "sigma": 8,
+      "base": {
+        "sample_id": "synthetic-qr-v1-development-01",
+        "group": "development",
+        "module_px": 8,
+        "size": [
+          264,
+          264
+        ],
+        "image": "data/samples/synthetic-qr-v1/development/dev-01-clean-module8-A.png",
+        "image_sha256": "9b1ff8d038e8beab1d39924b97dc57abda4d05a06f1b38d9f7e09eccd9363c57"
+      },
+      "expected": {
+        "path": "data/samples/synthetic-qr-v1/development/answers/A.txt",
+        "sha256": "eb53e7bb0c7b54e3d3e96d6d464de0daebf3e5ce1df8db6639aec6935d63a801",
+        "truth_source": "tools/generate_synthetic_samples.py 预先固定的载荷文本，与解码输出无关"
+      },
+      "generation": {
+        "applied": true,
+        "source": "original_base_image",
+        "operation": "cv2.GaussianBlur",
+        "ksize": [
+          0,
+          0
+        ],
+        "sigma_x": 8,
+        "sigma_y": 8,
+        "border_type": "BORDER_REFLECT_101",
+        "png_compression": 6
+      },
+      "image_path": "data/experiments/phase-4.3-blur-v1/development-20261013T081607Z/degraded/synthetic-qr-v1-development-01-sigma8.png",
+      "image_sha256": "e7751419af6a752f54d04f843d5cdc2087e5db7eac869d93880b4be9770a2f6a"
+    },
+    {
+      "condition_id": "synthetic-qr-v1-development-02-sigma0",
+      "group": "development",
+      "sigma": 0,
+      "base": {
+        "sample_id": "synthetic-qr-v1-development-02",
+        "group": "development",
+        "module_px": 6,
+        "size": [
+          198,
+          198
+        ],
+        "image": "data/samples/synthetic-qr-v1/development/dev-02-clean-module6-B.png",
+        "image_sha256": "6747837297057c7d715bddbd9355dd9852da973ec4f1b47432ac3f1753b4e29f"
+      },
+      "expected": {
+        "path": "data/samples/synthetic-qr-v1/development/answers/B.txt",
+        "sha256": "7b947024c3ecc21adf322be9b05f51d25ed925612ed8ac1a6aaeee1fecce6f9c",
+        "truth_source": "tools/generate_synthetic_samples.py 预先固定的载荷文本，与解码输出无关"
+      },
+      "generation": {
+        "applied": false,
+        "source": "original_base_image",
+        "reason": "sigma=0 直接引用原图：不模糊、不重新编码"
+      },
+      "image_path": "data/samples/synthetic-qr-v1/development/dev-02-clean-module6-B.png",
+      "image_sha256": "6747837297057c7d715bddbd9355dd9852da973ec4f1b47432ac3f1753b4e29f"
+    },
+    {
+      "condition_id": "synthetic-qr-v1-development-02-sigma1",
+      "group": "development",
+      "sigma": 1,
+      "base": {
+        "sample_id": "synthetic-qr-v1-development-02",
+        "group": "development",
+        "module_px": 6,
+        "size": [
+          198,
+          198
+        ],
+        "image": "data/samples/synthetic-qr-v1/development/dev-02-clean-module6-B.png",
+        "image_sha256": "6747837297057c7d715bddbd9355dd9852da973ec4f1b47432ac3f1753b4e29f"
+      },
+      "expected": {
+        "path": "data/samples/synthetic-qr-v1/development/answers/B.txt",
+        "sha256": "7b947024c3ecc21adf322be9b05f51d25ed925612ed8ac1a6aaeee1fecce6f9c",
+        "truth_source": "tools/generate_synthetic_samples.py 预先固定的载荷文本，与解码输出无关"
+      },
+      "generation": {
+        "applied": true,
+        "source": "original_base_image",
+        "operation": "cv2.GaussianBlur",
+        "ksize": [
+          0,
+          0
+        ],
+        "sigma_x": 1,
+        "sigma_y": 1,
+        "border_type": "BORDER_REFLECT_101",
+        "png_compression": 6
+      },
+      "image_path": "data/experiments/phase-4.3-blur-v1/development-20261013T081607Z/degraded/synthetic-qr-v1-development-02-sigma1.png",
+      "image_sha256": "0fa4e5224ef892ac55bc95c90ad04dcbbe866a64acb2395e8a2af075f379ad60"
+    },
+    {
+      "condition_id": "synthetic-qr-v1-development-02-sigma3",
+      "group": "development",
+      "sigma": 3,
+      "base": {
+        "sample_id": "synthetic-qr-v1-development-02",
+        "group": "development",
+        "module_px": 6,
+        "size": [
+          198,
+          198
+        ],
+        "image": "data/samples/synthetic-qr-v1/development/dev-02-clean-module6-B.png",
+        "image_sha256": "6747837297057c7d715bddbd9355dd9852da973ec4f1b47432ac3f1753b4e29f"
+      },
+      "expected": {
+        "path": "data/samples/synthetic-qr-v1/development/answers/B.txt",
+        "sha256": "7b947024c3ecc21adf322be9b05f51d25ed925612ed8ac1a6aaeee1fecce6f9c",
+        "truth_source": "tools/generate_synthetic_samples.py 预先固定的载荷文本，与解码输出无关"
+      },
+      "generation": {
+        "applied": true,
+        "source": "original_base_image",
+        "operation": "cv2.GaussianBlur",
+        "ksize": [
+          0,
+          0
+        ],
+        "sigma_x": 3,
+        "sigma_y": 3,
+        "border_type": "BORDER_REFLECT_101",
+        "png_compression": 6
+      },
+      "image_path": "data/experiments/phase-4.3-blur-v1/development-20261013T081607Z/degraded/synthetic-qr-v1-development-02-sigma3.png",
+      "image_sha256": "e210b502d6cc270c826b4929c2b974efe39abb7009d2d274df895e5544bd5306"
+    },
+    {
+      "condition_id": "synthetic-qr-v1-development-02-sigma5",
+      "group": "development",
+      "sigma": 5,
+      "base": {
+        "sample_id": "synthetic-qr-v1-development-02",
+        "group": "development",
+        "module_px": 6,
+        "size": [
+          198,
+          198
+        ],
+        "image": "data/samples/synthetic-qr-v1/development/dev-02-clean-module6-B.png",
+        "image_sha256": "6747837297057c7d715bddbd9355dd9852da973ec4f1b47432ac3f1753b4e29f"
+      },
+      "expected": {
+        "path": "data/samples/synthetic-qr-v1/development/answers/B.txt",
+        "sha256": "7b947024c3ecc21adf322be9b05f51d25ed925612ed8ac1a6aaeee1fecce6f9c",
+        "truth_source": "tools/generate_synthetic_samples.py 预先固定的载荷文本，与解码输出无关"
+      },
+      "generation": {
+        "applied": true,
+        "source": "original_base_image",
+        "operation": "cv2.GaussianBlur",
+        "ksize": [
+          0,
+          0
+        ],
+        "sigma_x": 5,
+        "sigma_y": 5,
+        "border_type": "BORDER_REFLECT_101",
+        "png_compression": 6
+      },
+      "image_path": "data/experiments/phase-4.3-blur-v1/development-20261013T081607Z/degraded/synthetic-qr-v1-development-02-sigma5.png",
+      "image_sha256": "8ffdc4107e4df07bb77721f1041393f20f06652e7abc6224b0e029d21a68b60c"
+    },
+    {
+      "condition_id": "synthetic-qr-v1-development-02-sigma8",
+      "group": "development",
+      "sigma": 8,
+      "base": {
+        "sample_id": "synthetic-qr-v1-development-02",
+        "group": "development",
+        "module_px": 6,
+        "size": [
+          198,
+          198
+        ],
+        "image": "data/samples/synthetic-qr-v1/development/dev-02-clean-module6-B.png",
+        "image_sha256": "6747837297057c7d715bddbd9355dd9852da973ec4f1b47432ac3f1753b4e29f"
+      },
+      "expected": {
+        "path": "data/samples/synthetic-qr-v1/development/answers/B.txt",
+        "sha256": "7b947024c3ecc21adf322be9b05f51d25ed925612ed8ac1a6aaeee1fecce6f9c",
+        "truth_source": "tools/generate_synthetic_samples.py 预先固定的载荷文本，与解码输出无关"
+      },
+      "generation": {
+        "applied": true,
+        "source": "original_base_image",
+        "operation": "cv2.GaussianBlur",
+        "ksize": [
+          0,
+          0
+        ],
+        "sigma_x": 8,
+        "sigma_y": 8,
+        "border_type": "BORDER_REFLECT_101",
+        "png_compression": 6
+      },
+      "image_path": "data/experiments/phase-4.3-blur-v1/development-20261013T081607Z/degraded/synthetic-qr-v1-development-02-sigma8.png",
+      "image_sha256": "5babf377fdacf4275db40d7141999cd0ded0662caf33604312365f898994b1c5"
+    }
+  ]
+}
