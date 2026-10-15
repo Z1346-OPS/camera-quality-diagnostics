@@ -138,3 +138,13 @@ C:\Users\zex\.codex\visualizations\2026\10\15\01a13df0-98e2-72f3-b260-ccd6452166
 实际输出摘要：`verification_status=consistent`；`reported_samples=6`、`csv_pairs=6`、`verified_frames=6`；`issues=[]`、`warnings=[]`，exit 0。对应的 6 张 PNG 文件摘要匹配，五项当前算法重算值与 CSV 一致。
 
 结果仅表示本次检查范围内的记录与文件一致；不能据此认定画面真实或相机工业合格。重新采集时必须为 run_capture.py 指定新的 output-dir，不能覆盖这两个历史目录。
+
+## 远程交付结果（2026-10-15，后续追加）
+
+以上“未提交／未推送／远程 CI 待执行”为当时状态，保留历史。后续已完成：
+
+- 六个文件以功能提交 `66b05d655e7045aab71c5594723baf3684e8f379` 正常推送 origin/main。
+- [GitHub Actions 38686222004](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/38686222004) 精确对应该提交，ubuntu-latest，结论 success。
+- 日志：`478 passed in 8.93s`，无跳过；development / test 两组精确评测闸门通过。
+- 项目中的图片符号链接逃逸测试已在 Linux 通过；Windows WinError 1314 仍是本机限制。仓库外独立套件的 JSON/CSV 等符号链接参数化检查未在 CI 执行，不能声称全部链接测试已完成。
+- 后续只追加此文档证据，不改源码、测试或工作流；后续文档提交的 CI 另以实际运行核验。
