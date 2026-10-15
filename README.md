@@ -185,9 +185,33 @@ result['qr_report']      # 既有 analyze_label 的完整输出，逐字段原�
 > 也不做并发或断点续跑。实机结果**不构成**硬实时、工业稳定性或识读准确率结论。
 > 产物仅新建于指定任务目录，不覆盖。详见[Phase 4.4 记录](docs/tasks/phase-4.4-timed-capture.md)。
 
+### 采集任务离线复核入口（业务阶段 4.5）
+
+采集结束后只指定任务目录即可复核：读取该目录的 `capture_task.json`、两份 CSV 与留证 PNG，
+核对任务声明、CSV 关联键、图片摘要与「按当前算法重算」的五项指标，输出一份 JSON。
+
+```powershell
+.\.venv\Scripts\python.exe -X utf8 src\review_capture.py data\reports\timed-capture\trial-003
+```
+
+- 只支持 `schema_version=1`、`report_type=camera_timed_capture`、`status=completed` 的静态任务目录；
+  非 completed 返回 `not_reviewed`（退出 2），不复核部分记录、不恢复数据、不改原状态。
+- 全部 CSV 键必须与任务声明的 `(run_id, frame_count)` 集合完全一致，**不做批次过滤**；
+  集合不一致时 `frames=[]`、`verified_frames=0`，不进入指标重算。
+- 图片摘要与指标分别核对：PNG 无损重编码导致像素相同而文件摘要不同时，仍报 `image_hash_mismatch`，不能整体通过。
+- 五项指标始终是「按当前算法与当前阈值重算」，`comparison_basis` 固定为 `current_algorithm_one_decimal`；
+  任务记录与当前运行库、阈值、`metrics.py`/`analysis_config.py` 摘要的差异只作为
+  `measurement_context_*` 提示，不阻断、不归因、**不建版本闸门**。
+- 退出码：一致 0；不一致 1；非 completed 2；必需 JSON/CSV 缺失、坏格式、类型错误或不安全路径为输入错误（2，stdout 为空）；
+  缺失 PNG 是逐帧问题（1）。只读、不打开摄像头、不创建新报告、不覆盖历史文件。
+
+> 复核只证明「文件与当前算法一致」，**不**证明画面真实、场景标签正确或工业合格，也不做故障判定。
+> 实机 `trial-003`（6 帧）与 `trial-004`（2 帧）逐帧复核一致。
+> 详见 [Phase 4.5 记录](docs/tasks/phase-4.5-capture-review.md) 与 [2026-10-15 本地复验](docs/tasks/phase-4.5-verification-2026-10-15.md)。
+
 ### 测试与验证体系
 
-- **pytest 自动化回归**：454 项用例、26 个测试文件；用时受运行环境影响，本次复验 21.11 秒
+- **pytest 自动化回归**：用例数量、实际通过／跳过及环境限制见[能力矩阵第 0 节](docs/stage-34-project-capability-matrix.md)；远程结果以对应提交的 Actions 记录为准。
 - **输入校验与错误分类**：非法参数、边界与资源上限、业务结果与程序执行异常分开处理
 - **证据核对**：原始帧留证、指标重算、跨报告关联键核对、留证 PNG 可解码性
 - **非破坏性输出**：`--output` 独占新建、不覆盖；历史报告与历史 JSON 的字段含义不改写；只读命令不修改 CSV
@@ -433,6 +457,7 @@ JSON 汇总也只是描述性统计；单次或少量采样不能据此设定设
 - ✅ 首次保存时记录摄像头编号、OpenCV 后端与帧尺寸的会话 JSON
 - ✅ 显式启用后保存未叠字原始帧 PNG；真实摄像头批次已验证保存成功
 - ✅ 只读核对 PNG 与 CSV 的关联、可解码性，以及单帧或整批次的 5 项指标数值一致性
+- ✅ 定时采集任务目录级只读复核入口 `src/review_capture.py`：组合任务声明、两份 CSV 与留证 PNG，分别核对文件摘要与指标
 
 > 已完成的“核对”不是自动场景识别。真实留证批次只验证了少量手动保存帧；不能据此声称检测准确率或设备故障识别能力。
 
@@ -513,6 +538,7 @@ camera-quality-diagnostics\
 │   ├── check_frame_evidence.py ← PNG 是否存在且可解码
 │   ├── verify_frame_metrics.py ← 单帧 PNG 指标重算核对
 │   ├── verify_run_metrics.py   ← 整批次 PNG 指标重算核对
+│   ├── review_capture.py   ← 定时采集任务目录级只读复核入口
 │   └── ...                 ← JSON 导出、场景与跨批次描述性分析
 ├── tests\                 ← 指标、报告、采集流程及各核对命令的自动测试
 ├── data\
