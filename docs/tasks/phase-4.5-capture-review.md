@@ -1,7 +1,7 @@
 # Phase 4.5：采集任务离线复核入口（缩减版）
 
 - 日期：2026-10-14。
-- 状态：功能提交 `66b05d6` 已交付且远程 478 passed；本轮继续补齐固定 JSON/CSV 的真实符号链接测试（第 8.5 节），对应新版本 CI 待核验。历史自测与冻结规格保留，Windows 权限限制不变。
+- 状态：**本轮验收与交付完成；补充测试提交 `2629e57` 已推送，远程 481 passed、无跳过（2026-10-15，第 8.6 节）**。四条真实符号链接路径已在 Linux 验证；Windows 权限限制保留，不修改系统设置。冻结规格和历史自测不改写。
 - 基线：`dd97998df18b2974a3530eae4d3e7e9cf41da33f`；本地工作区干净，已推送 `origin/main`。
 - 基线远程验证：GitHub Actions `38551307781`，精确对应上述提交，`454 passed in 7.93s`，两组评测闸门通过。此为历史实测，不预填下一轮结果。
 - 分工：Codex 设计；用户审核具体规格；Claude Code 实现与自测；Codex 验收；DeepSeek 只读复核；用户收尾。
@@ -305,6 +305,15 @@ R08 原本已要求固定 JSON/CSV 路径不得通过链接逃出目录。此前
 新增 `test_r08_symlinked_fixed_input_escaping_dir_is_rejected_before_read` 覆盖任务 JSON、质量 CSV、颜色 CSV。外部文件复制有效内容，避免格式错误掩盖路径缺陷；用 `Path.open` 守卫确保拒绝发生在读取外部文件之前。原图片用例、注入探针与全部既有断言保留。
 
 项目现在收集 481 项（原 478＋3），Phase 4.5 专项 27 项（原 24＋3）。当前 Windows 专项实际为 23 passed、4 skipped（1.47 秒），skip 均 WinError 1314。完整回归实际为 **477 passed、4 skipped（26.92 秒）**，exit 0；两组精确评测闸门通过，6＋2 帧 CLI 冒烟仍 consistent。对应提交的 Linux CI 待核验，不预填成功；8.4 的 478 项是原功能提交结果。
+
+### 8.6 剩余链接检查闭环与最终结论（2026-10-15）
+
+- 补充测试提交 `2629e579b7a939d1b1f0122ea2c08a415e7b2927` 已正常推送 origin/main；[远程运行 38686814154](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/38686814154) 精确对应该提交，ubuntu-latest，success。
+- Run tests 实际日志：**481 passed in 8.54s，无跳过**；两组精确评测闸门通过。
+- 四条规范路径（PNG、任务 JSON、质量 CSV、颜色 CSV）的项目真实符号链接用例均在 Linux 执行通过，拒绝发生在读取外部文件前。R08 的本轮缺口已通过现有 CI 环境补齐，没有修改产品源码或 CI 配置。
+- Windows 完整回归仍为 477 passed、4 skipped；这是本机 WinError 1314 环境限制，不改写为本机通过。仓库外 DeepSeek/Codex 套件保持原运行与 skip 记录，不声称它们已在 Linux 重跑。
+- 结论：Phase 4.5 本轮验收、交付和对应产品／测试版本的远程验证已完成。源码、原图、历史报告与冻结期望保持既有内容；新增三项测试仅补齐预先约定的路径检查。
+- 后续提交仅同步此验收证据；该文档提交自身的 CI 会再按实际运行检查，避免把上一提交结果冒充最终 HEAD。
 
 ## 9. 用户观察
 

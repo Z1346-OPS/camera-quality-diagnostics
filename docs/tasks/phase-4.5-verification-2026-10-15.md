@@ -154,3 +154,7 @@ C:\Users\zex\.codex\visualizations\2026\10\15\01a13df0-98e2-72f3-b260-ccd6452166
 为补齐任务 JSON 与两份 CSV 的真实符号链接覆盖，仅新增 3 个项目参数化测试，不改产品代码、CI 或原有断言。专项实跑 23 passed、4 skipped（1.47 秒）；Windows skip 均 WinError 1314。项目收集数由 478 变为 481；旧数字是历史记录，不改写。对应 Linux CI 结果后续实际记录。
 
 补充用例后的完整 Windows 回归实际为 `477 passed, 4 skipped in 26.92s`，exit 0；两组闸门与 6＋2 帧 CLI 冒烟通过。跳过的是四条真实符号链接路径，产品源码未改。
+
+## 剩余真实链接检查完成（2026-10-15，后续追加）
+
+补充测试提交 `2629e579b7a939d1b1f0122ea2c08a415e7b2927` 已推送，[运行 38686814154](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/38686814154)为 ubuntu-latest、success，日志 `481 passed in 8.54s`，无跳过，两组精确评测闸门通过。项目中图片及固定 JSON/CSV 四条真实符号链接路径均实际执行，通过读取前拒绝检查。Windows 477＋4 与仓库外套件的 skip 历史保留，不混写环境。此次最终文档同步不改产品代码、测试或 CI 配置。

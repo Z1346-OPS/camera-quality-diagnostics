@@ -30,6 +30,8 @@
 
 > 2026-10-15 交付补记：功能提交 `66b05d6` 已推送，精确对应的[远程运行](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/38686222004)为 478 passed、无跳过，两组闸门通过；本地 Windows 的 477＋1 保留为独立环境记录，仓库外套件未在 CI 执行。
 
+> 2026-10-15 最终补记：`2629e57` 新增三项固定输入真实符号链接用例，项目由 478 增为 481；对应[远程运行](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/38686814154)481 passed、无跳过，两组闸门通过。四条路径的项目用例在 Linux 通过；Windows 477 passed、4 skipped 保留为环境事实。
+
 | 项 | 实测值 |
 | --- | --- |
 | 提交数 | **67**（首个 `7c66c5d` 2026-09-18，最新 `c120d12` 2026-10-12，跨度约 3.5 周） |
@@ -37,8 +39,8 @@
 | 入库文件 | **155** 个（`data` 59、`docs` 42、`src` 24、`tests` 21、根 4、`.vscode` 2、`tools` 2、`.github` 1） |
 | 仓库体积 | `.git` **4.92 MB** |
 | 工作区体积 | **20.59 MB / 268 个文件**（其中约 15 MB 是**未入库**的 `photo/` 实拍原图与 `data/reports/` 产物） |
-| 测试 † | **481 项 / 27 个测试文件**（2026-10-15：原 478＋固定 JSON/CSV 真实符号链接 3 项；Phase 4.5 专项 27 项，Windows 实测 23 passed、4 skipped；Windows 完整回归 477 passed、4 skipped（26.92 秒）；对应新版本远程 CI 另记。原功能提交 66b05d6 的远程 478 passed 保留为历史） |
-| CI | GitHub Actions 执行**完整 pytest + 精确评测闸门**。Phase 4.5 功能提交 `66b05d6` 已核验：[运行 38686222004](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/38686222004)，Ubuntu **478 passed（8.93 秒）、无跳过**，两组闸门通过。历史基线 `dd97998` 为 454 passed；Windows 本地 477 passed、1 skipped 单独记录，不混写环境 |
+| 测试 † | **481 项 / 27 个测试文件**（2026-10-15：Windows 477 passed、4 skipped，26.92 秒；Linux 481 passed、无跳过，8.54 秒。Phase 4.5 专项 27 项，新增的 3 项补齐固定 JSON/CSV 真实符号链接路径；环境结果分别记录） |
+| CI | 完整 pytest 与精确评测闸门：补充测试提交 `2629e57` 的[运行 38686814154](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/38686814154)为 Ubuntu **481 passed（8.54 秒）、无跳过**，两组闸门通过；原功能提交 `66b05d6` 的 478 passed 为历史证据。四条项目真实符号链接路径已在 Linux 验证，Windows 477＋4 单独记录 |
 | 合成数据集 | `data/samples/synthetic-qr-v1/`，**46 张图 / 4.23 MB**，8 类受控退化 |
 | 评测清单 | 3 份（`development`、`test`、`expectations`） |
 | 源模块 / 工具脚本 / 文档 † | Phase 4.1–4.4 的 `src/quality_analysis.py`、`src/quality_qr_analysis.py`、`src/capture_task.py`、`src/run_capture.py`、`tests/test_quality_analysis.py`、`tests/test_quality_qr_analysis.py`、`tests/test_blur_experiment.py`、`tests/test_capture_task.py`、`tests/test_run_capture.py`、`tools/run_blur_experiment.py`、`docs/stage-35-*.md`、`docs/stage-36-*.md`、Phase 4.1–4.4 任务与证据文件及 `data/experiments/` 产物**均已入库**（`af2fc01` 起）；**本轮 Phase 4.5 交付增量**为 `src/review_capture.py`、`tests/test_review_capture.py`、`docs/tasks/phase-4.5-capture-review.md` 及 `docs/tasks/phase-4.5-verification-2026-10-15.md`；已随功能提交 `66b05d6` 入库，CI 证据见任务第 8.4 节（`docs` 下共 **57** 份 markdown，2026-10-14 实测） |
@@ -74,7 +76,7 @@ git ls-files | Measure-Object                                              # 入
 | 3 | 精确期望值回归闸门（不看退出码，比对报告 JSON） | `tools/check_evaluation_expectations.py`、`tests/test_synthetic_dataset_expectations.py` | CI 每次提交；已做反向测试（改坏期望 → exit 1） | 「建立精确期望值的回归闸门，行为变化必须显式确认」 | 不能说"零缺陷" |
 | 4 | 受控退化测试集与生成脚本（确定性、哈希自洽） | `tools/generate_synthetic_samples.py`、`data/samples/synthetic-qr-v1/` | 8 类退化 × 2 split；`noise-large` 复现真实拍摄失败形态 | 「设计可复现的受控退化测试集，覆盖边界与失败恢复路径」 | 不能说覆盖真实场景分布 |
 | 5 | 图像质量指标、报告留证与数值复核 | `src/metrics.py`、`src/report.py`、`src/frame_evidence.py`、`src/verify_*.py`、`src/check_*.py` | pytest + 真实摄像头批次报告 | 「图像指标记录、留证与逐帧数值复核」 | 不能做合格判定或故障归因 |
-| 6 | 持续集成 | `.github/workflows/tests.yml` | 每次 push 自动执行完整 pytest 与精确评测闸门；Phase 4.5 功能提交 `66b05d6` 在 Ubuntu 实际 478 passed、无跳过，两组闸门通过（运行 38686222004） | 「搭建自动化回归并核验对应提交的远程执行证据」 | 不能说已做完整发布流程或工业认证；本地与远程环境结果分别记录 |
+| 6 | 持续集成 | `.github/workflows/tests.yml` | 每次 push 自动执行完整 pytest 与精确评测闸门；补充测试提交 `2629e57` 在 Ubuntu 实际 481 passed、无跳过，两组闸门通过（运行 38686814154） | 「搭建自动化回归并核验对应提交的远程执行证据」 | 不能说已做完整发布流程或工业认证；本地与远程环境结果分别记录 |
 | 7 | 文档-实现一致性治理（四状态：已实现 / 已实现但文档缺失 / 规划中未实现 / 无法确认） | `docs/stage-32-*`、`docs/stage-33-*`、`AGENTS.md` | 审计 + 逐条源码核对 | 「建立文档与实现的一致性核对机制，区分事实、规划与未知」 | 不能说文档永远同步 |
 | 8 | 独立质量测量模块：ROI/整图的固定 4×4 分块亮度均衡 + 结构化测量限制（无评分） | `src/quality_analysis.py` | `tests/test_quality_analysis.py` 14 项；A01–A16 逐条验收 | 「实现只输出测量事实与适用性限制、不输出质量结论的图像质量测量接口」 | 不能做合格判定、故障归因或跨场景可比性结论；固定网格不保证发现块内局部变化 |
 | 9 | QR 报告与质量测量的关联层：同一图/同一区域的外围组合、读取一致性、区域对应与 profile 归并 | `src/quality_qr_analysis.py` | `tests/test_quality_qr_analysis.py` 27 项；B01–B18 与两项修复回归；本机严格 oracle 及跨环境身份校验（未覆盖冻结版本） | 「用外围组合把两条既有链路的证据按同一区域关联，并显式检测两次读取的一致性，不重写任一链路」 | **读取两次**，不声称单次读取、不声称文件全程未变、不声称检查范围之外的差异不存在；不新增状态词、不做质量评分或合格判定、不改既有报告字段含义 |
