@@ -187,6 +187,8 @@ result['qr_report']      # 既有 analyze_label 的完整输出，逐字段原�
 
 ### 采集任务离线复核入口（业务阶段 4.5）
 
+初次使用可按[三种情况的操作演示](docs/tasks/capture-review-walkthrough.md)运行临时合成数据，查看正常、缺图与指标不一致的完整 JSON；示例不依赖本机实拍文件。
+
 采集结束后只指定任务目录即可复核：读取该目录的 `capture_task.json`、两份 CSV 与留证 PNG，
 核对任务声明、CSV 关联键、图片摘要与「按当前算法重算」的五项指标，输出一份 JSON。
 
