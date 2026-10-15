@@ -459,6 +459,33 @@ def test_r08_symlinked_image_escaping_dir_is_rejected_before_read(tmp_path, monk
     assert outside.resolve() not in [path.resolve() for path in read_paths]
 
 
+@pytest.mark.parametrize("input_name", [TASK_JSON, QUALITY_CSV, COLOR_CSV])
+def test_r08_symlinked_fixed_input_escaping_dir_is_rejected_before_read(
+    tmp_path, monkeypatch, input_name,
+):
+    """固定 JSON/CSV 名称仍需拒绝真实符号链接逃逸，且不能先读取外部文件。"""
+    task_dir, _, _ = make_task(tmp_path, (1,), name="fixed-input-escape")
+    link = task_dir / input_name
+    outside = tmp_path / f"outside-{input_name}"
+    outside.write_bytes(link.read_bytes())  # 外部内容有效，避免格式错误掩盖路径缺陷。
+    link.unlink()
+    try:
+        link.symlink_to(outside)
+    except OSError as error:
+        pytest.skip(f"本环境不支持创建符号链接: {error}")
+
+    real_open = Path.open
+
+    def reject_external_read(self, *args, **kwargs):
+        if self.resolve() == outside.resolve():
+            pytest.fail("拒绝路径逃逸之前读取了外部文件")
+        return real_open(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", reject_external_read)
+    with pytest.raises(ValueError, match="路径逃出"):
+        review(task_dir)
+
+
 def test_r08_injected_resolution_outside_dir_is_rejected(tmp_path, monkeypatch):
     """注入 `Path.resolve` 的流程探针；**不能**替代上面的真实符号链接测试。"""
     task_dir, run_id, _ = make_task(tmp_path, (1,), name="inject")

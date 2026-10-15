@@ -148,3 +148,9 @@ C:\Users\zex\.codex\visualizations\2026\10\15\01a13df0-98e2-72f3-b260-ccd6452166
 - 日志：`478 passed in 8.93s`，无跳过；development / test 两组精确评测闸门通过。
 - 项目中的图片符号链接逃逸测试已在 Linux 通过；Windows WinError 1314 仍是本机限制。仓库外独立套件的 JSON/CSV 等符号链接参数化检查未在 CI 执行，不能声称全部链接测试已完成。
 - 后续只追加此文档证据，不改源码、测试或工作流；后续文档提交的 CI 另以实际运行核验。
+
+## 补齐固定输入链接测试（后续追加）
+
+为补齐任务 JSON 与两份 CSV 的真实符号链接覆盖，仅新增 3 个项目参数化测试，不改产品代码、CI 或原有断言。专项实跑 23 passed、4 skipped（1.47 秒）；Windows skip 均 WinError 1314。项目收集数由 478 变为 481；旧数字是历史记录，不改写。对应 Linux CI 结果后续实际记录。
+
+补充用例后的完整 Windows 回归实际为 `477 passed, 4 skipped in 26.92s`，exit 0；两组闸门与 6＋2 帧 CLI 冒烟通过。跳过的是四条真实符号链接路径，产品源码未改。
