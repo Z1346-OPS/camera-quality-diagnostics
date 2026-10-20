@@ -18,6 +18,7 @@ from src.capture_task import (
     CaptureTaskError,
 )
 from src.check_reports import reconcile_reports
+from src.review_capture import CaptureTaskReviewer
 from src.verify_frame_metrics import compare_frame_metrics
 from src import verify_run_metrics
 
@@ -941,6 +942,70 @@ def test_publish_refuses_existing_target(tmp_path):
     assert target.read_bytes() == b"existing"
 
 
+def test_publish_refuses_target_created_after_initial_check(tmp_path, monkeypatch):
+    target = tmp_path / "capture_task.json"
+    real_dumps = capture_task.json.dumps
+
+    def concurrent_writer(*args, **kwargs):
+        payload = real_dumps(*args, **kwargs)
+        target.write_bytes(b"concurrent report")
+        return payload
+
+    monkeypatch.setattr(capture_task.json, "dumps", concurrent_writer)
+    with pytest.raises(CaptureTaskError, match="拒绝覆盖") as caught:
+        capture_task._publish_report({"schema_version": 1}, target)
+    assert caught.value.stage == "report"
+    assert target.read_bytes() == b"concurrent report"
+    # 完整临时文件留作错误证据，不删除竞争者创建的报告。
+    assert json.loads((tmp_path / capture_task.REPORT_TEMP_NAME).read_text(encoding="utf-8")) == {
+        "schema_version": 1,
+    }
+
+
+def test_publish_complete_report_removes_temp_file(tmp_path):
+    target = tmp_path / "capture_task.json"
+    payload = {"schema_version": 1, "message": "完整报告"}
+    assert capture_task._publish_report(payload, target) == target
+    assert json.loads(target.read_text(encoding="utf-8")) == payload
+    assert not (tmp_path / capture_task.REPORT_TEMP_NAME).exists()
+
+
+def test_publish_link_error_preserves_temp_without_fallback(tmp_path, monkeypatch):
+    target = tmp_path / "capture_task.json"
+    error = OSError("文件系统不支持硬链接")
+    monkeypatch.setattr(capture_task.os, "link", _raising(error))
+    with pytest.raises(OSError) as caught:
+        capture_task._publish_report({"schema_version": 1}, target)
+    assert caught.value is error
+    assert not target.exists()
+    assert (tmp_path / capture_task.REPORT_TEMP_NAME).is_file()
+
+
+def test_publish_unlink_error_exposes_published_report(tmp_path, monkeypatch):
+    target = tmp_path / "capture_task.json"
+    error = OSError("临时链接删除失败")
+    monkeypatch.setattr(capture_task.Path, "unlink", _raising(error))
+    with pytest.raises(OSError) as caught:
+        capture_task._publish_report({"schema_version": 1}, target)
+    assert caught.value is error
+    assert json.loads(target.read_text(encoding="utf-8")) == {"schema_version": 1}
+    assert (tmp_path / capture_task.REPORT_TEMP_NAME).is_file()
+    assert any("已发布" in note for note in getattr(caught.value, "__notes__", []))
+
+
+def test_publish_link_error_keeps_capture_error_primary(tmp_path, monkeypatch):
+    error = OSError("文件系统拒绝发布")
+    monkeypatch.setattr(capture_task.os, "link", _raising(error))
+    harness = Harness(tmp_path, [(0.5, None)], duration=5, interval=1)
+    with pytest.raises(CaptureTaskError) as caught:
+        harness.run()
+    assert caught.value.stop_reason == "read_failed"
+    assert any("报告发布失败" in note and "文件系统拒绝发布" in note
+               for note in getattr(caught.value, "__notes__", []))
+    assert harness.camera.released == 1
+    assert not (harness.output_dir / "capture_task.json").exists()
+
+
 def test_temp_write_failure_leaves_no_partial_report(tmp_path):
     target = tmp_path / "capture_task.json"
     (tmp_path / capture_task.REPORT_TEMP_NAME).mkdir()  # 占用临时文件名
@@ -997,7 +1062,8 @@ TOP_FIELDS = {
 }
 
 
-def test_report_is_strict_json_with_fixed_fields_and_counts(tmp_path):
+def test_report_is_strict_json_with_fixed_fields_and_counts(tmp_path, monkeypatch):
+    monkeypatch.setattr(capture_task.platform, "system", lambda: "Windows")
     harness = Harness(
         tmp_path,
         [(0.5, make_frame(1)), (1.5, make_frame(2)), (2.5, make_frame(3)), (3.1, make_frame(4))],
@@ -1162,3 +1228,365 @@ def test_requested_camera_index_is_used(tmp_path):
     report = harness.run()
     assert harness.requested_indices == [3]
     assert report["config"]["camera_index"] == 3
+
+
+# ------------------------------------------------ T13 默认工厂读取边界
+
+class FakeVideoCapture:
+    """假底层 ``cv2.VideoCapture``：忠实模拟 DirectShow 的旧 ``read()`` 行为。
+
+    ``grab()`` / ``retrieve()`` 是真实标志；``read()`` 故意模仿 OpenCV 5.0.0
+    ``cap.cpp`` 的缺陷——忽略 ``retrieve()`` 的布尔返回值，只按输出数组是否
+    非空判定成功。默认工厂的适配器**不得**使用这个 ``read()``。
+
+    ``clock`` / ``step``：每次 ``grab()`` 推进可控时钟，用于驱动采样循环。
+    """
+
+    def __init__(self, *, clock=None, step=0.0, opened=True, backend="DSHOW",
+                 grab_result=True, retrieve_result=True, frame=None,
+                 grab_error=None, retrieve_error=None, release_error=None) -> None:
+        self.clock = clock
+        self.step = step
+        self.opened = opened
+        self.backend = backend
+        self.grab_result = grab_result
+        self.retrieve_result = retrieve_result
+        self.frame = frame
+        self.grab_error = grab_error
+        self.retrieve_error = retrieve_error
+        self.release_error = release_error
+        self.grab_calls = 0
+        self.retrieve_calls = 0
+        self.read_calls = 0
+        self.released = 0
+
+    def _tick(self) -> None:
+        if self.clock is not None:
+            self.clock.now += self.step
+
+    def isOpened(self) -> bool:
+        return self.opened
+
+    def getBackendName(self) -> str:
+        return self.backend
+
+    def release(self) -> None:
+        self.released += 1
+        if self.release_error is not None:
+            raise self.release_error
+
+    def grab(self) -> bool:
+        self.grab_calls += 1
+        self._tick()
+        if self.grab_error is not None:
+            raise self.grab_error
+        return self.grab_result
+
+    def retrieve(self):
+        self.retrieve_calls += 1
+        if self.retrieve_error is not None:
+            raise self.retrieve_error
+        return self.retrieve_result, self.frame
+
+    def read(self):
+        """旧行为：不使用 ``retrieve()`` 的布尔值，只按数组是否为空判定成功。"""
+        self.read_calls += 1
+        if not self.grab():
+            return False, None
+        _ok, frame = self.retrieve()
+        return frame is not None and getattr(frame, "size", 0) > 0, frame
+
+
+def _run_with_default_factory(tmp_path, backend, *, duration, interval, clock,
+                              monkeypatch, camera_index=0):
+    """经**真实**默认工厂（``_default_camera_factory``）驱动假底层设备。
+
+    不注入 ``camera_factory``：直接替换 ``capture_task.cv2.VideoCapture``，
+    以确保被测的是默认工厂实际创建的适配对象，而不是被直接注入的假 camera。
+    """
+    seen_indices = []
+
+    def fake_constructor(index, *args, **kwargs):
+        seen_indices.append(index)
+        return backend
+
+    monkeypatch.setattr(capture_task.cv2, "VideoCapture", fake_constructor)
+    config = CaptureConfig(
+        Path(tmp_path) / "task", camera_index=camera_index,
+        duration_seconds=duration, interval_seconds=interval,
+    )
+    runner = CaptureRunner(config, clock=clock)
+    return config, runner, seen_indices
+
+
+def test_grab_retrieve_adapter_rejects_nonempty_array_on_retrieve_failure():
+    """retrieve 返回 False 但数组非空 → 适配器必须返回读取失败。"""
+    backend = FakeVideoCapture(grab_result=True, retrieve_result=False, frame=make_frame(1))
+    adapter = capture_task._GrabRetrieveCamera(backend)
+    ok, frame = adapter.read()
+    assert ok is False
+    assert frame is None
+    assert backend.grab_calls == 1
+    assert backend.retrieve_calls == 1
+    assert backend.read_calls == 0
+
+
+def test_grab_retrieve_adapter_grab_failure_skips_retrieve():
+    """grab 失败 → 直接返回读取失败，绝不继续 retrieve。"""
+    backend = FakeVideoCapture(grab_result=False, frame=make_frame(1))
+    adapter = capture_task._GrabRetrieveCamera(backend)
+    ok, frame = adapter.read()
+    assert ok is False
+    assert frame is None
+    assert backend.grab_calls == 1
+    assert backend.retrieve_calls == 0
+
+
+def test_grab_retrieve_adapter_passes_frame_through_unchanged():
+    frame = make_frame(5)
+    backend = FakeVideoCapture(frame=frame)
+    adapter = capture_task._GrabRetrieveCamera(backend)
+    ok, returned = adapter.read()
+    assert ok is True
+    assert returned is frame
+
+
+def test_grab_retrieve_adapter_delegates_lifecycle():
+    backend = FakeVideoCapture(backend="DSHOW", opened=True)
+    adapter = capture_task._GrabRetrieveCamera(backend)
+    assert adapter.isOpened() is True
+    assert adapter.getBackendName() == "DSHOW"
+    adapter.release()
+    assert backend.released == 1
+
+
+def test_default_factory_retrieve_failure_is_read_failed(tmp_path, monkeypatch):
+    """默认工厂路径：grab 成功、retrieve 失败、数组非空 → failed/read_failed。
+
+    这是本轮的**核心回归**：未修改的旧代码会把这个非空数组当作成功帧，
+    任务 completed 且保存样本，因此本用例在修复前必然失败。
+    """
+    clock = FakeClock()
+    backend = FakeVideoCapture(
+        clock=clock, step=0.5,
+        grab_result=True, retrieve_result=False,
+        frame=make_frame(1),          # 非空数组：旧 read() 会据此报成功
+    )
+    config, runner, seen_indices = _run_with_default_factory(
+        tmp_path, backend, duration=2, interval=1, clock=clock, monkeypatch=monkeypatch,
+    )
+
+    with pytest.raises(CaptureTaskError) as excinfo:
+        runner.run()
+    assert excinfo.value.stop_reason == "read_failed"
+
+    report = read_report(config.output_dir)
+    assert report["status"] == "failed"
+    assert report["stop_reason"] == "read_failed"
+    assert report["primary_error"]["stage"] == "read"
+    assert report["camera"]["actual_backend"] == "DSHOW"
+    assert report["counts"]["read_attempts"] == 1
+    assert report["counts"]["valid_frames"] == 0
+    assert report["counts"]["sample_attempts"] == 0
+    assert report["counts"]["samples_completed"] == 0
+    assert report["samples"] == []
+    assert seen_indices == [0]
+    # 适配器使用了 grab/retrieve，没有走底层那个会误报成功的 read()
+    assert backend.grab_calls == 1
+    assert backend.retrieve_calls == 1
+    assert backend.read_calls == 0
+    assert backend.released == 1
+
+
+def test_default_factory_grab_failure_uses_existing_read_failure_path(tmp_path, monkeypatch):
+    """默认工厂路径：grab 失败 → 既有读取失败路径，不调用 retrieve，设备释放。"""
+    clock = FakeClock()
+    backend = FakeVideoCapture(
+        clock=clock, step=0.5, grab_result=False, frame=make_frame(1),
+    )
+    config, runner, _ = _run_with_default_factory(
+        tmp_path, backend, duration=2, interval=1, clock=clock, monkeypatch=monkeypatch,
+    )
+
+    with pytest.raises(CaptureTaskError) as excinfo:
+        runner.run()
+    assert excinfo.value.stop_reason == "read_failed"
+
+    report = read_report(config.output_dir)
+    assert report["status"] == "failed"
+    assert report["counts"]["read_attempts"] == 1
+    assert report["counts"]["valid_frames"] == 0
+    assert report["counts"]["samples_completed"] == 0
+    assert backend.retrieve_calls == 0
+    assert backend.released == 1
+
+
+def test_default_factory_accepts_successfully_read_black_frame(tmp_path, monkeypatch):
+    """grab/retrieve 都成功、画面确实全黑 → 按现有规则正常完成，不判为执行异常。"""
+    clock = FakeClock()
+    black = np.zeros((6, 8, 3), dtype=np.uint8)
+    backend = FakeVideoCapture(clock=clock, step=0.5, frame=black)
+    config, runner, _ = _run_with_default_factory(
+        tmp_path, backend, duration=2, interval=1, clock=clock, monkeypatch=monkeypatch,
+    )
+
+    report = runner.run()
+    assert report["status"] == "completed"
+    assert report["stop_reason"] == "duration_reached"
+    assert report["counts"]["samples_completed"] == 2
+    # 全黑帧被正常保存：不改像素、不新增暗图过滤或亮度阈值
+    for sample in report["samples"]:
+        saved = cv2.imread(str(config.output_dir / sample["image_file"]))
+        assert saved is not None
+        assert np.array_equal(saved, black)
+
+
+def test_default_factory_normal_frame_pixels_and_review_unchanged(tmp_path, monkeypatch):
+    """默认工厂路径：正常图像像素不变，采样 / PNG / CSV / 离线复核均一致。"""
+    clock = FakeClock()
+    frame = make_frame(7)
+    backend = FakeVideoCapture(clock=clock, step=0.5, frame=frame)
+    config, runner, _ = _run_with_default_factory(
+        tmp_path, backend, duration=2, interval=1, clock=clock, monkeypatch=monkeypatch,
+    )
+
+    report = runner.run()
+    assert report["status"] == "completed"
+    assert report["counts"]["samples_completed"] == 2
+    assert backend.read_calls == 0
+
+    for sample in report["samples"]:
+        assert sample["quality_status"] == "written"
+        assert sample["color_status"] == "written"
+        assert sample["image_status"] == "written"
+        saved = cv2.imread(str(config.output_dir / sample["image_file"]))
+        assert np.array_equal(saved, frame)
+
+    quality_rows = read_csv_rows(config.output_dir / "camera_quality_runs.csv")
+    color_rows = read_csv_rows(config.output_dir / "camera_colors_runs.csv")
+    assert len(quality_rows) == len(color_rows) == 2
+
+    review = CaptureTaskReviewer(config.output_dir).review()
+    assert review["verification_status"] == "consistent"
+    assert review["counts"]["verified_frames"] == 2
+
+
+@pytest.mark.parametrize("error_attr, error", [
+    ("grab_error", RuntimeError("grab 崩了")),
+    ("retrieve_error", cv2.error("retrieve 崩了")),
+])
+def test_default_factory_backend_exception_is_preserved(tmp_path, monkeypatch,
+                                                        error_attr, error):
+    """底层调用抛异常 → 原样传播（不吞、不包装），设备仍被释放。"""
+    clock = FakeClock()
+    backend = FakeVideoCapture(clock=clock, step=0.5, frame=make_frame(1),
+                               **{error_attr: error})
+    config, runner, _ = _run_with_default_factory(
+        tmp_path, backend, duration=2, interval=1, clock=clock, monkeypatch=monkeypatch,
+    )
+
+    observed = None
+    try:
+        runner.run()
+    except BaseException as caught:  # noqa: BLE001 - 要拿到原始异常对象比对同一性
+        observed = caught
+    assert observed is error
+
+    report = read_report(config.output_dir)
+    assert report["status"] == "failed"
+    assert report["stop_reason"] == "read_failed"
+    assert report["primary_error"]["type"] == type(error).__name__
+    assert backend.released == 1
+
+
+def test_default_factory_release_error_is_reported_through_adapter(tmp_path, monkeypatch):
+    """适配器正确委托 release：仅释放失败时 stop_reason=release_failed，首错优先不变。"""
+    clock = FakeClock()
+    release_error = OSError("适配器释放失败")
+    backend = FakeVideoCapture(clock=clock, step=0.5, frame=make_frame(1),
+                               release_error=release_error)
+    config, runner, _ = _run_with_default_factory(
+        tmp_path, backend, duration=2, interval=1, clock=clock, monkeypatch=monkeypatch,
+    )
+
+    observed = None
+    try:
+        runner.run()
+    except BaseException as caught:  # noqa: BLE001
+        observed = caught
+    assert observed is release_error
+
+    report = read_report(config.output_dir)
+    assert report["status"] == "failed"
+    assert report["stop_reason"] == "release_failed"
+    assert report["primary_error"] is None
+    assert report["cleanup_errors"][0]["type"] == "OSError"
+    assert report["counts"]["samples_completed"] == 2
+    assert backend.released == 1
+
+
+def test_default_factory_delegates_camera_index(tmp_path, monkeypatch):
+    """适配不改变摄像头编号的传递。"""
+    clock = FakeClock()
+    backend = FakeVideoCapture(clock=clock, step=0.5, frame=make_frame(1))
+    config, runner, seen_indices = _run_with_default_factory(
+        tmp_path, backend, duration=2, interval=1, clock=clock,
+        monkeypatch=monkeypatch, camera_index=3,
+    )
+    report = runner.run()
+    assert seen_indices == [3]
+    assert report["config"]["camera_index"] == 3
+
+
+@pytest.mark.parametrize("system, api, name, actual", [
+    ("Windows", cv2.CAP_DSHOW, "CAP_DSHOW", "DSHOW"),
+    ("Linux", cv2.CAP_V4L2, "CAP_V4L2", "V4L2"),
+])
+@pytest.mark.parametrize("outcome", ["normal", "grab_failed", "retrieve_failed", "open_failed"])
+def test_platform_default_factory_and_report(tmp_path, monkeypatch, system, api,
+                                           name, actual, outcome):
+    """真实默认工厂的后端选择、报告、失败传播及释放；不访问硬件。"""
+    monkeypatch.setattr(capture_task.platform, "system", lambda: system)
+    clock = FakeClock()
+    frame = make_frame(7)
+    backend = FakeVideoCapture(
+        clock=clock, step=0.5, backend=actual, frame=frame,
+        opened=outcome != "open_failed",
+        grab_result=outcome != "grab_failed",
+        retrieve_result=outcome != "retrieve_failed",
+    )
+    calls = []
+
+    def constructor(index, requested_api):
+        calls.append((index, requested_api))
+        return backend
+
+    monkeypatch.setattr(capture_task.cv2, "VideoCapture", constructor)
+    config = CaptureConfig(tmp_path / "task", camera_index=3,
+                           duration_seconds=2, interval_seconds=1)
+    runner = CaptureRunner(config, clock=clock)
+    if outcome == "normal":
+        report = runner.run()
+        assert report["status"] == "completed"
+        assert report["counts"]["samples_completed"] == 2
+        for sample in report["samples"]:
+            assert np.array_equal(cv2.imread(str(config.output_dir / sample["image_file"])), frame)
+        review = CaptureTaskReviewer(config.output_dir).review()
+        assert review["verification_status"] == "consistent"
+        assert review["counts"]["verified_frames"] == 2
+    else:
+        with pytest.raises(CaptureTaskError) as caught:
+            runner.run()
+        reason = "open_failed" if outcome == "open_failed" else "read_failed"
+        assert caught.value.stop_reason == reason
+        report = read_report(config.output_dir)
+        assert report["status"] == "failed"
+        assert report["stop_reason"] == reason
+        assert report["counts"]["samples_completed"] == 0
+        assert report["samples"] == []
+        assert backend.retrieve_calls == (1 if outcome == "retrieve_failed" else 0)
+    assert calls == [(3, api)]  # 不枚举设备、不尝试其他后端
+    assert report["camera"]["requested_backend"] == name
+    assert report["camera"]["actual_backend"] == (None if outcome == "open_failed" else actual)
+    assert backend.read_calls == 0
+    assert backend.released == 1

@@ -1,7 +1,8 @@
 # camera-quality-diagnostics — 项目规则
 
 > 项目专属规则。跨项目通用约束见 `C:\Users\zex\.codex\AGENTS.md`。
-> 下面的路径与命令均已在本机实测（2026-10-12，pytest 收集 285 项，exit 0）。
+> 下面的路径与命令均已在本机实测；测试数量随用例变化，2026-10-20 的本地记录为 508 passed、4 skipped
+> （见 `docs/tasks/delivery-candidate-2026-10-20.md`；跳过原因是 Windows 符号链接权限不足）。
 
 ## 项目定位
 
@@ -25,6 +26,9 @@
 看 `docs/stage-34-project-capability-matrix.md`，不要凭记忆说数字。**
 不要依据 `docs/label-reading-project-design.md`（2026-10-01 的历史记录）或旧提交信息。
 
+交付候选身份、支持范围与当前验证依据看 `docs/tasks/delivery-candidate-2026-10-20.md`；
+**未提交改动不属于 HEAD**，不能把当前 HEAD 单独称为包含最新修正的版本。
+
 已实现能力的准确位置：
 
 - QR 解码与降采样搜索：`src/analyze_label.py`、`src/label_analysis.py`
@@ -44,7 +48,7 @@
   **会话 cwd 必须 = 项目根**（见全局规则中的沙箱说明）。
 
 ```powershell
-# 测试（285 项，含合成数据集的 2 个期望用例）
+# 测试（默认由 pytest.ini 收集完整 tests/；2026-10-20 本地记录 508 passed、4 skipped）
 .\.venv\Scripts\python.exe -m pytest -q
 
 # 重新生成合成回归数据集（重写样例目录与两份清单；稳定后不要反复重生成）
@@ -82,7 +86,7 @@
 - NN 用两位数，从 `01` 起，只增不改；作废的编号不复用（在文档正文里注明作废即可）。
 - 业务阶段号只能写在标题或正文，且必须同时给出文档序号，例如：
   `业务阶段 1（文档 31）：通用图片分析入口`。
-- 新增文档：NN = `docs/` 下已有 `stage-NN-*` 的最大 NN + 1（截至 2026-10-12 为 `stage-33-`）。
+- 新增文档：NN = `docs/` 下已有 `stage-NN-*` 的最大 NN + 1（截至 2026-10-20 为 `stage-39-`）。
 - 引用历史文档时**只写文件名**，不要用「阶段 N」指代。
 - 已知历史偏差（**不改文件名、不重写历史**）：
   - `stage-0-design-and-learning.md`、`stage-1-local-input-verification.md`、

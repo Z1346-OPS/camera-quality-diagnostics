@@ -94,6 +94,50 @@ def test_transparent_pixel_is_composited_on_white(tmp_path):
     assert result["preprocessing"]["channel_conversion"] == "alpha_over_white_then_RGB_to_BGR"
 
 
+@pytest.mark.parametrize("mode, key", [("RGB", (0, 0, 0)), ("L", 0)])
+def test_png_transparent_color_is_composited_on_white(tmp_path, mode, key):
+    source = tmp_path / f"transparent-{mode}.png"
+    Image.new(mode, (4, 4), key).save(source, transparency=key)
+    original = source.read_bytes()
+
+    result = module.analyze_image(source)
+
+    assert result["metrics"]["brightness"] == 255.0
+    assert result["metrics"]["dark_ratio_percent"] == 0.0
+    assert result["metrics"]["bright_ratio_percent"] == 100.0
+    assert result["metrics"]["bgr_means"] == dict.fromkeys(("blue", "green", "red"), 255.0)
+    assert result["preprocessing"]["channel_conversion"] == "alpha_over_white_then_RGB_to_BGR"
+    assert source.read_bytes() == original
+    assert result["source"]["sha256"] == sha256(original).hexdigest()
+
+
+@pytest.mark.parametrize("mode, key, opaque, expected_bgr", [
+    ("RGB", (0, 0, 0), (10, 20, 30), (30, 20, 10)),
+    ("L", 0, 64, (64, 64, 64)),
+])
+@pytest.mark.parametrize("orientation", [0, 6])
+def test_png_transparent_color_preserves_opaque_pixels_and_orientation(
+    tmp_path, mode, key, opaque, expected_bgr, orientation,
+):
+    source = tmp_path / f"mixed-{mode}-{orientation}.png"
+    image = Image.new(mode, (4, 3), key)
+    image.putpixel((0, 0), opaque)
+    exif = Image.Exif()
+    exif[274] = orientation
+    image.save(source, transparency=key, exif=exif)
+    original = source.read_bytes()
+    expected = np.full((3, 4, 3), 255, dtype=np.uint8)
+    expected[0, 0] = expected_bgr
+    if orientation == 6:
+        expected = np.rot90(expected, -1)
+
+    actual, metadata = module.load_normalized_image(source)
+
+    np.testing.assert_array_equal(actual, expected)
+    assert metadata["preprocessing"]["channel_conversion"] == "alpha_over_white_then_RGB_to_BGR"
+    assert source.read_bytes() == original
+
+
 def test_rejects_unsupported_format_and_high_bit_depth(tmp_path):
     gif = tmp_path / "image.gif"
     Image.new("RGB", (2, 2)).save(gif)

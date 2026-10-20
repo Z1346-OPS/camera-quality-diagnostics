@@ -2,6 +2,26 @@
 
 基于 Python 和 OpenCV 的**摄像头采集、图像质量指标记录与证据核对练习项目**。目前主要使用本机摄像头验证流程，不是已标定的工业相机诊断产品。
 
+## 当前交付候选（2026-10-20）
+
+- 已提交基线：`81b86e6`（`main`）。当前候选还包含**未提交**的取帧失败传播修正、Linux V4L2 后端适配，以及本次透明 PNG、测试收集范围和报告发布修正；HEAD 单独**不包含**这些改动。
+- 候选文件清单、支持范围与本轮验证见[当前交付候选说明](docs/tasks/delivery-candidate-2026-10-20.md)；[10 月 18 日说明](docs/tasks/delivery-candidate-2026-10-18.md)保留为历史快照。
+- 最新本地测试与跳过原因见[能力矩阵第 0 节](docs/stage-34-project-capability-matrix.md)。历史远程 CI 的 `481 passed` 对应旧提交 `2629e57`，**不覆盖**当前未提交改动。
+- 不访问摄像头、不依赖本机实拍文件的公开复现入口见[三种情况的采集复核演示](docs/tasks/capture-review-walkthrough.md)。
+
+### 首次运行：合成 QR（无需摄像头）
+
+在自己的克隆仓库根目录执行，使用 Python 3.12 创建项目虚拟环境。`data/reports/` 是运行产物目录，不随克隆提供，首次导出前需创建：
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+New-Item -ItemType Directory -Path '.\data\reports' -Force | Out-Null
+.\.venv\Scripts\python.exe -X utf8 src\analyze_label.py data\samples\stage2-known-qr.png --expected-file data\samples\stage2-known-qr.expected.txt --truth-source '预先固定的合成样例生成内容' --output data\reports\qr-first-run-001.json
+```
+
+预期为 `status=completed`、`truth_check.status=correct`（位于尝试与区域汇总中），退出码 0。再次运行请更换 JSON 文件名；现有报告仍拒绝覆盖。Linux 离线命令将解释器替换为 `.venv/bin/python`，并用 `mkdir -p data/reports` 创建目录；摄像头支持范围另见下文。
+
 2026-10-01 的后续方向：逐步接入手机图片上传、标签可读性检查和服务化存储。详见[项目方向转变与迁移计划](docs/project-direction-and-migration-plan.md)。该文档区分现有能力与规划。当前状态：**手机服务与数据库尚未实现**；**QR 解码、人工 ROI 与按清单批量评测已实现**（见下方「阶段 2」与[文档 32 文档与实现一致性核对](docs/stage-32-docs-vs-code-consistency.md)）。
 
 阶段 1 已新增本地 JPEG/PNG 图片分析入口（仍无手机上传）：
@@ -13,11 +33,11 @@ Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
 .\.venv\Scripts\python.exe -X utf8 .\src\analyze_image.py 'D:\Photos\label.jpg' --output '.\data\reports\label-analysis-001.json'
 ```
 
-结果同时打印 JSON。`--output` 可省略，此时只打印，不保存结果；指定的 JSON 路径必须是新文件，重新分析请换新文件名。原图只读、不覆盖。程序按图片内容识别 JPEG/PNG，接受 8 位灰度、RGB、带透明度及调色板图；16 位等模式明确拒绝。EXIF 方向 1–8 按定义处理；方向值 0 保留原始像素排列，并在 JSON 的 `warnings` 中提示人工核对方向，其他无效值仍拒绝。透明像素以白色背景合成，结果记录原图 SHA-256、预处理、全图分析区域和阈值。单文件上限 25 MiB，像素上限 1600 万；超限图片会明确报错。指标仅描述整张照片，不做标签可读性或合格判定；详见[阶段 1 记录](docs/stage-31-local-image-analysis.md)。
+结果同时打印 JSON。`--output` 可省略，此时只打印，不保存结果；指定的 JSON 路径必须是新文件，重新分析请换新文件名，父目录需先创建。原图只读、不覆盖。程序按图片内容识别 JPEG/PNG，接受 8 位灰度、RGB、带透明度及调色板图；16 位等模式明确拒绝。EXIF 方向 1–8 按定义处理；方向值 0 保留原始像素排列，并在 JSON 的 `warnings` 中提示人工核对方向，其他无效值仍拒绝。透明像素以白色背景合成，包含 RGBA/LA、调色板透明度以及 RGB/灰度 PNG 的透明色（tRNS），结果记录原图 SHA-256、预处理、全图分析区域和阈值。单文件上限 25 MiB，像素上限 1600 万；超限图片会明确报错。指标仅描述整张照片，不做标签可读性或合格判定；详见[阶段 1 记录](docs/stage-31-local-image-analysis.md)与[本轮修正记录](docs/stage-39-release-review-fixes.md)。
 
 ### 阶段 2：本地 QR 基线与人工 ROI
 
-新增独立入口，不改变历史图片分析报告格式。阶段 1 实拍已验收。**阶段 2 的实拍 + 已知答案验收已于 2026-10-09 完成**：`photo/A7.jpg` 基线读出失败（`decode_error`），启用降采样搜索后读出，且与预先固定的答案逐字节相同（`truth_check.status=correct`），结果见 `data/reports/qr-A7-downscale-001.json`。仅支持 QR Code，未接入增强、网页或数据库，详见[阶段 2 记录](docs/stage-2-roi-qr-baseline.md)。
+新增独立入口，不改变历史图片分析报告格式。阶段 1 实拍已验收。**阶段 2 的实拍 + 已知答案验收已于 2026-10-09 完成**：`photo/A7.jpg` 基线读出失败（`decode_error`），启用降采样搜索后读出，且与预先固定的答案逐字节相同（`truth_check.status=correct`），结果见 `data/reports/qr-A7-downscale-001.json`（本机报告，被 `.gitignore` 忽略，不随仓库交付）。仅支持 QR Code，未接入增强、网页或数据库，详见[阶段 2 记录](docs/stage-2-roi-qr-baseline.md)。
 
 ```powershell
 # 内容预先确定的合成样例：可打印此 PNG 后用手机拍摄
@@ -141,6 +161,18 @@ result['qr_report']      # 既有 analyze_label 的完整输出，逐字段原�
 
 ### 定时采集与间隔留证（业务阶段 4.4）
 
+**Linux 后端适配（2026-10-19）**：`run_capture.py` 在 Linux 上请求 `CAP_V4L2`，
+Windows 上继续请求 `CAP_DSHOW`；报告记录对应请求与实际后端，均保留取帧失败传播防护。
+本次适配不涉及 `main.py`、`camera_test.py` 的交互入口。Ubuntu 实机采集仍待验证，
+不能由单元测试推断任意设备可用。详见 [Linux 适配记录](docs/stage-38-linux-capture-backend.md)。
+
+Ubuntu 在项目根使用已安装依赖的 `.venv`；输出目录须不存在：
+
+```bash
+./.venv/bin/python -B -X utf8 src/run_capture.py --camera-index 0 --duration 10 --interval 5 --output-dir data/reports/linux-trial-001
+./.venv/bin/python -B -X utf8 src/review_capture.py data/reports/linux-trial-001
+```
+
 无预览的定时采集入口：按固定间隔从单个摄像头采样，只对选中帧测量、保存并留证，
 最后发布一份任务报告。首版只做运行保护，**不做质量评分或故障判定，也不保证严格到时退出**
 （同步读取、测量与保存都可能阻塞；报告记录的是实际时长）。
@@ -157,6 +189,13 @@ result['qr_report']      # 既有 analyze_label 的完整输出，逐字段原�
   有效帧按 `floor(elapsed/interval)` 归属区间，**同一区间最多一个样本，跨过的旧区间不补采**；
   截止后返回的有效帧计入有效帧数但不保存。读取失败或无效图像优先作为错误，
   不因已经超时而掩盖失败。
+- **取帧失败传播（2026-10-17）**：默认摄像头后端（`CAP_DSHOW`）经一层薄适配读取，
+  显式检查 `grab()`/`retrieve()` 的真实成功标志——`grab` 失败即判读取失败且不再 `retrieve`，
+  `retrieve` 失败即使返回非空数组也不作为成功帧交给采集流程。此前直接调用
+  `cv2.VideoCapture.read()` 时，其丢弃 `retrieve()` 返回值、仅按输出数组是否为空判定成功，
+  底层取帧失败但数组非空会被误计为成功采集。此改动只修正失败传播，**不**新增重试、
+  补采、删帧或亮度阈值，也**不**声称历史近黑画面的根因已确认。详见
+  [取帧失败传播防护记录](docs/stage-37-read-failure-guard.md)。
 - 每个新任务目录含 `camera_quality_runs.csv`、`camera_colors_runs.csv`、
   `camera_frame_<run_id>_<frame_count>.png` 与 `capture_task.json`。
   `run_id` 由程序生成（32 位小写十六进制 UUID，不接受 CLI 输入）；颜色记录
@@ -167,7 +206,9 @@ result['qr_report']      # 既有 analyze_label 的完整输出，逐字段原�
   其他未预期异常保留回溯和非零退出（不会「打印错误但返回 0」）。
 - 报告 `capture_task.json` 为严格 JSON（不允许 NaN/Infinity），记录状态、停止原因、
   计数、逐样本记录、设备信息（取不到时写 null，不猜测）、来源文件 SHA-256 与运行库版本；
-  正式报告先写同目录临时文件、完整关闭后再发布，目标已存在即拒绝。
+  正式报告先写同目录临时文件、完整关闭后用硬链接独占发布；即使同名目标在发布瞬间出现也拒绝覆盖。
+  输出文件系统须支持硬链接（本机 NTFS 已验证；Linux 仍需对应环境验证），不支持时明确报错并保留临时文件。
+  发布成功后移除临时名字；移除失败会报错并注明正式报告已发布，不自动删除正式报告。详见[本轮修正记录](docs/stage-39-release-review-fixes.md)。
 
 **实机验收（2026-10-14，本机内置摄像头，`.venv`；下表的两个目录对应最终源码版本）**：
 
@@ -179,7 +220,9 @@ result['qr_report']      # 既有 analyze_label 的完整输出，逐字段原�
 （「实际时长」是报告里的 `capture_elapsed_seconds`，只含采集与逐样本处理／保存，
 不含打开与释放设备；两次进程的总耗时分别约 31.7 秒与 11.6 秒。
 更早的 `trial-001`、`trial-002` 是修复前版本的运行，原样保留、未改写，
-其报告中的源码摘要对应旧源码，不作为最终版本证据。）
+其报告中的源码摘要对应旧源码，不作为最终版本证据。
+上述试跑目录位于本机 `data/reports/`，被 Git 忽略、不随仓库交付；
+公开复现请使用[三种情况的采集复核演示](docs/tasks/capture-review-walkthrough.md)。）
 
 > ⚠️ **能力边界**：只做本机单设备的固定间隔采样；不做重试、不切换后端、不自动重连，
 > 也不做并发或断点续跑。实机结果**不构成**硬实时、工业稳定性或识读准确率结论。
@@ -213,7 +256,7 @@ result['qr_report']      # 既有 analyze_label 的完整输出，逐字段原�
 
 ### 测试与验证体系
 
-- **pytest 自动化回归**：用例数量、实际通过／跳过及环境限制见[能力矩阵第 0 节](docs/stage-34-project-capability-matrix.md)；远程结果以对应提交的 Actions 记录为准。
+- **pytest 自动化回归**：`pytest.ini` 将默认收集范围固定为完整 `tests/`，本机 `data/reports/` 中的历史诊断夹具不会混入；需要运行历史夹具时显式指定路径及其环境。用例数量、实际通过／跳过及环境限制见[能力矩阵第 0 节](docs/stage-34-project-capability-matrix.md)；远程结果以对应提交的 Actions 记录为准。
 - **输入校验与错误分类**：非法参数、边界与资源上限、业务结果与程序执行异常分开处理
 - **证据核对**：原始帧留证、指标重算、跨报告关联键核对、留证 PNG 可解码性
 - **非破坏性输出**：`--output` 独占新建、不覆盖；历史报告与历史 JSON 的字段含义不改写；只读命令不修改 CSV
@@ -234,9 +277,10 @@ result['qr_report']      # 既有 analyze_label 的完整输出，逐字段原�
 
 **CI 验证什么**：`GitHub Actions` 在 push 和 pull request 时执行完整 pytest 测试（`.venv/bin/python -m pytest -q`）与 `tools/check_evaluation_expectations.py`。当前本地测试数量与验证记录见[能力矩阵](docs/stage-34-project-capability-matrix.md)；本地通过不代表远程 CI 已通过，远程执行结果以对应提交的 Actions 记录为准。闸门**不依赖退出码**——评测器对「程序故障」与「有样本按预期读不出」都返回 2，因此它把报告 JSON 与入库期望逐项精确比对。行为确实变了必须 `--refresh` 并经人工确认后提交。
 
-关联层的通用 pytest 将图片绝对路径、运行库版本与解码器版本按当前环境独立校验，
-其余稳定字段仍与冻结 oracle 精确比较；本机冻结环境的严格复算保持不变。
-路径/版本适配不等于忽略这些字段，也不扩大 volatile 白名单。验证记录见文档 36。
+关联层的通用 pytest 将图片绝对路径、运行库版本、解码器版本及源码摘要按当前环境和实际源码文件独立校验，
+业务稳定字段仍与冻结 oracle 精确比较；历史 oracle 保持原字节。
+路径/版本/源码身份适配不等于忽略这些字段，也不扩大 volatile 白名单；篡改任一源码摘要仍必须失败。
+原验证记录见文档 36，本次源码身份核验调整见[文档 39](docs/stage-39-release-review-fixes.md)。
 
 ```powershell
 # 重新生成数据集（重写样例目录与两份清单；稳定后不要反复重生成）

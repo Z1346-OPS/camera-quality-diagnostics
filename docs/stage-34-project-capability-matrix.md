@@ -7,7 +7,24 @@
 - 本文不是又一份总结：它把**已有能力**翻译成可对外表述的语句，并为每句话标注**证据位置**与**不可声称的边界**
 - **本文是项目数字的唯一事实来源**。其他文档与本表冲突时以本表为准，并应修正那份文档
 
-## 0. 项目当前状态快照（2026-10-12 实测；标 † 的行为 2026-10-13 重测）
+## 0. 最新验证与历史快照
+
+### 2026-10-20 修正后的工作区
+
+| 项 | 本轮实测 |
+| --- | --- |
+| 版本身份 | HEAD 仍为 `81b86e6`，取帧失败传播、Linux 后端适配与本轮审查修正均未提交；不能将 HEAD 单独称为最终修正版 |
+| 正式自动化回归 | **512 项 / 27 个测试文件；Windows 508 passed、4 skipped，47.34s，exit 0**。四项跳过均为 WinError 1314，涉及留证 PNG、任务 JSON、质量 CSV、颜色 CSV 的真实符号链接 |
+| 本轮新增测试 | 11 项：6 项 RGB/L PNG 透明色及方向/像素回归，5 项报告发布/错误传播回归；关联层已有的篡改拒绝测试另补逐项源码摘要反例，不增加用例数 |
+| 默认发现范围 | 根目录默认收集与显式 `tests/` 均为 512 项；导入时随机 UUID 参数值归一化后节点一致。`pytest.ini` 只将默认发现范围固定为 `tests/`，不修改用例跳过条件 |
+| 精确评测闸门 | development/test 各 23 样本，均与入库期望完全一致，exit 0；未 refresh |
+| 依赖检查 | `pip check` exit 0 |
+| 源码副本 CLI 冒烟 | 在不含既有 reports 的新源码副本中先创建输出目录，再执行 QR 已知答案导出（0）、重复导出拒绝覆盖（2）、图片分析（0）、合成采集（0）、离线复核 consistent（0）；复用现有 `.venv`，不是依赖重装或新的实机验收 |
+| 当前远程 CI | 本轮未提交、未推送，未验证当前源码的远程 CI；下文 481 passed 仍只属于旧提交 |
+
+修正范围、先失败后通过的记录和候选清单见 `docs/stage-39-release-review-fixes.md` 与 `docs/tasks/delivery-candidate-2026-10-20.md`。本轮没有实机采集或 Linux 实机验证，不替换历史设备验收结果。
+
+### 历史快照（2026-10-12 实测；标 † 的行为 2026-10-13 重测）
 
 > 2026-10-13 说明：Phase 4.2（文档 36）与 Phase 4.3（任务文档 `docs/tasks/phase-4.3-blur-experiment.md`）
 > 实施后只重测了**受影响**的两行（测试、源模块/工具/文档），并新增能力行 §1-9、§1-10。
@@ -32,6 +49,18 @@
 
 > 2026-10-15 最终补记：`2629e57` 新增三项固定输入真实符号链接用例，项目由 478 增为 481；对应[远程运行](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/38686814154)481 passed、无跳过，两组闸门通过。四条路径的项目用例在 Linux 通过；Windows 477 passed、4 skipped 保留为环境事实。
 
+> 2026-10-18 交付候选说明：当前 HEAD 为 `81b86e6`（79 个提交、209 个已跟踪文件）。
+> 工作区另有**未提交**的取帧失败传播修正（`src/capture_task.py`、`tests/test_capture_task.py`）
+> 与两份未跟踪文档，另有本轮纯文档更新。与这些未提交源码对应的验证是
+> `data/reports/read-failure-guard-20261017-101037-9d36a959/` 中 2026-10-17 的本地记录：
+> `493 passed in 23.07s`、评测闸门 exit 0、3 轮正常路径实机复核一致；**该记录仅在本机，未经过远程 CI**。
+> 远程 CI 的 `481 passed` 对应 `2629e57`，且 `2629e57..81b86e6` 只改文档，因此**不覆盖**未提交修正。
+> 本轮（2026-10-18）只做交付整理与静态核对，未重跑测试或摄像头。
+> 候选身份、支持范围、公开复现与本地证据见 `docs/tasks/delivery-candidate-2026-10-18.md`。
+
+> 下表各行保留原始测量日期与数字；其中“提交数”“入库文件”“仓库体积”等是 2026-10-12 快照，
+> “测试”“CI”在 2026-10-15 有补记。当前候选的实时值以 2026-10-18 说明及 `git`/`pytest` 实测为准。
+
 | 项 | 实测值 |
 | --- | --- |
 | 提交数 | **67**（首个 `7c66c5d` 2026-09-18，最新 `c120d12` 2026-10-12，跨度约 3.5 周） |
@@ -39,8 +68,8 @@
 | 入库文件 | **155** 个（`data` 59、`docs` 42、`src` 24、`tests` 21、根 4、`.vscode` 2、`tools` 2、`.github` 1） |
 | 仓库体积 | `.git` **4.92 MB** |
 | 工作区体积 | **20.59 MB / 268 个文件**（其中约 15 MB 是**未入库**的 `photo/` 实拍原图与 `data/reports/` 产物） |
-| 测试 † | **481 项 / 27 个测试文件**（2026-10-15：Windows 477 passed、4 skipped，26.92 秒；Linux 481 passed、无跳过，8.54 秒。Phase 4.5 专项 27 项，新增的 3 项补齐固定 JSON/CSV 真实符号链接路径；环境结果分别记录） |
-| CI | 完整 pytest 与精确评测闸门：补充测试提交 `2629e57` 的[运行 38686814154](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/38686814154)为 Ubuntu **481 passed（8.54 秒）、无跳过**，两组闸门通过；原功能提交 `66b05d6` 的 478 passed 为历史证据。四条项目真实符号链接路径已在 Linux 验证，Windows 477＋4 单独记录 |
+| 测试 † | **481 项 / 27 个测试文件**（2026-10-15 已提交基线：Windows 477 passed、4 skipped，26.92 秒；Linux 481 passed、无跳过，8.54 秒。Phase 4.5 专项 27 项，新增的 3 项补齐固定 JSON/CSV 真实符号链接路径；环境结果分别记录。**未提交修正的本地记录为 493，见上方 2026-10-18 说明**） |
+| CI | 完整 pytest 与精确评测闸门：补充测试提交 `2629e57` 的[运行 38686814154](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/38686814154)为 Ubuntu **481 passed（8.54 秒）、无跳过**，两组闸门通过；原功能提交 `66b05d6` 的 478 passed 为历史证据。四条项目真实符号链接路径已在 Linux 验证，Windows 477＋4 单独记录。**该结果对应 `2629e57`；未提交修正没有远程 CI 记录** |
 | 合成数据集 | `data/samples/synthetic-qr-v1/`，**46 张图 / 4.23 MB**，8 类受控退化 |
 | 评测清单 | 3 份（`development`、`test`、`expectations`） |
 | 源模块 / 工具脚本 / 文档 † | Phase 4.1–4.4 的 `src/quality_analysis.py`、`src/quality_qr_analysis.py`、`src/capture_task.py`、`src/run_capture.py`、`tests/test_quality_analysis.py`、`tests/test_quality_qr_analysis.py`、`tests/test_blur_experiment.py`、`tests/test_capture_task.py`、`tests/test_run_capture.py`、`tools/run_blur_experiment.py`、`docs/stage-35-*.md`、`docs/stage-36-*.md`、Phase 4.1–4.4 任务与证据文件及 `data/experiments/` 产物**均已入库**（`af2fc01` 起）；**本轮 Phase 4.5 交付增量**为 `src/review_capture.py`、`tests/test_review_capture.py`、`docs/tasks/phase-4.5-capture-review.md` 及 `docs/tasks/phase-4.5-verification-2026-10-15.md`；已随功能提交 `66b05d6` 入库，CI 证据见任务第 8.4 节（`docs` 下共 **57** 份 markdown，2026-10-14 实测） |
@@ -87,7 +116,7 @@ git ls-files | Measure-Object                                              # 入
 ## 2. 测试能力映射（岗位语言）
 
 测试维度按**用例名关键字归类**（同一用例可计入多类，因此合计大于总用例数）。
-> ⚠️ 下表的分项数字是在 **285 项**时测得的，**未随 Phase 4.1 的 14 项、Phase 4.2 的 27 项、Phase 4.3 的 17 项、Phase 4.4 的 111 项与 Phase 4.5 的 24 项重算**；总数见第 0 节（最新 481；原 Phase 4.5 24 项之外另补 3 项真实链接检查）。
+> ⚠️ 下表的分项数字是在 **285 项**时测得的，**未随 Phase 4.1 的 14 项、Phase 4.2 的 27 项、Phase 4.3 的 17 项、Phase 4.4 的 111 项与 Phase 4.5 的 24 项重算**；总数见第 0 节（已提交基线 481；未提交修正的本地记录 493，见第 0 节 2026-10-18 说明；原 Phase 4.5 24 项之外另补 3 项真实链接检查）。
 
 | 维度 | 实测用例数 | 对应岗位语言 |
 | --- | --- | --- |
@@ -169,7 +198,7 @@ git ls-files | Measure-Object                                              # 入
 
 | 通用要求 | 项目对应 | 证据 |
 | --- | --- | --- |
-| 测试用例设计 | 285 项时测得，含 128 输入校验 / 58 错误分类 / 35 非破坏性（分项未重算；总数见第 0 节） | `tests/` 24 个文件 |
+| 测试用例设计 | 285 项时测得，含 128 输入校验 / 58 错误分类 / 35 非破坏性（分项未重算；总数见第 0 节） | `tests/`（2026-10-15 已提交基线为 27 个测试文件） |
 | 自动化测试 | pytest + GitHub Actions，提交即验证 | `.github/workflows/tests.yml` |
 | 图像/算法效果验证 | QR 评测：真值逐字节校验、分母口径、分组泄漏检查 | `src/evaluate_labels.py` |
 | 问题定位能力 | A7 降采样恢复案例（现象→分析→处置→验证） | 本文故事 1 |

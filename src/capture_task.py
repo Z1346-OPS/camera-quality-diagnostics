@@ -47,7 +47,6 @@ else:
 
 
 IMPLEMENTATION_VERSION = "timed-capture-1"
-REQUESTED_BACKEND = "CAP_DSHOW"
 
 # 首版运行保护策略，不是相机或质量阈值。
 MAX_CAMERA_INDEX = 2**31 - 1
@@ -178,9 +177,62 @@ class CaptureConfig:
         ) // self.interval_seconds
 
 
+class _GrabRetrieveCamera:
+    """默认摄像头读取边界的薄适配：显式传播 ``grab()``/``retrieve()`` 的真实标志。
+
+    背景（已核对 OpenCV 5.0.0 官方源码，见 `docs/stage-37-read-failure-guard.md`）：
+    ``cv2.VideoCapture.read()`` 丢弃 ``retrieve()`` 的布尔返回值，只按输出数组是否
+    为空判定成功；DirectShow 的 ``retrieveFrame()`` 在取像素**之前**先
+    ``frame.create()`` 预分配非空数组，因此取帧超时失败时仍可能返回非空数组。
+    这会让「上游未取到帧」被上层误计为成功采集。
+
+    本适配器只在 ``grab()`` 与 ``retrieve()`` **都**成功时把原始帧原样交给上层；
+    任一失败即返回 ``(False, None)``，交由 ``CaptureRunner`` 既有的 ``read_failed``
+    流程处理。它不重试、不补采、不删帧、不改像素、不判定画面质量。
+
+    只委托 ``CaptureRunner`` 实际用到的接口：``isOpened`` / ``getBackendName`` /
+    ``release`` / ``read``。
+    """
+
+    def __init__(self, capture) -> None:
+        self._capture = capture
+
+    def isOpened(self) -> bool:
+        return self._capture.isOpened()
+
+    def getBackendName(self):
+        return self._capture.getBackendName()
+
+    def release(self) -> None:
+        self._capture.release()
+
+    def read(self):
+        """返回 ``(ok, frame)``，与 ``cv2.VideoCapture.read()`` 形状一致。
+
+        grab 失败即返回失败且**不**继续 retrieve；retrieve 以其真实布尔标志为准，
+        失败时即使底层给出非空数组也不作为成功帧上交。
+        """
+        if not self._capture.grab():
+            return False, None
+        retrieved, frame = self._capture.retrieve()
+        if not retrieved:
+            return False, None
+        return True, frame
+
+
+def _requested_backend() -> str:
+    """Linux 使用 V4L2；其他平台保持原 DirectShow 行为（未新增支持声明）。"""
+    return "CAP_V4L2" if platform.system() == "Linux" else "CAP_DSHOW"
+
+
 def _default_camera_factory(camera_index: int):
-    """Windows DirectShow 后端；只打开配置的编号，不做探测读帧。"""
-    return cv2.VideoCapture(camera_index, cv2.CAP_DSHOW)
+    """Windows DirectShow / Linux V4L2；只打开配置的编号，不做探测读帧。
+
+    返回薄适配对象：其 ``read()`` 显式检查 ``grab()``/``retrieve()`` 的真实成功标志，
+    避免底层取帧失败但输出数组非空时被误计为成功采集。
+    """
+    capture = cv2.VideoCapture(camera_index, getattr(cv2, _requested_backend()))
+    return _GrabRetrieveCamera(capture)
 
 
 def _utc_now_iso() -> str:
@@ -282,7 +334,7 @@ def _new_report(config: CaptureConfig, run_id: str) -> dict:
             "interval_seconds": config.interval_seconds,
         },
         "camera": {
-            "requested_backend": REQUESTED_BACKEND,
+            "requested_backend": _requested_backend(),
             "actual_backend": None,
             "first_frame_size": None,
         },
@@ -353,7 +405,11 @@ def _sha256_file(path: Path) -> str:
 
 
 def _publish_report(report: dict, target: Path) -> Path:
-    """先写同目录新临时文件，完整关闭后再发布；目标已存在即拒绝。"""
+    """完整关闭同目录临时文件后，以独占硬链接发布；不替换已有目标。
+
+    硬链接让目标在发布时直接指向完整文件，且目标同时被别人创建时也拒绝覆盖。
+    文件系统不支持硬链接时明确失败，保留临时证据，不降级到覆盖式发布。
+    """
     target = Path(target)
     if target.exists():
         raise CaptureTaskError(
@@ -365,7 +421,19 @@ def _publish_report(report: dict, target: Path) -> Path:
     temp = target.parent / REPORT_TEMP_NAME
     with temp.open("x", encoding="utf-8", newline="\n") as handle:
         handle.write(payload)
-    os.replace(temp, target)
+    try:
+        os.link(temp, target)
+    except FileExistsError as error:
+        raise CaptureTaskError(
+            f"报告目标已存在，拒绝覆盖: {target}",
+            stop_reason="execution_error",
+            stage="report",
+        ) from error
+    try:
+        temp.unlink()
+    except BaseException as error:
+        _add_note(error, f"完整报告已发布: {target}；临时链接未移除: {temp}")
+        raise
     return target
 
 

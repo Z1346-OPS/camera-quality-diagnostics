@@ -327,10 +327,15 @@ def test_fixture_matrix_covers_states(monkeypatch, tmp_path):
 # --- B07 -------------------------------------------------------------------
 
 def _assert_portable_qr_report(report, record, *, source_path, runtime, decoder_version):
-    """仅替换环境身份的独立期望；业务字段及源码摘要仍逐字段对照冻结值。"""
+    """业务字段对照冻结值；环境身份及源码摘要从当前文件独立核对。"""
     expected = deepcopy(record["stable"])
     expected["source"]["path"] = source_path
     expected["provenance"]["runtime"] = dict(runtime)
+    expected["provenance"]["source_sha256"] = {
+        name: sha256((ROOT / "src" / name).read_bytes()).hexdigest()
+        for name in ("analyze_image.py", "analysis_config.py", "metrics.py",
+                     "analyze_label.py", "label_analysis.py")
+    }
     for attempt in expected["attempts"]:
         attempt["decode"]["decoder"]["version"] = decoder_version
     assert strip_volatile(report) == expected, record["name"]
@@ -390,7 +395,14 @@ def test_qr_oracle_checks_portable_identity_and_business(source_path, python_ver
     bad_decoder["attempts"][0]["decode"]["decoder"]["version"] = "incorrect"
     bad_payload = deepcopy(report)
     bad_payload["attempts"][0]["decode"]["symbols"][0]["payload_base64"] = "YmFk"
-    for candidate in (bad_path, bad_runtime, bad_decoder, bad_payload):
+    bad_sources = []
+    for name in report["provenance"]["source_sha256"]:
+        bad_source = deepcopy(report)
+        bad_source["provenance"]["source_sha256"][name] = "0" * 64
+        bad_sources.append(bad_source)
+    missing_sources = deepcopy(report)
+    missing_sources["provenance"].pop("source_sha256")
+    for candidate in (bad_path, bad_runtime, bad_decoder, bad_payload, missing_sources, *bad_sources):
         with pytest.raises(AssertionError):
             check(candidate)
     assert record["stable"] == stable_before

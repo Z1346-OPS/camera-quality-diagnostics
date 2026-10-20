@@ -111,9 +111,8 @@ def load_normalized_image(path: Path) -> tuple[np.ndarray, dict]:
             image.load()
             # Zero gives no reliable direction; preserve the stored pixel order.
             upright = image.copy() if orientation == 0 else ImageOps.exif_transpose(image)
-            has_alpha = original_mode in {"RGBA", "LA"} or (
-                original_mode == "P" and "transparency" in image.info
-            )
+            # PNG tRNS can describe a transparent color in RGB/L as well as P.
+            has_alpha = original_mode in {"RGBA", "LA"} or "transparency" in image.info
             if has_alpha:
                 rgba = upright.convert("RGBA")
                 rgb = Image.new("RGB", rgba.size, (255, 255, 255))
