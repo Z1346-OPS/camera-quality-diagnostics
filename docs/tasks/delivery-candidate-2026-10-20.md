@@ -1,8 +1,10 @@
-# 当前交付候选说明（2026-10-20）
+# 交付候选历史说明（2026-10-20）
+
+> 2026-10-27 补记：下文是提交前的候选快照。列出的修改与新增文件已随 `6dba7c799754e90ef687d48fa99dca61445e58f5` 提交并推送；[Actions #14](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/39424609746) 为 512 passed、两组精确闸门通过。当前交付状态见[公开验收汇总](../verification/acceptance-summary-2026-10-27.md)。正文中的“未提交”“待纳入”仅描述当时状态。
 
 ## 目标与身份
 
-本候选承接 `delivery-candidate-2026-10-18.md`、`stage-38-linux-capture-backend.md` 与本次审查修正。10 月 18 日说明是历史快照，当前范围以本文为准。
+本候选承接 `delivery-candidate-2026-10-18.md`、`stage-38-linux-capture-backend.md` 与本次审查修正。10 月 18 日说明和本文均保留为历史快照，当前范围见页首补记。
 
 - 分支 `main`；HEAD 仍为 `81b86e6d6b2b264890d2229e12856b7ef15b19ea`。
 - 当前候选 = 上述 HEAD + 下面列出的未提交文件。不能将该 HEAD 单独称为包含最新修正的版本。
@@ -52,7 +54,7 @@
 | 真实 QR 正确性 | 无独立已知答案时仅报告读出/未读出，truth 为 not_provided；历史 14/18 不是正确率 |
 | 历史近黑画面 | 取帧失败传播缺陷已有防护；历史现象根因仍未确认 |
 
-## 提交与结束本次项目
+## 当时的提交与结项计划（已完成提交及 CI 核验）
 
 1. 审阅上述文件及最终 diff，只纳入应交付的文件，保持源码修正与测试成对提交。
 2. 用英文 conventional commit 记录修正，例如 `fix(analysis): handle PNG transparent colors`、`fix(capture): publish reports without replacing existing files`、`chore(test): scope default collection to product tests`，必要的文档与测试随对应提交纳入。

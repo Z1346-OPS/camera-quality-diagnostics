@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "kind": "github_actions_verification_excerpt",
+  "recorded_on": "2026-10-27",
+  "repository": "Z1346-OPS/camera-quality-diagnostics",
+  "head_sha": "6dba7c799754e90ef687d48fa99dca61445e58f5",
+  "run": {
+    "id": 39424609746,
+    "number": 14,
+    "url": "https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/39424609746"
+  },
+  "job": {
+    "id": 118633879623,
+    "name": "pytest",
+    "url": "https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/39424609746/job/118633879623",
+    "conclusion": "success",
+    "started_at": "2026-10-20T12:44:25Z",
+    "completed_at": "2026-10-20T12:44:57Z",
+    "labels": [
+      "ubuntu-latest"
+    ]
+  },
+  "environment": {
+    "os": "Ubuntu 24.04.5",
+    "python": "3.12.15",
+    "virtualenv": ".venv"
+  },
+  "tests": {
+    "command": ".venv/bin/python -m pytest -q",
+    "passed": 512,
+    "failed": 0,
+    "skipped": 0,
+    "duration_seconds": 7.13
+  },
+  "evaluation_gate": {
+    "command": ".venv/bin/python -X utf8 tools/check_evaluation_expectations.py",
+    "conclusion": "success",
+    "splits": {
+      "development": {
+        "total_samples": 23,
+        "status": "completed_with_errors",
+        "baseline_correct": 18,
+        "with_downscale_correct": 21,
+        "improved": 3,
+        "degraded": 0
+      },
+      "test": {
+        "total_samples": 23,
+        "status": "completed",
+        "baseline_correct": 18,
+        "with_downscale_correct": 21,
+        "improved": 3,
+        "degraded": 0
+      }
+    }
+  },
+  "successful_steps": [
+    {
+      "name": "Run tests",
+      "conclusion": "success",
+      "started_at": "2026-10-20T12:44:46Z",
+      "completed_at": "2026-10-20T12:44:54Z"
+    },
+    {
+      "name": "Gate label evaluation on the synthetic dataset",
+      "conclusion": "success",
+      "started_at": "2026-10-20T12:44:54Z",
+      "completed_at": "2026-10-20T12:44:55Z"
+    }
+  ],
+  "provenance": {
+    "metadata_endpoint": "https://api.github.com/repos/Z1346-OPS/camera-quality-diagnostics/actions/runs/39424609746/jobs",
+    "logs_endpoint": "https://api.github.com/repos/Z1346-OPS/camera-quality-diagnostics/actions/jobs/118633879623/logs",
+    "note": "Selected lines copied from GitHub job logs; this is an excerpt, not the full log or an independently signed attestation. Checkout/setup warnings are outside this excerpt."
+  },
+  "log_excerpt": [
+    "2026-10-20T12:44:31.1318659Z [command]/usr/bin/git log -1 --format=%H",
+    "2026-10-20T12:44:31.1345698Z 6dba7c799754e90ef687d48fa99dca61445e58f5",
+    "2026-10-20T12:44:31.2590339Z Successfully set up CPython (3.12.15)",
+    "2026-10-20T12:44:46.7953723Z ##[group]Run .venv/bin/python -m pytest -q",
+    "2026-10-20T12:44:54.3152125Z 512 passed in 7.13s",
+    "2026-10-20T12:44:54.4150664Z ##[group]Run .venv/bin/python -X utf8 tools/check_evaluation_expectations.py",
+    "2026-10-20T12:44:55.3740989Z === development ===",
+    "2026-10-20T12:44:55.3741850Z   样本 23   status=completed_with_errors",
+    "2026-10-20T12:44:55.3742390Z   baseline               正确 18/23   correct=18  decode_error=1  not_decoded=4",
+    "2026-10-20T12:44:55.3742961Z   with_downscale_search  正确 21/23   correct=21  decode_error=1  not_decoded=1",
+    "2026-10-20T12:44:55.3743516Z   paired_change: improved=3 degraded=0 分母=23",
+    "2026-10-20T12:44:55.3744101Z   ✅ 与入库期望完全一致",
+    "2026-10-20T12:44:55.3744519Z === test ===",
+    "2026-10-20T12:44:55.3744848Z   样本 23   status=completed",
+    "2026-10-20T12:44:55.3745288Z   baseline               正确 18/23   ambiguous=1  correct=18  not_decoded=4",
+    "2026-10-20T12:44:55.3745814Z   with_downscale_search  正确 21/23   ambiguous=1  correct=21  not_decoded=1",
+    "2026-10-20T12:44:55.3746310Z   paired_change: improved=3 degraded=0 分母=23",
+    "2026-10-20T12:44:55.3746681Z   ✅ 与入库期望完全一致",
+    "2026-10-20T12:44:55.3747157Z 闸门通过：数据集行为与入库期望一致。"
+  ]
+}
