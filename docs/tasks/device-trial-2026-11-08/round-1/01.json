@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "report_type": "camera_timed_capture",
+  "run_id": "3a6b250dc12347859ddf6bb2b1d76bbc",
+  "status": "failed",
+  "stop_reason": "open_failed",
+  "config": {
+    "camera_index": 9999,
+    "duration_seconds": 2,
+    "interval_seconds": 1
+  },
+  "camera": {
+    "requested_backend": "CAP_DSHOW",
+    "actual_backend": null,
+    "first_frame_size": null
+  },
+  "timings": {
+    "started_at_utc": null,
+    "ended_at_utc": null,
+    "capture_elapsed_seconds": null
+  },
+  "counts": {
+    "planned_sample_slots": 2,
+    "read_attempts": 0,
+    "valid_frames": 0,
+    "sample_attempts": 0,
+    "samples_completed": 0
+  },
+  "metric_config": {
+    "dark_threshold": 30,
+    "bright_threshold": 225
+  },
+  "samples": [],
+  "primary_error": {
+    "stage": "open",
+    "type": "CaptureTaskError",
+    "message": "无法打开摄像头"
+  },
+  "cleanup_errors": [],
+  "provenance": {
+    "implementation_version": "timed-capture-1",
+    "runtime": {
+      "python": "3.12.10",
+      "opencv": "5.0.0",
+      "numpy": "2.5.3"
+    },
+    "source_sha256": {
+      "capture_task.py": "b1c45c29b72f048e679475fce703019f38328bf3eb4d78cdde4ad6e90d47e40b",
+      "run_capture.py": "b34e30d38433cedc1c8ccd90f742205d531e78b654e2092d91c3b886354808d2",
+      "metrics.py": "aacc4977661250244222159ced96a2c023a00b8519c03de798dac731865c5cb9",
+      "analysis_config.py": "fd04ccd4c4efa84aa9799daa2c174996e89e4926b8d25572d01811ec4f26eb41",
+      "report.py": "8639c22e21a9d2878a6335abdb7c4e0cb8b9401441b003da632d3b4a08d471ba",
+      "frame_evidence.py": "8fc04c08b2b1293f930de0831c5522658859dd3c8f8412ea85623f7d9ad26f46"
+    }
+  }
+}

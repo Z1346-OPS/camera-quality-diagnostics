@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "report_type": "camera_timed_capture",
+  "run_id": "fb248a0511e640aeb1d73c087aa67067",
+  "status": "completed",
+  "stop_reason": "duration_reached",
+  "config": {
+    "camera_index": 0,
+    "duration_seconds": 2,
+    "interval_seconds": 1
+  },
+  "camera": {
+    "requested_backend": "CAP_DSHOW",
+    "actual_backend": "DSHOW",
+    "first_frame_size": [
+      640,
+      480
+    ]
+  },
+  "timings": {
+    "started_at_utc": "2026-10-16T06:09:36.390+00:00",
+    "ended_at_utc": "2026-10-16T06:09:38.390+00:00",
+    "capture_elapsed_seconds": 2.0
+  },
+  "counts": {
+    "planned_sample_slots": 2,
+    "read_attempts": 51,
+    "valid_frames": 51,
+    "sample_attempts": 2,
+    "samples_completed": 2
+  },
+  "metric_config": {
+    "dark_threshold": 30,
+    "bright_threshold": 225
+  },
+  "samples": [
+    {
+      "frame_count": 1,
+      "slot_index": 0,
+      "scheduled_elapsed_seconds": 0,
+      "read_elapsed_seconds": 0.3279999999795109,
+      "width": 640,
+      "height": 480,
+      "quality_status": "written",
+      "color_status": "written",
+      "image_status": "written",
+      "image_file": "camera_frame_fb248a0511e640aeb1d73c087aa67067_1.png",
+      "image_sha256": "793a512b9a96b11605bd64146f208daf392c05092b1d149042d3731bfa72b666"
+    },
+    {
+      "frame_count": 23,
+      "slot_index": 1,
+      "scheduled_elapsed_seconds": 1,
+      "read_elapsed_seconds": 1.0150000000139698,
+      "width": 640,
+      "height": 480,
+      "quality_status": "written",
+      "color_status": "written",
+      "image_status": "written",
+      "image_file": "camera_frame_fb248a0511e640aeb1d73c087aa67067_23.png",
+      "image_sha256": "e7ca33cbf602391bbbd1fe4fec0fc0c2aa6133d944d8a3c2f20ac37115bd00f4"
+    }
+  ],
+  "primary_error": null,
+  "cleanup_errors": [],
+  "provenance": {
+    "implementation_version": "timed-capture-1",
+    "runtime": {
+      "python": "3.12.10",
+      "opencv": "5.0.0",
+      "numpy": "2.5.3"
+    },
+    "source_sha256": {
+      "capture_task.py": "b1c45c29b72f048e679475fce703019f38328bf3eb4d78cdde4ad6e90d47e40b",
+      "run_capture.py": "b34e30d38433cedc1c8ccd90f742205d531e78b654e2092d91c3b886354808d2",
+      "metrics.py": "aacc4977661250244222159ced96a2c023a00b8519c03de798dac731865c5cb9",
+      "analysis_config.py": "fd04ccd4c4efa84aa9799daa2c174996e89e4926b8d25572d01811ec4f26eb41",
+      "report.py": "8639c22e21a9d2878a6335abdb7c4e0cb8b9401441b003da632d3b4a08d471ba",
+      "frame_evidence.py": "8fc04c08b2b1293f930de0831c5522658859dd3c8f8412ea85623f7d9ad26f46"
+    }
+  }
+}
