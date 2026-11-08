@@ -15,7 +15,7 @@
 | 仓库 | 职责与当前入口 | 本机分支与交付提交 |
 | --- | --- | --- |
 | `D:\Projects\Python\camera-quality-diagnostics` | 采集图像、测量质量、核验二维码、复核原图并输出报告。主要入口为 `src/run_capture.py`、`src/review_capture.py`、`src/analyze_label.py`。 | `main`，`c20feeafe28616d2a3269ccbd82085bbb22e5122` |
-| `D:\AIProjects\projects\test_failure_investigator` | 只读导入报告、比较后续材料、查询单个采集问题并导出交接说明。桌面入口为 `src/run_investigator.py`，Python 入口为 `Session.get_issue_details`。 | `experiment/multi-agent-fault-benchmark`，`e6152184604b2d4803097c409dec3a80946df0bd` |
+| `D:\AIProjects\projects\test_failure_investigator` | 只读导入报告、比较后续材料、查询单个采集复核问题并导出交接说明。桌面入口为 `src/run_investigator.py`，Python 命令为 `src/query_issue.py`，复用 `Session.get_issue_details`。 | `experiment/multi-agent-fault-benchmark`，`dffff387a98e793a553c7e44bfdfaaf091f7f03c` |
 
 两仓通过三种报告对接：`camera_timed_capture` v1、`capture_task_review` v1、`label_baseline` v2。采集复核支持逐问题的发现、关闭和重新出现；QR 已支持图片、区域与独立答案的前后比较。第一版问题详情查询优先覆盖采集复核。
 
@@ -45,7 +45,7 @@
 | 设备打开失败后的恢复核对 | 两轮材料已备齐，已通过现有窗口回放 | 编号 9999 打开失败，随后编号 0 采集成功。两个批次不可比较，原失败原因仍未知。见第 6.5 节。 |
 | AI 依据问答与本地 HTTP | 备选阶段 | 已完成方案调研，尚无模型对照结果、推理耗时或独立 HTTP 调用示例 |
 
-在 Windows 本机使用两个项目原有的 Python 3.12.10 虚拟环境复验。摄像头完整测试 **509 通过、4 跳过**，助手完整单测 **167 通过、1 跳过**，跨仓回归 **2 通过**，Tk 冒烟 **161/161 个检查点通过**，另有 8 项 Tk 专项回归通过。5 项跳过均涉及 Windows 符号链接权限。QR 的 development 和 test 各 23 个样本，结果均与入库期望完全一致。联合验证使用模拟设备和合成材料。
+在 Windows 本机使用两个项目原有的 Python 3.12.10 虚拟环境复验。摄像头完整测试 **509 通过、4 跳过**，助手完整单测 **168 通过、1 跳过**，第 2 节固定提交的干净检出跨仓回归 **2 通过**，Tk 冒烟 **161/161 个检查点通过**。5 项跳过均涉及 Windows 符号链接权限。此前另有 8 项 Tk 专项回归通过，QR 的 development 和 test 各 23 个样本，结果均与入库期望完全一致。联合验证使用模拟设备和合成材料。
 
 摄像头首次从 `aa77a72` 干净检出时，全量测试为 1 失败、508 通过、4 跳过。`test_qr_stable_fields_oracle` 检出参考脚本的 SHA-256 不符，原因是 Windows 将 168 个 LF 换成了 CRLF。交付提交 `c20feea` 为该脚本固定 LF；再次干净检出后，原冻结摘要与单项、全量测试均通过。
 
@@ -67,7 +67,7 @@ git -C $camera checkout --quiet --detach c20feeafe28616d2a3269ccbd82085bbb22e512
 if ($LASTEXITCODE) { throw '摄像头交付提交检出失败' }
 git clone --quiet --no-hardlinks --no-checkout $assistantRepo $assistant
 if ($LASTEXITCODE) { throw '助手仓库复制失败' }
-git -C $assistant checkout --quiet --detach e6152184604b2d4803097c409dec3a80946df0bd
+git -C $assistant checkout --quiet --detach dffff387a98e793a553c7e44bfdfaaf091f7f03c
 if ($LASTEXITCODE) { throw '助手交付提交检出失败' }
 $env:INVESTIGATOR_ROOT = $assistant
 Push-Location -LiteralPath $camera -ErrorAction Stop
@@ -181,6 +181,25 @@ B 将问题码简写为 `issues[0]=frame_unverifiable`。在原报告中，准�
 助手 `e615218` 在同一调查中保留了原失败，将后续运行判为“不可比较”。窗口和导出正文均说明了新运行自身的成功；第二轮首页未直接点明编号 0 已采集成功。[第一轮交接说明](device-trial-2026-11-08/host/after-round-1.md) · [第二轮交接说明](device-trial-2026-11-08/host/after-round-2.md)
 
 本轮只读历史报告，**真人走查仍待完成**。主持人应观察接手人能否同时指出后续成功的设备与范围、原失败的证据和缺口。[参与者任务卡](device-trial-2026-11-08/round-1/任务.md) · [主持人走查单](device-trial-2026-11-08/host/走查.md)
+
+**摘要收尾。** 两名独立 AI 只读旧摘要时都把后续采集结果记为未知，读完全文后都找到了编号 0 的成功证据。用上列两份原报告回放助手 `dffff38`，第一轮摘要与原导出一致，第二轮首页现已明确写出“编号 0 本次采集成功；编号 9999 的原问题仍待可比复验，根因未知”。[新版第二轮交接说明](device-trial-2026-11-08/host/after-round-2-revised.md)
+
+### 6.6 按问题查询采集复核证据
+
+从助手仓库根目录运行。下列命令使用本交接包中的三份采集复核报告，按导入顺序对同一个问题查询两次。
+
+```powershell
+$trial = 'D:\Projects\Python\camera-quality-diagnostics\docs\tasks\capture-trial-2026-11-08'
+.\.venv\Scripts\python.exe -B -X utf8 src/query_issue.py P01 "$trial/round-1/01.json" "$trial/round-1/02.json"
+.\.venv\Scripts\python.exe -B -X utf8 src/query_issue.py P01 "$trial/round-1/01.json" "$trial/round-1/02.json" "$trial/round-2/03.json"
+```
+
+| 输入 | 关闭判断 | 证据位置 | 缺失检查 |
+| --- | --- | --- | --- |
+| 01 + 02 | `open` | [01.json](capture-trial-2026-11-08/round-1/01.json) 的 `issues[0]` 登记了帧 2 的问题。[02.json](capture-trial-2026-11-08/round-1/02.json) 的 `frames[0]` 仅核实帧 1。 | 同批次、可比条件下对帧 2 的独立复核，需要图片摘要匹配且五项指标逐项一致。 |
+| 01 + 02 + 03 | `closed_in_scope` | `resolved_by` 指向补充记录 2，即 [03.json](capture-trial-2026-11-08/round-2/03.json)；其中 `frames[1]` 是实际核实帧 2 的记录。 | `missing_evidence=[]`，交接时保留原失败及支持此次关闭的记录。 |
+
+命令输出与 `Session.get_issue_details()` 相同的 v1 JSON；报告内的实际帧号以 `frame_count` 为准。第 6.5 节的设备打开失败通过采集任务的交接说明核对，当前按问题编号查询的范围是采集复核。
 
 ## 7. 后续扩展的启动条件
 
