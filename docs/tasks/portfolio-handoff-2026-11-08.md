@@ -39,6 +39,7 @@
 | Python 问题详情 | v1 已验证 | 返回问题状态、逐次判断、来源摘要、完整核实帧集合、执行身份及缺失项。新导出列出各次复核的编号与开始时间。 |
 | AI 交接说明盲测 | 已完成两轮 | 两名独立 AI 读者均能区分已核实帧号与原始逐帧记录。两轮结论和六份原答见第 6.1 节。 |
 | 单帧覆盖对照 | 已验证 | 两份后续报告均核实 1 帧。仅覆盖帧 1 时 P01 仍未解决，仅覆盖原异常帧 2 时 P01 在本次范围内可关闭。证据见第 6.2 节。 |
+| 固定帧 2 的批次对照 | 已验证 | 两份后续报告都核实帧 2。同批次时 P01 可在本次范围内关闭，不同批次时仍未解决。单字段对照与证据见第 6.3 节。 |
 | 真人走查 | **待完成** | 主持人材料已备齐，尚待 1～2 位未参与开发的人独立操作并提交匿名记录。 |
 | AI 依据问答与本地 HTTP | 备选阶段 | 已完成方案调研，尚无模型对照结果、推理耗时或独立 HTTP 调用示例 |
 
@@ -119,6 +120,20 @@ try {
 - B 读到 `verified_frame_counts=[2]` 和 `frames[0] → 帧 2`，指出同批次、同口径的复核覆盖了原异常帧，摘要匹配且五项指标一致，因此 **P01 可在帧 2 的本次复核范围内关闭**。[B 原答](capture-trial-2026-11-08/host/single-frame-scope-8893017141/reader-B.md)
 
 两份说明均写明只核实了 1 帧。两人都用逐帧定位说明核实的是哪一帧，并保留了首次无法核实的原因未知这一结论。本机实验目录为 `data/reports/handoff-test-6e07af85/`，两份原答分别保存在其下的 `A/answer.md` 和 `B/answer.md`。本轮结论仅涵盖两名 AI 对这组合成材料的阅读，**真人走查仍待完成**。
+
+### 6.3 固定帧 2，改变批次
+
+每组都从同一份[原异常报告 01.json](capture-trial-2026-11-08/round-1/01.json)开始，在独立调查中只追加一份后续报告。原批次为 `e6f899ecd3794dccbbbbfc54a62145be`，P01 记录的是该批次帧 2 无法核实。
+
+两份实际复核均晚于原异常，比较口径相同，报告自身均为 `consistent`。两份报告都只核实了帧 2（`verified_frame_counts=[2]`，`frames[0] → 帧 2`），图像摘要匹配，五项指标值对相同。
+
+| 后续材料 | P01 的比较结果与状态 | 可核查的证据 |
+| --- | --- | --- |
+| 同批次实际复核 | **本次范围内可关闭**（`closed_in_scope`）。后续报告的 `run_id` 与原报告一致，复核覆盖了原问题帧。 | [复核报告](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/same/review.json) · [查询快照](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/same/issue.json) · [窗口导出](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/same/handoff.md) |
+| 不同批次实际复核 | **仍未解决**（`open`）。后续报告核实了批次 `2c72d699761043b89be433524834ace0` 的帧 2，与原异常不可比较。 | [复核报告](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/different/review.json) · [查询快照](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/different/issue.json) · [窗口导出](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/different/handoff.md) |
+| 只改 `run_id` 的合成对照 | **本次范围内可关闭**（`closed_in_scope`）。复制上一行的报告，只将 `run_id` 改回原批次。复核编号、开始时间和逐帧数据保持一致；将副本单独导入新的调查后，比较结果由“不可比较”变为“范围内通过”。 | [单字段对照副本](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/control/review.json) · [查询快照](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/control/issue.json) · [窗口导出](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/control/handoff.md) |
+
+前两行来自两次实际执行的复核，第三行用于单独检验批次字段对判断的影响。三组窗口显示均与问题查询一致，实际导出均与预览一致，原失败历史保留。本机实验目录为 `data/reports/frame-2-batch-ffbdee1077/`。本次使用合成材料自动回放；**真人走查仍待完成**。
 
 ## 7. 后续扩展的启动条件
 

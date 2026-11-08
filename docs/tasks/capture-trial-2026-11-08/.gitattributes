@@ -4,3 +4,5 @@
 host/handoff-retest-a0b6d9b5/*/*.md text eol=lf
 # 单帧对照保留报告、快照和窗口导出的原始字节，供证据摘要核对。
 host/single-frame-scope-8893017141/* -text !eol
+# 固定帧 2 的批次对照同样保留三组证据的原始字节。
+host/frame-2-batch-ffbdee1077/*/* -text !eol
