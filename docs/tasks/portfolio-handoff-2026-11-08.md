@@ -2,6 +2,15 @@
 
 交接日期：2026-11-08。第 2 节固定的两仓版本包含采集复核问题卡片、Python 查询命令和材料三的原报告。接手人可按第 5 节从干净检出启动窗口，查看 P01 的关闭判断、证据位置和待补检查。
 
+## 手机续接（2026-11-09）
+
+当前工作版本为摄像头仓库 `main`（[交接结果 4454051](https://github.com/Z1346-OPS/camera-quality-diagnostics/tree/445405187dcf2ee4a6ff3058b23cddff4d208474)）和助手仓库 `experiment/multi-agent-fault-benchmark`（[助手 9581764](https://github.com/Z1346-OPS/test_failure_investigator/tree/95817644bee7aa118db190151eb5575ccd62cad5)）。第 2 节保留早期联合演示的固定版本。
+
+- **接着看 P01。** 两份报告都核实了帧 2，同批次可在该帧范围内关闭，不同批次仍缺原批次帧 2 的独立复核。两份查询都包含关闭判断、证据位置和缺失检查。[同批次查询](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/same/cli-p01.json) · [不同批次查询](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/different/cli-p01.json)
+- **接着看 QR。** A7 本次读出与所给答案逐字节一致；A4 仍有多个候选，A7 的结果不能关闭 A4。第 6.4 节记录了三组交接回放。[历史样本结果](evidence/qr-photo-pair-2026-11-09/README.md) · [随仓提供的无答案报告](qr-trial-2026-11-08/round-1/01.json) · [同图补上答案的报告](qr-trial-2026-11-08/round-2/02.json)
+
+新增独立实拍暂缓，真人走查待完成。本机历史照片及含解码载荷的报告只保留在本机。手机上可以直接阅读以上查询、报告与交接结论。
+
 ## 1. 总目标与目标用户
 
 **目标用户**是负责摄像头或扫码终端回归验证的软件测试工程师。他接到一份异常报告和几份后续结果，需要决定原问题能否关闭，并向下一位接手人说明理由。
