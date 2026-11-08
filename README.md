@@ -53,6 +53,8 @@ mkdir -p data/reports
 .\.venv\Scripts\python.exe -X utf8 tools\check_evaluation_expectations.py
 ```
 
+合成 QR 闸门同时核对汇总和逐样本期望。按样本 ID 比对图片及独立答案的 SHA-256，再按区域核对基线与降采样搜索的结果。若两个样本的成败互换，即使总正确数相同，差异也会指出具体样本和方法。
+
 Linux 将解释器替换为 `.venv/bin/python`。还可运行[离线采集复核演示](docs/tasks/capture-review-walkthrough.md)，复现正常、缺失和篡改输入的处理流程。
 
 如同时检出了排查助手，可运行[跨仓复验用例](docs/tasks/investigator-contract.md)。它使用合成采集结果，验证旧报告重排、局部复核和 QR 答案身份缺失时的判断，并实际导出交接说明。

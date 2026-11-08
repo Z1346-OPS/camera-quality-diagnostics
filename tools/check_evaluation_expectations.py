@@ -6,8 +6,9 @@ Why this gate does not trust the exit code
 ``OSError``, ``MemoryError``) **and** for the business outcome ``completed_with_errors``
 (samples that are expected not to decode).  A CI step cannot tell those two apart from the
 exit code alone, so this gate accepts exit codes 0 and 2 but *judges the JSON report*: it
-compares ``status``, every per-method outcome counter, the correctness denominators and the
-paired change against committed expectations.  Any drift fails with a per-item diff instead
+compares ``status``, every per-method outcome counter, the correctness denominators, the
+paired change and each sample's identity and regional outcomes against committed expectations.
+Any drift fails with a per-item diff instead
 of a bare "exit 2".
 
 ``--refresh`` records the current behaviour as the new expectation.  That is a deliberate,
@@ -31,7 +32,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_DIR = PROJECT_ROOT / "data" / "manifests"
 EXPECTATIONS_PATH = MANIFEST_DIR / "evaluation-synthetic-expectations.json"
 SPLITS = ("development", "test")
-EXPECTATIONS_SCHEMA_VERSION = 1
+EXPECTATIONS_SCHEMA_VERSION = 2
 # exit 0 = completed, exit 2 = completed_with_errors (a business outcome, not a crash)
 ACCEPTED_EXIT_CODES = (0, 2)
 
@@ -66,8 +67,24 @@ def run_evaluation(split):
 
 
 def summarize(report):
-    """Keep only the values the gate pins; timings and IDs are expected to vary."""
+    """Pin stable sample identities and outcomes; ignore timings and execution IDs."""
     summary = report["summaries"][0]
+    samples = {}
+    for result in report["results"]:
+        sample = result["sample"]
+        ident = sample["id"]
+        if ident in samples:
+            raise GateError(f"评测报告重复列出样本 {ident}")
+        regions = {}
+        for comparison in result["comparisons"]:
+            region = comparison["region"]
+            if region in regions:
+                raise GateError(f"样本 {ident} 重复列出区域 {region}")
+            regions[region] = {method: comparison[method]["outcome"]
+                               for method in ("baseline", "with_downscale_search")}
+        samples[ident] = {"image_sha256": sample["sha256"],
+                          "expected_sha256": sample.get("expected_sha256"),
+                          "regions": regions}
     return {
         "status": report["status"],
         "total_samples": summary["total_samples"],
@@ -77,6 +94,7 @@ def summarize(report):
             for name, method in sorted(summary["methods"].items())
         },
         "paired_change": dict(summary["paired_change"]),
+        "samples": samples,
     }
 
 
@@ -140,6 +158,9 @@ def main(argv=None):
 
     splits = SPLITS if args.split == "all" else (args.split,)
     expectations = load_expectations()
+    if args.refresh and args.split != "all" and any(
+            "samples" not in expectations.get(split, {}) for split in SPLITS if split != args.split):
+        parser.error("首次记录逐样本期望需要同时刷新 development 和 test，请使用 --refresh --split all")
     failures = 0
 
     for split in splits:

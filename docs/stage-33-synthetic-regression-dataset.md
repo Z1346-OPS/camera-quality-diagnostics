@@ -121,6 +121,7 @@ evaluate_labels.py  →  报告 JSON  →  check_evaluation_expectations.py  →
 ### 闸门规则
 
 - 比对项：`status`、样本数、每个 method 的 9 个 outcome 计数、正确率分母、`paired_change` 四项
+- 2026-11-09 补充：期望格式 v2 在上述汇总之外，按 `split → samples → 样本 ID` 固定图片与独立答案的 SHA-256，并按区域分别记录 `baseline` 和 `with_downscale_search` 的结果。清单行顺序可变。交换同组 01 与 07 的结果时，总数不变，两个样本各有两个方法的差异。
 - **精确值比对，不是阈值**：不写成「失败数 ≤ N 就通过」
 - `--refresh` 才会改写期望文件，且必须**人工确认后随提交更新**
 - 因此闸门**在改善方向也会拦住你**：如果将来 σ5/σ8 也能读出，`improved` 变化会失败并要求显式确认——这是刻意的，项目对数据集行为的声明必须是有意识更新的
