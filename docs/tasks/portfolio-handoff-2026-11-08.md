@@ -15,7 +15,7 @@
 | 仓库 | 职责与当前入口 | 本机分支与交付提交 |
 | --- | --- | --- |
 | `D:\Projects\Python\camera-quality-diagnostics` | 采集图像、测量质量、核验二维码、复核原图并输出报告。主要入口为 `src/run_capture.py`、`src/review_capture.py`、`src/analyze_label.py`。 | `main`，`0321d03e2469bcba36b9dcb243d7f2004a914acf` |
-| `D:\AIProjects\projects\test_failure_investigator` | 只读导入报告、显示单个问题的判断与证据，并导出交接说明。桌面入口为 `src/run_investigator.py`，Python 命令为 `src/query_issue.py`，均复用 `Session.get_issue_details`。 | `experiment/multi-agent-fault-benchmark`，`8dfdb0cbea8d57a897ea57903f2a02da94bbb642` |
+| `D:\AIProjects\projects\test_failure_investigator` | 只读导入报告、显示单个问题的判断与证据，并导出交接说明。桌面入口为 `src/run_investigator.py`，Python 命令为 `src/query_issue.py`，均复用 `Session.get_issue_details`。 | `experiment/multi-agent-fault-benchmark`，`4bdcfa49a1a7c8e9ad25e6e028c2cfb281072020` |
 
 两仓通过三种报告对接：`camera_timed_capture` v1、`capture_task_review` v1、`label_baseline` v2。采集复核支持逐问题的发现、关闭和重新出现；QR 已支持图片、区域与独立答案的前后比较。第一版问题详情查询优先覆盖采集复核。
 
@@ -48,7 +48,7 @@
 | 设备打开失败后的恢复核对 | 两轮材料已备齐，已通过现有窗口回放 | 编号 9999 打开失败，随后编号 0 采集成功。两个批次不可比较，原失败原因仍未知。见第 6.5 节。 |
 | AI 依据问答与本地 HTTP | 备选阶段 | 已完成方案调研，尚无模型对照结果、推理耗时或独立 HTTP 调用示例 |
 
-在 Windows 本机使用两个项目原有的 Python 3.12.10 虚拟环境复验。摄像头完整测试 **509 通过、4 跳过**，助手完整单测 **169 通过、1 跳过**，Tk 冒烟 **161/161 个检查点通过**，Tk 专项回归 **9 项通过**。5 项跳过均涉及 Windows 符号链接权限。第 2 节固定提交的干净检出跨仓回归 **2 通过**，窗口另完成第 5.1 节的材料三回放。此前 QR 的 development 和 test 各 23 个样本，结果均与入库期望完全一致。联合验证使用模拟设备和合成材料。
+在 Windows 本机使用两个项目原有的 Python 3.12.10 虚拟环境复验。摄像头完整测试 **509 通过、4 跳过**，助手完整单测 **171 通过、1 跳过**，Tk 冒烟 **161/161 个检查点通过**，Tk 专项回归 **9 项通过**。5 项跳过均涉及 Windows 符号链接权限。第 2 节固定提交的干净检出跨仓回归 **2 通过**，窗口另完成第 5.1 节的材料三回放。此前 QR 的 development 和 test 各 23 个样本，结果均与入库期望完全一致。联合验证使用模拟设备和合成材料。
 
 摄像头首次从 `aa77a72` 干净检出时，全量测试为 1 失败、508 通过、4 跳过。`test_qr_stable_fields_oracle` 检出参考脚本的 SHA-256 不符，原因是 Windows 将 168 个 LF 换成了 CRLF。交付提交 `c20feea` 为该脚本固定 LF；再次干净检出后，原冻结摘要与单项、全量测试均通过。
 
@@ -70,7 +70,7 @@ git -C $camera checkout --quiet --detach 0321d03e2469bcba36b9dcb243d7f2004a914ac
 if ($LASTEXITCODE) { throw '摄像头交付提交检出失败' }
 git clone --quiet --no-hardlinks --no-checkout $assistantRepo $assistant
 if ($LASTEXITCODE) { throw '助手仓库复制失败' }
-git -C $assistant checkout --quiet --detach 8dfdb0cbea8d57a897ea57903f2a02da94bbb642
+git -C $assistant checkout --quiet --detach 4bdcfa49a1a7c8e9ad25e6e028c2cfb281072020
 if ($LASTEXITCODE) { throw '助手交付提交检出失败' }
 $env:INVESTIGATOR_ROOT = $assistant
 Push-Location -LiteralPath $camera -ErrorAction Stop
@@ -96,13 +96,14 @@ $reports
 & (Join-Path $assistantRepo '.venv/Scripts/python.exe') -B -X utf8 (Join-Path $assistant 'src/run_investigator.py')
 ```
 
-点“选择已有报告”打开第一份文件，再点“添加操作后的结果”追加第二份。在“当前调查”下查看 P01：可在本次帧 2 范围内关闭；依据是补充记录 1 的 `frames[0] → 帧 2`，关闭该问题没有待补检查，首次无法核实的原因仍未知。“展开状态历史”可回查原失败，“复制交接摘要”可取得该问题的交接话。关窗后，在同一 PowerShell 中运行以下命令即可核对查询。
+点“选择已有报告”打开第一份文件，再点“添加操作后的结果”追加第二份。在“当前调查”下查看 P01：可在本次帧 2 范围内关闭；依据是补充记录 1 的 `frames[0] → 帧 2`，关闭该问题没有待补检查，首次无法核实的原因仍未知。“展开状态历史”可回查原失败，“复制交接摘要”可取得该问题的交接话。关窗后，在同一 PowerShell 中先用 `--list` 查到本调查有哪些采集复核问题，再按返回的编号查证据位置与缺失检查。
 
 ```powershell
+& (Join-Path $assistantRepo '.venv/Scripts/python.exe') -B -X utf8 (Join-Path $assistant 'src/query_issue.py') --list @reports
 & (Join-Path $assistantRepo '.venv/Scripts/python.exe') -B -X utf8 (Join-Path $assistant 'src/query_issue.py') P01 @reports
 ```
 
-本次干净检出还继续追加了第 6.6 节的重新出现报告、重复的旧关闭报告和后续独立复核。窗口和 CLI 依次显示未解决、范围内关闭、重新出现、重复后仍未解决、再次关闭。两次关闭时均从窗口保存了 Markdown，实际文件与预览一致。
+卡片版本 `8dfdb0c` 的干净检出还追加了第 6.6 节的重新出现报告、重复的旧关闭报告和后续独立复核。窗口和 CLI 依次显示未解决、范围内关闭、重新出现、重复后仍未解决、再次关闭。两次关闭时均从窗口保存了 Markdown，实际文件与预览一致。版本 `4bdcfa4` 的列表与逐项查询在这五个阶段使用相同的编号和状态。
 
 ## 6. 走查与 Python 查询
 
