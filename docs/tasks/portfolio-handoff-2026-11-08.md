@@ -19,6 +19,8 @@
 
 两仓通过三种报告对接：`camera_timed_capture` v1、`capture_task_review` v1、`label_baseline` v2。采集复核支持逐问题的发现、关闭和重新出现；QR 已支持图片、区域与独立答案的前后比较。第一版问题详情查询优先覆盖采集复核。
 
+要复现第 6.3 节材料三的新版单帧摘要，助手使用后续本地提交 `647f505231f47896c1554ab01943fab2affb93ae`。第 5 节的联合演示仍使用上表的固定版本。
+
 ## 3. 主案例与判定表
 
 | 接手时看到的材料 | 应得出的结论 | 下一步 |
@@ -136,6 +138,8 @@ try {
 | 只改 `run_id` 的合成对照 | **本次范围内可关闭**（`closed_in_scope`）。复制上一行的报告，只将 `run_id` 改回原批次。复核编号、开始时间和逐帧数据保持一致；将副本单独导入新的调查后，比较结果由“不可比较”变为“范围内通过”。 | [单字段对照副本](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/control/review.json) · [查询快照](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/control/issue.json) · [窗口导出](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/control/handoff.md) |
 
 前两行来自两次实际执行的复核，第三行用于单独检验批次字段对判断的影响。三组窗口显示均与问题查询一致，实际导出均与预览一致，原失败历史保留。本机实验目录为 `data/reports/frame-2-batch-ffbdee1077/`。
+
+**材料三的新版简明结论。** 用同一份原异常报告 `01.json` 和同批次单帧 `same/review.json` 重新导出，并用 `src/query_issue.py P01` 独立查询。P01 可在本次帧 2 范围内关闭，关闭该问题没有待补检查，首次无法核实的原因仍未知。查询返回 `status=closed_in_scope`、`resolved_by=补充记录 1`、`missing_evidence=[]`；补充记录 1 的 `frames[0]` 对应帧 2，图片摘要匹配，五项指标逐项一致。[新版交接说明](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/same/handoff-revised.md) · [P01 查询输出](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/same/cli-p01.json)
 
 **批次对照盲测。** 两名新的独立 AI 读者各自只读一份实际导出的交接说明。提问没有提示应检查哪个字段，两人都主动核对了原报告与补充报告的 `run_id`，并正确判断 P01 能否关闭。
 
