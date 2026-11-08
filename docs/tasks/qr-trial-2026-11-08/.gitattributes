@@ -1,2 +1,4 @@
 # 交接说明中的来源摘要按导入报告的字节计算。
 *.json text eol=lf
+# 保留六份盲测原答的字节，便于核对实验时的 SHA-256。
+host/qr-summary-reading-37e3e1b9/*/*.md -text

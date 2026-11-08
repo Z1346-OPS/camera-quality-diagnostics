@@ -151,7 +151,17 @@ B 将问题码简写为 `issues[0]=frame_unverifiable`。在原报告中，准�
 
 已用原来的两份报告复验：第一轮说明保留内容未验证的结论；第二轮首页分别写明主报告当时已读出二维码、未提供独立答案，以及补充报告的本次整图读出与所给答案逐字节一致。两轮预览均与窗口保存的 Markdown 一致。[新版第二轮首页](qr-trial-2026-11-08/host/after-round-2-scoped.md)
 
-**真人走查仍待完成**，主持人将观察参与者能否独立找到当前结论及其依据。[参与者任务卡](qr-trial-2026-11-08/round-1/任务.md) · [主持人走查单与参考说明](qr-trial-2026-11-08/host/走查.md)
+**新版“简明结论”盲测复验。** 两名新的独立 AI 读者 A、B 按下表顺序阅读同一套材料。每一步都先保存两人的原答，再发下一份材料。
+
+| 已发材料 | 两名读者的判断 | 原答 |
+| --- | --- | --- |
+| 第一轮完整说明 | 主报告已读出一个二维码，当时未提供独立答案，内容正确性仍未知。 | [A 第一轮](qr-trial-2026-11-08/host/qr-summary-reading-37e3e1b9/A/answer-1.md) · [B 第一轮](qr-trial-2026-11-08/host/qr-summary-reading-37e3e1b9/B/answer-1.md) |
+| 仅第二轮新版“简明结论” | 两人此时就已分清两份报告：主报告当时未验证；补充报告的本次整图读出与所给答案逐字节一致，在这份答案和本次分析范围内可判为正确。 | [A 摘要即时判断](qr-trial-2026-11-08/host/qr-summary-reading-37e3e1b9/A/answer-summary.md) · [B 摘要即时判断](qr-trial-2026-11-08/host/qr-summary-reading-37e3e1b9/B/answer-summary.md) |
+| 第二轮完整说明 | **两人均维持即时判断。** 全文补足了 `known_truth.status=provided` 和整图 `truth_check.status=correct` 的依据，也说明答案来源由用户声明，助手未独立核实。 | [A 全文判断](qr-trial-2026-11-08/host/qr-summary-reading-37e3e1b9/A/answer-full.md) · [B 全文判断](qr-trial-2026-11-08/host/qr-summary-reading-37e3e1b9/B/answer-full.md) |
+
+**仍有一处措辞差异。** 摘要建议写“登记的问题不再出现”，正文却明确说明“原记录和新结果都没有登记问题”。两名读者只看摘要时都沿用了“问题未再出现”的说法；读完全文后，都指出两份记录没有登记问题，也没有据此断言故障已修复。这一差异没有改变两人对 QR 内容正确性的判断。
+
+本机实验目录为 `data/reports/qr-summary-reading-37e3e1b9/`，表中六份原答均已随仓库归档。**真人走查仍待完成**，主持人将观察参与者能否独立找到当前结论及其依据。[参与者任务卡](qr-trial-2026-11-08/round-1/任务.md) · [主持人走查单与参考说明](qr-trial-2026-11-08/host/走查.md)
 
 ## 7. 后续扩展的启动条件
 
