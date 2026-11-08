@@ -15,7 +15,7 @@
 | 仓库 | 职责与当前入口 | 本机分支与交付提交 |
 | --- | --- | --- |
 | `D:\Projects\Python\camera-quality-diagnostics` | 采集图像、测量质量、核验二维码、复核原图并输出报告。主要入口为 `src/run_capture.py`、`src/review_capture.py`、`src/analyze_label.py`。 | `main`，`9ae15ef92082ea3c14ea7248082d084402397030` |
-| `D:\AIProjects\projects\test_failure_investigator` | 只读导入报告、显示单个问题的判断与证据，并导出交接说明。桌面入口为 `src/run_investigator.py`，Python 命令为 `src/query_issue.py`，均复用 `Session.get_issue_details`。 | `experiment/multi-agent-fault-benchmark`，`e518237f7d7408c8e2113622d6778358de9f96e0` |
+| `D:\AIProjects\projects\test_failure_investigator` | 只读导入报告、显示单个问题的判断与证据，并导出交接说明。桌面入口为 `src/run_investigator.py`，Python 命令为 `src/query_issue.py`，均复用 `Session.get_issue_details`。 | `experiment/multi-agent-fault-benchmark`，`1b7b0b50f2f15e0815e90796cbc766601e51be29` |
 
 两仓通过三种报告对接：`camera_timed_capture` v1、`capture_task_review` v1、`label_baseline` v2。采集复核支持逐问题的发现、关闭和重新出现；QR 已支持图片、区域与独立答案的前后比较。第一版问题详情查询优先覆盖采集复核。
 
@@ -70,7 +70,7 @@ git -C $camera checkout --quiet --detach 9ae15ef92082ea3c14ea7248082d08440239703
 if ($LASTEXITCODE) { throw '摄像头交付提交检出失败' }
 git clone --quiet --no-hardlinks --no-checkout $assistantRepo $assistant
 if ($LASTEXITCODE) { throw '助手仓库复制失败' }
-git -C $assistant checkout --quiet --detach e518237f7d7408c8e2113622d6778358de9f96e0
+git -C $assistant checkout --quiet --detach 1b7b0b50f2f15e0815e90796cbc766601e51be29
 if ($LASTEXITCODE) { throw '助手交付提交检出失败' }
 $env:INVESTIGATOR_ROOT = $assistant
 Push-Location -LiteralPath $camera -ErrorAction Stop
@@ -106,6 +106,8 @@ $reports
 卡片版本 `8dfdb0c` 的干净检出还追加了第 6.6 节的重新出现报告、重复的旧关闭报告和后续独立复核。窗口和 CLI 依次显示未解决、范围内关闭、重新出现、重复后仍未解决、再次关闭。两次关闭时均从窗口保存了 Markdown，实际文件与预览一致。版本 `4bdcfa4` 的列表与逐项查询在这五个阶段使用相同的编号和状态。
 
 助手 `efbf1cc` 将证据位置带入“复制交接摘要”。材料三首次关闭的摘要指向 `补充记录 1 (review.json) | frames[0] → 帧 2`。重新出现后，摘要指向 `unverifiable-again.json` 的 `issues[0]`；重复导入仍保留这个位置。再次关闭后，摘要改指 `补充记录 4 (later-frame-2-review.json) | frames[0] → 帧 2`。两次关闭时，导出说明的“简明结论”也包含这段摘要。
+
+在窗口展开 P01 的状态历史，每条事件下方都显示当时的报告文件名和 SHA-256 前 16 位。第一次关闭对应 [review.json](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/same/review.json)，重新出现对应 [unverifiable-again.json](capture-trial-2026-11-08/host/p01-reopen-bc0c0be664/unverifiable-again.json)，再次关闭对应 [later-frame-2-review.json](capture-trial-2026-11-08/host/p01-reclose-2e72387dc2/later-frame-2-review.json)。两次关闭均可在各自报告的 `frames[0]` 核对帧 2。重复导入没有新增状态事件。
 
 ### 5.2 交接同一调查中的多个问题
 
