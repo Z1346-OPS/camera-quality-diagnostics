@@ -217,6 +217,12 @@ $trial = 'D:\Projects\Python\camera-quality-diagnostics\docs\tasks\capture-trial
 
 追加补充记录 2 后，助手仍沿用 **P01**，状态回到 `open`，`resolved_by` 回到 `null`。问题历史依次记录“发现 → 范围内不再出现 → 重新出现”。两次查询的 `evidence["补充记录 1"]` 逐字段相同，仍可查到上次关闭所依据的报告摘要、帧位置和指标值对。现在还缺**一次晚于本次异常、同批次且口径可比的帧 2 独立复核**。本次为命令回放，真人走查仍待完成。[重新打开后的查询输出](capture-trial-2026-11-08/host/p01-reopen-bc0c0be664/reopened.json)
 
+**P01 重新出现后再次关闭。** 将第一次关闭用的报告再次导入为补充记录 3。查询返回 `latest_primary_comparison.is_repeat=true`，P01 仍为 `open`。问题历史、证据和缺失检查均与重新打开时一致，仍需一次晚于本次异常的帧 2 独立复核。[重复导入后的查询输出](capture-trial-2026-11-08/host/p01-reclose-2e72387dc2/after-repeat.json)
+
+补充记录 4 来自对含帧 2 留证图片的合成任务副本执行的新复核。其 `review_id` 独立，`reviewed_at_utc` 晚于补充记录 2 的异常，`run_id` 与 `comparison_basis` 均与原批次一致。`frames[0].frame_count=2`，图片摘要匹配，五项指标逐项一致。[新复核报告](capture-trial-2026-11-08/host/p01-reclose-2e72387dc2/later-frame-2-review.json)
+
+取得这份证据后，助手才沿用 **P01** 在本次帧 2 范围内再次关闭（`closed_in_scope`），`resolved_by` 指向补充记录 4，`missing_evidence=[]`。最终查询的 `history` 和 `evidence` 可分别回查补充记录 1 的第一次关闭、补充记录 2 的重新出现和补充记录 4 的第二次关闭。前两份证据与重新打开时逐字段一致。真人走查仍待完成。[再次关闭后的查询输出](capture-trial-2026-11-08/host/p01-reclose-2e72387dc2/reclosed.json)
+
 ## 7. 后续扩展的启动条件
 
 - **AI 依据问答**：从走查中选取参与者实际提出的问题，用同一批事实比较规则说明和模型回答。程序生成状态和证据编号；模型只生成说明、引用和建议。验收时检查引用是否真实支持回答、是否遗漏未解决项、是否擅自推断硬件根因，以及用户是否更容易判断下一步。超时或依据不足时继续提供规则说明。

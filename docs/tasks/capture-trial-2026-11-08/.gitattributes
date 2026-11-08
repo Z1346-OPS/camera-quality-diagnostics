@@ -8,3 +8,4 @@ host/single-frame-scope-8893017141/* -text !eol
 host/frame-2-batch-ffbdee1077/*/* -text !eol
 # 保留复核报告与查询输出的原始换行，便于按 source_sha256 回查。
 host/p01-reopen-bc0c0be664/*.json -text !eol whitespace=cr-at-eol
+host/p01-reclose-2e72387dc2/*.json -text !eol whitespace=cr-at-eol

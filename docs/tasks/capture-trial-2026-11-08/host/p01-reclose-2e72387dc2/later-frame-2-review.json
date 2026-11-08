@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "report_type": "capture_task_review",
+  "run_id": "e6f899ecd3794dccbbbbfc54a62145be",
+  "task_status": "completed",
+  "verification_status": "consistent",
+  "comparison_basis": "current_algorithm_one_decimal",
+  "counts": {
+    "reported_samples": 1,
+    "csv_pairs": 1,
+    "verified_frames": 1
+  },
+  "frames": [
+    {
+      "frame_count": 2,
+      "image_sha256_match": true,
+      "metrics": {
+        "brightness": [
+          "100.0",
+          "100.0"
+        ],
+        "dark_ratio": [
+          "0.0",
+          "0.0"
+        ],
+        "bright_ratio": [
+          "0.0",
+          "0.0"
+        ],
+        "sharpness": [
+          "0.0",
+          "0.0"
+        ],
+        "contrast": [
+          "0.0",
+          "0.0"
+        ]
+      }
+    }
+  ],
+  "issues": [],
+  "warnings": [],
+  "declared_frame_counts": [
+    2
+  ],
+  "review_id": "6bbd76053dff4330bf4c459848e2bb4f",
+  "reviewed_at_utc": "2026-11-08T09:36:34.224616+00:00"
+}
