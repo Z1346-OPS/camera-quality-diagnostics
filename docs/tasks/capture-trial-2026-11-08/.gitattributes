@@ -2,3 +2,5 @@
 *.json text eol=lf
 # 保留本次盲测原答的换行，便于按原始 SHA-256 核对。
 host/handoff-retest-a0b6d9b5/*/*.md text eol=lf
+# 单帧对照保留报告、快照和窗口导出的原始字节，供证据摘要核对。
+host/single-frame-scope-8893017141/* -text !eol

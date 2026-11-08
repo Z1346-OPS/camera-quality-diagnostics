@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "investigation_id": "abf5edc9f20d",
+  "issue_id": "P01",
+  "key": "frame_unverifiable:2",
+  "label": "有帧无法核实（帧 2）",
+  "frame_count": 2,
+  "status": "closed_in_scope",
+  "origin": {
+    "context": "主报告",
+    "locator": "issues[0]"
+  },
+  "resolved_by": "补充记录 1",
+  "history": [
+    {
+      "context": "主报告",
+      "event": "发现",
+      "reason": "有帧无法核实（帧 2）；来源 issues[0]"
+    },
+    {
+      "context": "补充记录 1",
+      "event": "范围内不再出现",
+      "reason": "覆盖同一对象、口径及帧 2；不说明原因"
+    }
+  ],
+  "evidence": {
+    "主报告": {
+      "source_name": "01.json",
+      "source_sha256": "5fee7591205c08a6efef16a58b618481bed156975d1cc8cbdff7be521577429d",
+      "run_id": "e6f899ecd3794dccbbbbfc54a62145be",
+      "verification_status": "inconsistent",
+      "comparison_basis": "current_algorithm_one_decimal",
+      "review_id": "5f271c8b79c543078984b9cdc30f536a",
+      "reviewed_at_utc": "2026-11-08T01:54:53.771096+00:00",
+      "declared_frame_counts": [
+        1,
+        2
+      ],
+      "scope_locator": "frames",
+      "verified_frame_counts": [
+        1
+      ],
+      "verified_frames": [
+        {
+          "locator": "frames[0]",
+          "frame_count": 1,
+          "image_sha256_match": true,
+          "metrics": {
+            "brightness": [
+              "100.0",
+              "100.0"
+            ],
+            "dark_ratio": [
+              "0.0",
+              "0.0"
+            ],
+            "bright_ratio": [
+              "0.0",
+              "0.0"
+            ],
+            "sharpness": [
+              "0.0",
+              "0.0"
+            ],
+            "contrast": [
+              "0.0",
+              "0.0"
+            ]
+          }
+        }
+      ],
+      "warnings": []
+    },
+    "补充记录 1": {
+      "source_name": "only-2.json",
+      "source_sha256": "695d602c7547bafe231f21f7932bb81406a357c8eaf5d65b21f581bc1ad92a45",
+      "run_id": "e6f899ecd3794dccbbbbfc54a62145be",
+      "verification_status": "consistent",
+      "comparison_basis": "current_algorithm_one_decimal",
+      "review_id": "c9a8d27c6e174fffa037c2bc4de76abe",
+      "reviewed_at_utc": "2026-11-08T04:46:30.055298+00:00",
+      "declared_frame_counts": [
+        2
+      ],
+      "scope_locator": "frames",
+      "verified_frame_counts": [
+        2
+      ],
+      "verified_frames": [
+        {
+          "locator": "frames[0]",
+          "frame_count": 2,
+          "image_sha256_match": true,
+          "metrics": {
+            "brightness": [
+              "100.0",
+              "100.0"
+            ],
+            "dark_ratio": [
+              "0.0",
+              "0.0"
+            ],
+            "bright_ratio": [
+              "0.0",
+              "0.0"
+            ],
+            "sharpness": [
+              "0.0",
+              "0.0"
+            ],
+            "contrast": [
+              "0.0",
+              "0.0"
+            ]
+          }
+        }
+      ],
+      "warnings": []
+    }
+  },
+  "last_issue_assessment": {
+    "context": "补充记录 1",
+    "event": "范围内不再出现",
+    "reason": "覆盖同一对象、口径及帧 2；不说明原因",
+    "same_subject": true,
+    "condition_conflict": null
+  },
+  "latest_primary_comparison": {
+    "context": "补充记录 1",
+    "primary_sha256": "5fee7591205c08a6efef16a58b618481bed156975d1cc8cbdff7be521577429d",
+    "source_sha256": "695d602c7547bafe231f21f7932bb81406a357c8eaf5d65b21f581bc1ad92a45",
+    "report_type": "capture_task_review",
+    "is_repeat": false,
+    "comparable_to_primary": true,
+    "result": "范围内通过",
+    "reason": "同一对象上原记录登记的问题在新结果中不再出现；这只说明该范围内的问题消失，不说明原因。"
+  },
+  "missing_evidence": [],
+  "next_step": "交接原失败和支持本次范围内关闭的复核记录。"
+}

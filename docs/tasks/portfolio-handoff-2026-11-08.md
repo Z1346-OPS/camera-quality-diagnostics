@@ -38,6 +38,7 @@
 | 联合演示和审查修复 | 双仓提交已固定，干净检出复验通过 | 已验证执行编号与时间、原帧号覆盖、QR 答案摘要、同一份 PNG 字节核对、报告父目录联接及文件替换检查 |
 | Python 问题详情 | v1 已验证 | 返回问题状态、逐次判断、来源摘要、完整核实帧集合、执行身份及缺失项。新导出列出各次复核的编号与开始时间。 |
 | AI 交接说明盲测 | 已完成两轮 | 两名独立 AI 读者均能区分已核实帧号与原始逐帧记录。两轮结论和六份原答见第 6.1 节。 |
+| 单帧覆盖对照 | 已验证 | 两份后续报告均核实 1 帧。仅覆盖帧 1 时 P01 仍未解决，仅覆盖原异常帧 2 时 P01 在本次范围内可关闭。证据见第 6.2 节。 |
 | 真人走查 | **待完成** | 主持人材料已备齐，尚待 1～2 位未参与开发的人独立操作并提交匿名记录。 |
 | AI 依据问答与本地 HTTP | 备选阶段 | 已完成方案调研，尚无模型对照结果、推理耗时或独立 HTTP 调用示例 |
 
@@ -98,6 +99,19 @@ try {
 | 定向追问 | 两人都指出，仅凭说明无法确定 01 的原始 `frames` 数组有几条记录，也无法确定其中是否有帧 2 的条目。主持人核对原始 JSON 后确认共有两条，帧 2 有记录，但未通过核实。 | [A 追问](capture-trial-2026-11-08/host/handoff-retest-a0b6d9b5/A/follow-up.md) · [B 追问](capture-trial-2026-11-08/host/handoff-retest-a0b6d9b5/B/follow-up.md) |
 
 在这个案例里，四份自由回答都没有把已核实帧号简写成 `frames=[1]`，也没有据此推断原始数组长度。本机实验目录为 `data/reports/handoff-retest-a0b6d9b5/`；表中链接指向随仓库保存、与实验原答逐字节一致的副本。**真人走查仍待完成**，需由主持人另行记录实际操作用时、求助点和接手结果。
+
+### 6.2 同样核实 1 帧，能否关闭原问题
+
+两个独立调查均从[原异常报告 01.json](capture-trial-2026-11-08/round-1/01.json)开始。`issues[0]` 记录第 2 帧无法核实，两组的 P01 初始状态均为 `open`。每组只追加一份后续报告。两份报告都来自同一批次，复核开始时间都晚于原异常，比较口径相同，且各自的 `reported_samples`、`csv_pairs`、`verified_frames` 均为 1，`verification_status` 均为 `consistent`。
+
+| 后续报告 | 已核实帧号与原报告定位 | P01 的关闭判断 | 助手输出 |
+| --- | --- | --- | --- |
+| [只覆盖帧 1](capture-trial-2026-11-08/host/single-frame-scope-8893017141/only-1.json) | `verified_frame_counts=[1]`，`frames[0] → 帧 1` | **仍未解决**（`open`）。帧 1 的证据无法核实原异常帧 2，比较结果为“证据不足”。 | [问题查询快照](capture-trial-2026-11-08/host/single-frame-scope-8893017141/only-1-issue.json) · [窗口导出](capture-trial-2026-11-08/host/single-frame-scope-8893017141/only-1-handoff.md) |
+| [只覆盖帧 2](capture-trial-2026-11-08/host/single-frame-scope-8893017141/only-2.json) | `verified_frame_counts=[2]`，`frames[0] → 帧 2` | **本次范围内可关闭**（`closed_in_scope`）。目标帧 2 摘要匹配，五项指标逐项一致，比较结果为“范围内通过”。 | [问题查询快照](capture-trial-2026-11-08/host/single-frame-scope-8893017141/only-2-issue.json) · [窗口导出](capture-trial-2026-11-08/host/single-frame-scope-8893017141/only-2-handoff.md) |
+
+两份后续报告中，`frames[0]` 都定位到数组的第一条记录；具体核实的是哪一帧，要看该条记录的 `frame_count`。两个窗口的显示均与查询快照一致，导出文件均与各自预览一致。原失败记录仍在，两组都未确认首次无法核实的原因。
+
+本次使用合成报告自动驱动现有 Tk 窗口，**真人走查仍待完成**。本机实验目录为 `data/reports/single-frame-scope-8893017141/`；表中证据链接指向随仓库归档的副本。
 
 ## 7. 后续扩展的启动条件
 

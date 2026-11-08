@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "investigation_id": "5f4ceb693b24",
+  "issue_id": "P01",
+  "key": "frame_unverifiable:2",
+  "label": "有帧无法核实（帧 2）",
+  "frame_count": 2,
+  "status": "open",
+  "origin": {
+    "context": "主报告",
+    "locator": "issues[0]"
+  },
+  "resolved_by": null,
+  "history": [
+    {
+      "context": "主报告",
+      "event": "发现",
+      "reason": "有帧无法核实（帧 2）；来源 issues[0]"
+    },
+    {
+      "context": "补充记录 1",
+      "event": "未解决",
+      "reason": "缺少帧 2 摘要匹配且五项指标逐项一致的核实证据"
+    }
+  ],
+  "evidence": {
+    "主报告": {
+      "source_name": "01.json",
+      "source_sha256": "5fee7591205c08a6efef16a58b618481bed156975d1cc8cbdff7be521577429d",
+      "run_id": "e6f899ecd3794dccbbbbfc54a62145be",
+      "verification_status": "inconsistent",
+      "comparison_basis": "current_algorithm_one_decimal",
+      "review_id": "5f271c8b79c543078984b9cdc30f536a",
+      "reviewed_at_utc": "2026-11-08T01:54:53.771096+00:00",
+      "declared_frame_counts": [
+        1,
+        2
+      ],
+      "scope_locator": "frames",
+      "verified_frame_counts": [
+        1
+      ],
+      "verified_frames": [
+        {
+          "locator": "frames[0]",
+          "frame_count": 1,
+          "image_sha256_match": true,
+          "metrics": {
+            "brightness": [
+              "100.0",
+              "100.0"
+            ],
+            "dark_ratio": [
+              "0.0",
+              "0.0"
+            ],
+            "bright_ratio": [
+              "0.0",
+              "0.0"
+            ],
+            "sharpness": [
+              "0.0",
+              "0.0"
+            ],
+            "contrast": [
+              "0.0",
+              "0.0"
+            ]
+          }
+        }
+      ],
+      "warnings": []
+    },
+    "补充记录 1": {
+      "source_name": "only-1.json",
+      "source_sha256": "d81de6e365b8b1e4a2708cb4e1e0f9ef607d33b3f2c00e6fafe2b5b13696f4a8",
+      "run_id": "e6f899ecd3794dccbbbbfc54a62145be",
+      "verification_status": "consistent",
+      "comparison_basis": "current_algorithm_one_decimal",
+      "review_id": "2c6cb155fb3b4f138ace728a81405493",
+      "reviewed_at_utc": "2026-11-08T04:46:29.736811+00:00",
+      "declared_frame_counts": [
+        1
+      ],
+      "scope_locator": "frames",
+      "verified_frame_counts": [
+        1
+      ],
+      "verified_frames": [
+        {
+          "locator": "frames[0]",
+          "frame_count": 1,
+          "image_sha256_match": true,
+          "metrics": {
+            "brightness": [
+              "100.0",
+              "100.0"
+            ],
+            "dark_ratio": [
+              "0.0",
+              "0.0"
+            ],
+            "bright_ratio": [
+              "0.0",
+              "0.0"
+            ],
+            "sharpness": [
+              "0.0",
+              "0.0"
+            ],
+            "contrast": [
+              "0.0",
+              "0.0"
+            ]
+          }
+        }
+      ],
+      "warnings": []
+    }
+  },
+  "last_issue_assessment": {
+    "context": "补充记录 1",
+    "event": "未解决",
+    "reason": "缺少帧 2 摘要匹配且五项指标逐项一致的核实证据",
+    "same_subject": true,
+    "condition_conflict": null
+  },
+  "latest_primary_comparison": {
+    "context": "补充记录 1",
+    "primary_sha256": "5fee7591205c08a6efef16a58b618481bed156975d1cc8cbdff7be521577429d",
+    "source_sha256": "d81de6e365b8b1e4a2708cb4e1e0f9ef607d33b3f2c00e6fafe2b5b13696f4a8",
+    "report_type": "capture_task_review",
+    "is_repeat": false,
+    "comparable_to_primary": true,
+    "result": "证据不足",
+    "reason": "原记录的问题涉及帧 2，但新结果没有核实这些帧；不能把它们当作已消失。"
+  },
+  "missing_evidence": [
+    "缺少帧 2 摘要匹配且五项指标逐项一致的核实证据"
+  ],
+  "next_step": "补做同批次、口径可比且晚于问题记录的独立复核，核实帧 2。"
+}
