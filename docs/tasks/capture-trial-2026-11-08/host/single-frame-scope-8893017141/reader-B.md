@@ -1,0 +1,3 @@
+- **补充报告只核实了帧 2。** `only-2.json` 的 `declared_frame_counts=[2]`、`verified_frame_counts=[2]`，逐帧定位为 `frames[0] → 帧 2`，摘要匹配且五项指标一致。`counts.verified_frames=1` 表示核实数量。
+- **P01 可以按“帧 2 范围内不再出现”关闭。** 主报告 `01.json` 的 `issues[0]` 登记了帧 2 的 `frame_unverifiable`。当时声明帧号为 `[1, 2]`，实际只核实 `[1]`，定位为 `frames[0] → 帧 1`。两份记录的 `run_id=e6f899ecd3794dccbbbbfc54a62145be`、`comparison_basis=current_algorithm_one_decimal` 相同。补充报告直接覆盖原问题帧，`verification_status` 从 `inconsistent` 变为 `consistent`，补充报告无问题码。
+- **交接时保留原失败及补充记录。** 在调查 `abf5edc9f20d` 下关联 `01.json` 和 `only-2.json`，写明本次仅复验帧 2。原先无法核实的原因未知，整机恢复与其他帧、批次的状态也不能由此次复验确定。说明未附原始报告或原图，需要独立复核时应另行索取。
