@@ -26,7 +26,8 @@ except ImportError:
 
 def compare_frame_metrics(
     run_id: str, frame_count: int, report_dir: Path = REPORT_DIR,
-    quality_path: Path = QUALITY_PATH, color_path: Path = COLOR_PATH,
+    quality_path: Path = QUALITY_PATH, color_path: Path = COLOR_PATH, *,
+    png_bytes: bytes | None = None,
 ) -> dict[str, tuple[str, str]]:
     """返回各指标的 (CSV 值, PNG 重算值)，两者均按一位小数表示。"""
     if type(frame_count) is not int or frame_count < 1:
@@ -41,11 +42,12 @@ def compare_frame_metrics(
             item for item in csv.DictReader(source)
             if item["run_id"] == run_id and int(item["frame_count"]) == frame_count
         )
-    image_path = Path(report_dir) / f"camera_frame_{run_id}_{frame_count}.png"
-    contents = image_path.read_bytes()
-    if not contents.startswith(b"\x89PNG\r\n\x1a\n"):
+    if png_bytes is None:
+        image_path = Path(report_dir) / f"camera_frame_{run_id}_{frame_count}.png"
+        png_bytes = image_path.read_bytes()
+    if not png_bytes.startswith(b"\x89PNG\r\n\x1a\n"):
         raise ValueError("留证图片不是有效 PNG")
-    frame = cv2.imdecode(np.frombuffer(contents, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    frame = cv2.imdecode(np.frombuffer(png_bytes, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
     if frame is None or frame.dtype != np.uint8 or frame.ndim != 3 or frame.shape[2] != 3:
         raise ValueError("留证图片无法解码为 8 位 BGR 三通道图")
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)

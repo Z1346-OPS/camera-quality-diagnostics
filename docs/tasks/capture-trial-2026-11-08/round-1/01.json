@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "report_type": "capture_task_review",
+  "run_id": "e6f899ecd3794dccbbbbfc54a62145be",
+  "task_status": "completed",
+  "verification_status": "inconsistent",
+  "comparison_basis": "current_algorithm_one_decimal",
+  "counts": {
+    "reported_samples": 2,
+    "csv_pairs": 2,
+    "verified_frames": 1
+  },
+  "frames": [
+    {
+      "frame_count": 1,
+      "image_sha256_match": true,
+      "metrics": {
+        "brightness": [
+          "100.0",
+          "100.0"
+        ],
+        "dark_ratio": [
+          "0.0",
+          "0.0"
+        ],
+        "bright_ratio": [
+          "0.0",
+          "0.0"
+        ],
+        "sharpness": [
+          "0.0",
+          "0.0"
+        ],
+        "contrast": [
+          "0.0",
+          "0.0"
+        ]
+      }
+    },
+    {
+      "frame_count": 2,
+      "image_sha256_match": null,
+      "metrics": null
+    }
+  ],
+  "issues": [
+    {
+      "code": "frame_unverifiable",
+      "frame_count": 2,
+      "detail": "无法读取留证图片: [Errno 2] No such file or directory: 'camera_frame_e6f899ecd3794dccbbbbfc54a62145be_2.png'"
+    }
+  ],
+  "warnings": [],
+  "declared_frame_counts": [
+    1,
+    2
+  ],
+  "review_id": "5f271c8b79c543078984b9cdc30f536a",
+  "reviewed_at_utc": "2026-11-08T01:54:53.771096+00:00"
+}

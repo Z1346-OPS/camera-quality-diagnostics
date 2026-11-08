@@ -7,8 +7,9 @@ import csv
 import hashlib
 import json
 import platform
+from datetime import datetime, timedelta
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import cv2
 import numpy as np
@@ -205,6 +206,31 @@ def test_r02_frame_metrics_match_existing_interface(tmp_path):
 
 # ---------- R03：无损重编码，像素相同、摘要不同 ----------
 
+def test_png_replacement_after_read_cannot_mix_hash_and_pixels(tmp_path, monkeypatch):
+    task_dir, run_id, _ = make_task(tmp_path, csv_values=[(200.0, 0.0, 0.0, 0.0, 0.0)])
+    image = png_path(task_dir, run_id, 1)
+    original_read = Path.read_bytes
+    reads = []
+
+    def read_then_replace(path):
+        contents = original_read(path)
+        if path == image:
+            reads.append(path)
+            if len(reads) == 1:
+                ok, encoded = cv2.imencode(".png", np.full((4, 5, 3), 200, dtype=np.uint8))
+                assert ok
+                image.write_bytes(encoded.tobytes())
+        return contents
+
+    monkeypatch.setattr(Path, "read_bytes", read_then_replace)
+    result = review(task_dir)
+    assert result["verification_status"] == "inconsistent"
+    assert reads == [image]
+    assert result["frames"][0]["image_sha256_match"] is True
+    assert result["frames"][0]["metrics"]["brightness"] == ["200.0", "100.0"]
+    assert result["counts"]["verified_frames"] == 0
+
+
 def test_r03_lossless_reencode_keeps_metrics_but_flags_hash(tmp_path):
     task_dir, run_id, _ = make_task(tmp_path, (1,))
     image = png_path(task_dir, run_id, 1)
@@ -262,6 +288,9 @@ def test_r05_csv_key_set_must_equal_declared_set(tmp_path):
     assert result["verification_status"] == "inconsistent"
     assert [issue["code"] for issue in result["issues"]] == ["csv_keys_mismatch"]
     assert result["frames"] == [] and result["counts"]["verified_frames"] == 0
+    assert result["declared_frame_counts"] == [1, 2]
+    assert result["csv_key_differences"]["quality_missing"] == [[run_id, 2]]
+    assert result["csv_key_differences"]["color_missing"] == [[run_id, 2]]
     assert cli(task_dir) == 1
 
     # 两份 CSV 同时混入其他批次
@@ -568,7 +597,7 @@ def test_r10_repeated_review_does_not_accumulate(tmp_path):
     reviewer = CaptureTaskReviewer(task_dir)
     first = reviewer.review()
     second = reviewer.review()
-    assert first == second
+    assert_distinct_executions(first, second)
     assert second["counts"] == {"reported_samples": 1, "csv_pairs": 1, "verified_frames": 1}
 
 
@@ -577,7 +606,17 @@ def test_r10_output_is_serializable_json(tmp_path, capsys):
     result = review(task_dir)
     assert json.loads(json.dumps(result, ensure_ascii=False, allow_nan=False)) == result
     assert cli(task_dir) == 0
-    assert json.loads(capsys.readouterr().out) == result
+    assert_distinct_executions(result, json.loads(capsys.readouterr().out))
+
+
+def assert_distinct_executions(first, second):
+    first = first.copy()
+    second = second.copy()
+    assert UUID(first.pop("review_id")) != UUID(second.pop("review_id"))
+    for report in (first, second):
+        timestamp = datetime.fromisoformat(report.pop("reviewed_at_utc"))
+        assert timestamp.utcoffset() == timedelta(0)
+    assert first == second
 
 
 # ---------- R11：新旧入口独立调用；输入无增删改 ----------

@@ -15,8 +15,9 @@ import json
 import platform
 import re
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import cv2
 import numpy as np
@@ -129,6 +130,13 @@ class CaptureTaskReviewer:
         self.task_dir = Path(task_dir)
 
     def review(self) -> dict:
+        started = datetime.now(UTC)
+        result = self._inspect_task()
+        result["review_id"] = uuid4().hex
+        result["reviewed_at_utc"] = started.isoformat()
+        return result
+
+    def _inspect_task(self) -> dict:
         task_dir = self.task_dir.resolve()
         report_path = _resolve_within(task_dir, task_dir / TASK_REPORT_NAME)
         quality_path = _resolve_within(task_dir, task_dir / QUALITY_CSV_NAME)
@@ -182,10 +190,23 @@ class CaptureTaskReviewer:
                 f"仅质量 {len(quality_only)}，仅颜色 {len(color_only)}"
             )
             issues.append(_issue(CSV_KEYS_MISMATCH, None, detail))
-            return self._result(
+            result = self._result(
                 run_id, status, "inconsistent", issues, warnings, frames=[],
                 reported_samples=declared_count, csv_pairs=len(matched), verified_frames=0,
             )
+            quality_keys = matched | quality_only
+            color_keys = matched | color_only
+            result["declared_frame_counts"] = sorted(frame_counts)
+            differences = {
+                "quality_missing": declared_keys - quality_keys,
+                "color_missing": declared_keys - color_keys,
+                "quality_extra": quality_keys - declared_keys,
+                "color_extra": color_keys - declared_keys,
+            }
+            result["csv_key_differences"] = {
+                name: [list(key) for key in sorted(keys)] for name, keys in differences.items()
+            }
+            return result
 
         frames = []
         verified_frames = 0
@@ -198,11 +219,13 @@ class CaptureTaskReviewer:
             verified_frames += 1 if verified else 0
 
         verification_status = "consistent" if not issues else "inconsistent"
-        return self._result(
+        result = self._result(
             run_id, status, verification_status, issues, warnings, frames=frames,
             reported_samples=declared_count, csv_pairs=len(matched),
             verified_frames=verified_frames,
         )
+        result["declared_frame_counts"] = sorted(frame_counts)
+        return result
 
     # ---------- 内部步骤 ----------
 
@@ -257,23 +280,18 @@ class CaptureTaskReviewer:
         metrics = None
 
         try:
-            digest = hashlib.sha256(sample["image_path"].read_bytes()).hexdigest()
-        except OSError as error:
-            unverifiable = f"无法读取留证图片: {error}"
-        else:
+            png_bytes = sample["image_path"].read_bytes()
+            digest = hashlib.sha256(png_bytes).hexdigest()
             image_sha256_match = digest == sample["image_sha256"]
             if not image_sha256_match:
                 hash_issue = f"文件摘要 {digest} 与任务记录 {sample['image_sha256']} 不同"
 
-        try:
             compared = compare_frame_metrics(
-                run_id, frame_count, task_dir, quality_path, color_path
+                run_id, frame_count, task_dir, quality_path, color_path, png_bytes=png_bytes
             )
         except (OSError, ValueError, cv2.error) as error:
-            unverifiable = (
-                f"{unverifiable}；无法重算指标: {error}" if unverifiable
-                else f"无法重算指标: {error}"
-            )
+            operation = "无法读取留证图片" if image_sha256_match is None else "无法重算指标"
+            unverifiable = f"{operation}: {error}"
         else:
             metrics = {name: [saved, recalculated] for name, (saved, recalculated) in compared.items()}
             different = [name for name, (saved, recalculated) in compared.items() if saved != recalculated]
