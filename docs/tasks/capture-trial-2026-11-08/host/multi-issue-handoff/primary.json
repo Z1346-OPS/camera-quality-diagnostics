@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "report_type": "capture_task_review",
+  "review_id": "c136e23717de40fe8613becff7fda981",
+  "reviewed_at_utc": "2026-10-17T00:00:00+00:00",
+  "run_id": "run10000000000000000000000000000",
+  "task_status": "completed",
+  "verification_status": "inconsistent",
+  "comparison_basis": "current_algorithm_one_decimal",
+  "counts": {
+    "reported_samples": 2,
+    "csv_pairs": 2,
+    "verified_frames": 0
+  },
+  "frames": [
+    {
+      "frame_count": 1,
+      "image_sha256_match": null,
+      "metrics": null
+    },
+    {
+      "frame_count": 2,
+      "image_sha256_match": null,
+      "metrics": null
+    }
+  ],
+  "issues": [
+    {
+      "code": "frame_unverifiable",
+      "frame_count": 1,
+      "detail": "合成缺图"
+    },
+    {
+      "code": "frame_unverifiable",
+      "frame_count": 2,
+      "detail": "合成缺图"
+    }
+  ],
+  "warnings": [],
+  "test_marker": "initial"
+}
