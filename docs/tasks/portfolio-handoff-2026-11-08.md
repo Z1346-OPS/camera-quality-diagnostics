@@ -133,7 +133,16 @@ try {
 | 不同批次实际复核 | **仍未解决**（`open`）。后续报告核实了批次 `2c72d699761043b89be433524834ace0` 的帧 2，与原异常不可比较。 | [复核报告](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/different/review.json) · [查询快照](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/different/issue.json) · [窗口导出](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/different/handoff.md) |
 | 只改 `run_id` 的合成对照 | **本次范围内可关闭**（`closed_in_scope`）。复制上一行的报告，只将 `run_id` 改回原批次。复核编号、开始时间和逐帧数据保持一致；将副本单独导入新的调查后，比较结果由“不可比较”变为“范围内通过”。 | [单字段对照副本](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/control/review.json) · [查询快照](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/control/issue.json) · [窗口导出](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/control/handoff.md) |
 
-前两行来自两次实际执行的复核，第三行用于单独检验批次字段对判断的影响。三组窗口显示均与问题查询一致，实际导出均与预览一致，原失败历史保留。本机实验目录为 `data/reports/frame-2-batch-ffbdee1077/`。本次使用合成材料自动回放；**真人走查仍待完成**。
+前两行来自两次实际执行的复核，第三行用于单独检验批次字段对判断的影响。三组窗口显示均与问题查询一致，实际导出均与预览一致，原失败历史保留。本机实验目录为 `data/reports/frame-2-batch-ffbdee1077/`。
+
+**批次对照盲测。** 两名新的独立 AI 读者各自只读一份实际导出的交接说明。提问没有提示应检查哪个字段，两人都主动核对了原报告与补充报告的 `run_id`，并正确判断 P01 能否关闭。
+
+- A 读到两份报告的 `run_id` 相同，确认后续复核覆盖原批次的帧 2，摘要匹配且五项指标一致，判断 **P01 可在本次帧 2 范围内关闭**。[A 原答](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/same/reader-A.md)
+- B 读到两份报告的 `run_id` 不同，指出补充报告只核实了另一批次的帧 2。原批次仍缺帧 2 的复核证据，判断 **P01 仍未解决**。[B 原答](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/different/reader-B.md)
+
+B 将问题码简写为 `issues[0]=frame_unverifiable`。在原报告中，准确的字段位置是 `issues[0].code`，值为 `frame_unverifiable`。这处引用不够精确，两人的批次和关闭判断均正确。
+
+本机盲测目录为 `data/reports/handoff-reading-d4c90b6b/`，原答分别位于其下的 `A/answer.md` 和 `B/answer.md`。上述结论限于两名 AI 对这组合成材料的阅读；**真人走查仍待完成**。
 
 ## 7. 后续扩展的启动条件
 
