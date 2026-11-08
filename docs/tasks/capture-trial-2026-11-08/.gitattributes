@@ -1,2 +1,4 @@
 # 导出的证据索引按报告原字节计算 SHA-256。
 *.json text eol=lf
+# 保留本次盲测原答的换行，便于按原始 SHA-256 核对。
+host/handoff-retest-a0b6d9b5/*/*.md text eol=lf

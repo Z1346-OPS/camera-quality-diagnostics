@@ -1,0 +1,5 @@
+- 01.json 原始 frames 数组共有多少个元素：未知。交接说明未附原报告，也没有给出数组长度。技术详情只定位到 frames[0]，所以只知道至少有一个元素。declared_frame_counts=[1,2] 给出声明范围，counts.verified_frames=1 给出通过核实的帧数，两者都不能充当数组长度。
+- 01.json 通过核实的只有帧 1。直接依据是 verified_frame_counts=[1]，逐帧依据为 frames[0] → 帧 1，摘要匹配且五项指标一致。
+- 01.json 原数组里有没有帧 2 的记录：未知。主报告/E03 → issues[0] 记载帧 2 无法核实，交接说明没有给出帧 2 在原始 frames 中的条目或完整数组。“无法核实”不足以区分条目缺失和条目存在但未通过核实。
+- 02.json 通过核实的只有帧 1。补充记录 1 技术详情给出 verified_frame_counts=[1]，可回查 frames[0] → 帧 1。
+- 03.json 通过核实的是帧 1 和帧 2。补充记录 2 技术详情给出 verified_frame_counts=[1,2]，可分别回查 frames[0] → 帧 1 和 frames[1] → 帧 2。
