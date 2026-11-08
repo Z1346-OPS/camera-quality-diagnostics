@@ -201,6 +201,16 @@ $trial = 'D:\Projects\Python\camera-quality-diagnostics\docs\tasks\capture-trial
 
 命令输出与 `Session.get_issue_details()` 相同的 v1 JSON；报告内的实际帧号以 `frame_count` 为准。第 6.5 节的设备打开失败通过采集任务的交接说明核对，当前按问题编号查询的范围是采集复核。
 
+**固定帧 2 的批次对照。** 用助手 `dffff38` 的 `src/query_issue.py` 分别查询 P01。每次都从同一份 [01.json](capture-trial-2026-11-08/round-1/01.json) 开始，只追加第 6.3 节的一份复核报告。原问题位于 `issues[0].code`，值为 `frame_unverifiable`，涉及原批次 `e6f899ec…` 的帧 2。两份实际复核报告都只核实了帧 2（`verified_frame_counts=[2]`）。各自报告中的 `frames[0].frame_count=2`，图片摘要匹配，五项指标逐项一致。
+
+| 后续材料 | P01 关闭判断 | 证据与缺失检查 | 本次命令输出 |
+| --- | --- | --- | --- |
+| 同批次 `e6f899ec…` | `closed_in_scope`，可在本次帧 2 范围内关闭。 | `resolved_by` 指向补充记录 1，其 `frames[0]` 覆盖原问题，`missing_evidence=[]`。 | [同批次查询 JSON](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/same/cli-p01.json) |
+| 不同批次 `2c72d699…` | `open`，原问题仍未解决。 | 补充记录 1 的 `frames[0]` 核实了另一批次的帧 2。`missing_evidence` 指出两份报告的 `run_id` 不同，`next_step` 要求补做晚于原问题、同批次且口径可比的帧 2 复核。 | [不同批次查询 JSON](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/different/cli-p01.json) |
+| 只改 `run_id` 的合成对照 | `open` → `closed_in_scope`。 | 将上一行报告的 `run_id` 改回原批次，其余字段完全相同。单独查询后，`resolved_by` 指向补充记录 1，`missing_evidence=[]`。 | [单字段对照查询 JSON](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/control/cli-p01.json) |
+
+表中三份输出与本机 `data/reports/p01-batch-query-664dffce4a/` 下的 `same.json`、`different.json`、`control.json` 分别逐字节一致。本次验证了 Python 查询命令；**真人走查仍待完成**。
+
 ## 7. 后续扩展的启动条件
 
 - **AI 依据问答**：从走查中选取参与者实际提出的问题，用同一批事实比较规则说明和模型回答。程序生成状态和证据编号；模型只生成说明、引用和建议。验收时检查引用是否真实支持回答、是否遗漏未解决项、是否擅自推断硬件根因，以及用户是否更容易判断下一步。超时或依据不足时继续提供规则说明。
