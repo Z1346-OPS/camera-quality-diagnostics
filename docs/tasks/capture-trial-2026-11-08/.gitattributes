@@ -6,3 +6,5 @@ host/handoff-retest-a0b6d9b5/*/*.md text eol=lf
 host/single-frame-scope-8893017141/* -text !eol
 # 固定帧 2 的批次对照同样保留三组证据的原始字节。
 host/frame-2-batch-ffbdee1077/*/* -text !eol
+# 保留复核报告与查询输出的原始换行，便于按 source_sha256 回查。
+host/p01-reopen-bc0c0be664/*.json -text !eol whitespace=cr-at-eol

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "report_type": "capture_task_review",
+  "run_id": "e6f899ecd3794dccbbbbfc54a62145be",
+  "task_status": "completed",
+  "verification_status": "inconsistent",
+  "comparison_basis": "current_algorithm_one_decimal",
+  "counts": {
+    "reported_samples": 1,
+    "csv_pairs": 1,
+    "verified_frames": 0
+  },
+  "frames": [
+    {
+      "frame_count": 2,
+      "image_sha256_match": null,
+      "metrics": null
+    }
+  ],
+  "issues": [
+    {
+      "code": "frame_unverifiable",
+      "frame_count": 2,
+      "detail": "无法读取留证图片: [Errno 2] No such file or directory: 'D:\\\\Projects\\\\Python\\\\camera-quality-diagnostics\\\\data\\\\reports\\\\p01-reopen-bc0c0be664\\\\fixture-without-image\\\\camera_frame_e6f899ecd3794dccbbbbfc54a62145be_2.png'"
+    }
+  ],
+  "warnings": [],
+  "declared_frame_counts": [
+    2
+  ],
+  "review_id": "f59a7c27163b4d968bd44d37622c7610",
+  "reviewed_at_utc": "2026-11-08T08:41:13.367427+00:00"
+}

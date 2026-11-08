@@ -211,6 +211,12 @@ $trial = 'D:\Projects\Python\camera-quality-diagnostics\docs\tasks\capture-trial
 
 表中三份输出与本机 `data/reports/p01-batch-query-664dffce4a/` 下的 `same.json`、`different.json`、`control.json` 分别逐字节一致。本次验证了 Python 查询命令；**真人走查仍待完成**。
 
+**P01 关闭后再次出现。** 同批次的补充记录 1 核实了帧 2，图片摘要匹配，五项指标逐项一致。此时 P01 为 `closed_in_scope`，`resolved_by` 指向补充记录 1，`missing_evidence=[]`。[关闭时的查询输出](capture-trial-2026-11-08/host/p01-reopen-bc0c0be664/closed.json)
+
+随后用同批次、同口径的合成任务副本再次复核。副本缺少帧 2 的留证图片，补充记录 2 的 `issues[0].code` 为 `frame_unverifiable`，`issues[0].frame_count=2`。[再次无法核实的复核报告](capture-trial-2026-11-08/host/p01-reopen-bc0c0be664/unverifiable-again.json)
+
+追加补充记录 2 后，助手仍沿用 **P01**，状态回到 `open`，`resolved_by` 回到 `null`。问题历史依次记录“发现 → 范围内不再出现 → 重新出现”。两次查询的 `evidence["补充记录 1"]` 逐字段相同，仍可查到上次关闭所依据的报告摘要、帧位置和指标值对。现在还缺**一次晚于本次异常、同批次且口径可比的帧 2 独立复核**。本次为命令回放，真人走查仍待完成。[重新打开后的查询输出](capture-trial-2026-11-08/host/p01-reopen-bc0c0be664/reopened.json)
+
 ## 7. 后续扩展的启动条件
 
 - **AI 依据问答**：从走查中选取参与者实际提出的问题，用同一批事实比较规则说明和模型回答。程序生成状态和证据编号；模型只生成说明、引用和建议。验收时检查引用是否真实支持回答、是否遗漏未解决项、是否擅自推断硬件根因，以及用户是否更容易判断下一步。超时或依据不足时继续提供规则说明。
