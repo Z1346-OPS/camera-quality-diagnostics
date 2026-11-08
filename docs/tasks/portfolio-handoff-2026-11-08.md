@@ -15,7 +15,7 @@
 | 仓库 | 职责与当前入口 | 本机分支与交付提交 |
 | --- | --- | --- |
 | `D:\Projects\Python\camera-quality-diagnostics` | 采集图像、测量质量、核验二维码、复核原图并输出报告。主要入口为 `src/run_capture.py`、`src/review_capture.py`、`src/analyze_label.py`。 | `main`，`c20feeafe28616d2a3269ccbd82085bbb22e5122` |
-| `D:\AIProjects\projects\test_failure_investigator` | 只读导入报告、比较后续材料、查询单个采集问题并导出交接说明。桌面入口为 `src/run_investigator.py`，Python 入口为 `Session.get_issue_details`。 | `experiment/multi-agent-fault-benchmark`，`3b6fefdb7afd89aaea15581331f558be52909127` |
+| `D:\AIProjects\projects\test_failure_investigator` | 只读导入报告、比较后续材料、查询单个采集问题并导出交接说明。桌面入口为 `src/run_investigator.py`，Python 入口为 `Session.get_issue_details`。 | `experiment/multi-agent-fault-benchmark`，`9a7eb914355c327d999948d8c193a916f6780dce` |
 
 两仓通过三种报告对接：`camera_timed_capture` v1、`capture_task_review` v1、`label_baseline` v2。采集复核支持逐问题的发现、关闭和重新出现；QR 已支持图片、区域与独立答案的前后比较。第一版问题详情查询优先覆盖采集复核。
 
@@ -62,7 +62,7 @@ git -C $camera checkout --quiet --detach c20feeafe28616d2a3269ccbd82085bbb22e512
 if ($LASTEXITCODE) { throw '摄像头交付提交检出失败' }
 git clone --quiet --no-hardlinks --no-checkout $assistantRepo $assistant
 if ($LASTEXITCODE) { throw '助手仓库复制失败' }
-git -C $assistant checkout --quiet --detach 3b6fefdb7afd89aaea15581331f558be52909127
+git -C $assistant checkout --quiet --detach 9a7eb914355c327d999948d8c193a916f6780dce
 if ($LASTEXITCODE) { throw '助手交付提交检出失败' }
 $env:INVESTIGATOR_ROOT = $assistant
 Push-Location -LiteralPath $camera -ErrorAction Stop
@@ -82,7 +82,7 @@ try {
 1. **试用材料已备齐。** 两轮材料随摄像头交付提交入库。主持人先单独给出 `round-1`，待参与者保存第一轮说明再给 `round-2`。每轮只问“这项异常能关闭吗？请写一句话交给下一位同事”。主持人留存答案和匿名记录单。
 2. **邀请 1～2 位未参与开发的人独立操作。** 优先邀请实际做回归验证的测试人员；如由同学代试，记录其背景。观察是否误关闭、能否找到证据、能否说出下一步，以及接手人只读交接说明能否继续。分别记录用时和求助点。已有材料可复用助手仓库中的 `docs/first-guide-and-trial-plan.md`。
 3. **采集问题详情查询已实现。** `session.get_issue_details(investigation_id, issue_id)` 返回当前调查中的问题快照。助手仓库 `docs/capture-issue-query.md` 有可直接运行的两轮示例和错误约定。报告自身结论、相对主报告的比较结果、问题当前状态分别表达。
-4. **已完成技术验收。** 第一轮返回 `open`、补充记录完整核实集合 `[1]`；第二轮返回 `closed_in_scope`、集合 `[1, 2]`。两轮均在现有 Tk 窗口核对查询、预览与保存的说明。定向回归另覆盖仅核实第 2 帧、重复导入、旧版缺身份、相同时间、不同批次、缺失或未知编号、矛盾记录及关闭后重新出现。[新版第一轮脱敏导出](capture-trial-2026-11-08/host/query-v1-round-1.md)
+4. **已完成技术验收。** 第一轮返回 `open`，补充记录的说明写出 `verified_frame_counts=[1]`。第二轮返回 `closed_in_scope`，说明写出 `verified_frame_counts=[1, 2]`，并用 `frames[1] → 帧 2` 定位原报告记录。两轮均在现有 Tk 窗口核对查询、预览与保存的说明。定向回归另覆盖仅核实第 2 帧、重复导入、旧版缺身份、相同时间、不同批次、缺失或未知编号、矛盾记录及关闭后重新出现。[第一轮脱敏导出](capture-trial-2026-11-08/host/verified-frame-counts-round-1.md) · [第二轮脱敏导出](capture-trial-2026-11-08/host/verified-frame-counts-round-2.md)
 
 这一步的交付件是匿名走查记录、Python 查询契约、回归用例和一份脱敏交接样例。未经真人操作，走查项保持待完成。
 
