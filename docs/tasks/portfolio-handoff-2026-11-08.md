@@ -279,4 +279,4 @@ $trial = 'D:\Projects\Python\camera-quality-diagnostics\docs\tasks\capture-trial
 
 复测时从摄像头仓库运行 `.\.venv\Scripts\python.exe -X utf8 -m src.evaluate_labels data/manifests/evaluation-synthetic-development.json --split development --output <新的报告路径>`。test 组同时替换清单名和 split。每组各运行三次，从每份输出的 `results[].comparisons[]` 提取上述两个耗时；development 按预期返回退出码 2，并生成 `completed_with_errors` 报告。
 
-剩余候选项为扩大独立实拍样本。
+**实拍进度（2026-11-09）。** 已对本机 A1 至 A7 七张历史 JPEG 做相同整图输入的配对复验。A7 从基线解码错误变为与预设答案逐字节一致；已确认来源的 A4 加入搜索后仍为多候选。七张均属开发回放。下一批独立实拍的 T01、T02 纸质标签与预定答案已备好，尚待取得照片。[逐图结果和拍摄材料](evidence/qr-photo-pair-2026-11-09/README.md)
