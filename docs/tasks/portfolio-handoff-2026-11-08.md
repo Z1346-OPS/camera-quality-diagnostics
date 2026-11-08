@@ -15,7 +15,7 @@
 | 仓库 | 职责与当前入口 | 本机分支与交付提交 |
 | --- | --- | --- |
 | `D:\Projects\Python\camera-quality-diagnostics` | 采集图像、测量质量、核验二维码、复核原图并输出报告。主要入口为 `src/run_capture.py`、`src/review_capture.py`、`src/analyze_label.py`。 | `main`，`c20feeafe28616d2a3269ccbd82085bbb22e5122` |
-| `D:\AIProjects\projects\test_failure_investigator` | 只读导入报告、比较后续材料、查询单个采集问题并导出交接说明。桌面入口为 `src/run_investigator.py`，Python 入口为 `Session.get_issue_details`。 | `experiment/multi-agent-fault-benchmark`，`9a7eb914355c327d999948d8c193a916f6780dce` |
+| `D:\AIProjects\projects\test_failure_investigator` | 只读导入报告、比较后续材料、查询单个采集问题并导出交接说明。桌面入口为 `src/run_investigator.py`，Python 入口为 `Session.get_issue_details`。 | `experiment/multi-agent-fault-benchmark`，`8c2c80e4db18d54efa41a543a6d2a15438d7d35c` |
 
 两仓通过三种报告对接：`camera_timed_capture` v1、`capture_task_review` v1、`label_baseline` v2。采集复核支持逐问题的发现、关闭和重新出现；QR 已支持图片、区域与独立答案的前后比较。第一版问题详情查询优先覆盖采集复核。
 
@@ -44,7 +44,7 @@
 | QR 内容核验走查材料 | 两轮材料已备齐，已通过现有窗口回放 | 同图单一读出；无独立答案时保留未知，与预先固定答案逐字节一致时可判定本次内容正确。首页措辞的走查点见第 6.4 节。 |
 | AI 依据问答与本地 HTTP | 备选阶段 | 已完成方案调研，尚无模型对照结果、推理耗时或独立 HTTP 调用示例 |
 
-在 Windows 本机使用两个项目原有的 Python 3.12.10 虚拟环境复验。摄像头完整测试 **509 通过、4 跳过**，助手完整单测 **163 通过、1 跳过**，跨仓回归 **2 通过**，Tk 冒烟 **161/161 个检查点通过**，另有 8 项 Tk 专项回归通过。5 项跳过均涉及 Windows 符号链接权限。QR 的 development 和 test 各 23 个样本，结果均与入库期望完全一致。联合验证使用模拟设备和合成材料。
+在 Windows 本机使用两个项目原有的 Python 3.12.10 虚拟环境复验。摄像头完整测试 **509 通过、4 跳过**，助手完整单测 **166 通过、1 跳过**，跨仓回归 **2 通过**，Tk 冒烟 **161/161 个检查点通过**，另有 8 项 Tk 专项回归通过。5 项跳过均涉及 Windows 符号链接权限。QR 的 development 和 test 各 23 个样本，结果均与入库期望完全一致。联合验证使用模拟设备和合成材料。
 
 摄像头首次从 `aa77a72` 干净检出时，全量测试为 1 失败、508 通过、4 跳过。`test_qr_stable_fields_oracle` 检出参考脚本的 SHA-256 不符，原因是 Windows 将 168 个 LF 换成了 CRLF。交付提交 `c20feea` 为该脚本固定 LF；再次干净检出后，原冻结摘要与单项、全量测试均通过。
 
@@ -66,7 +66,7 @@ git -C $camera checkout --quiet --detach c20feeafe28616d2a3269ccbd82085bbb22e512
 if ($LASTEXITCODE) { throw '摄像头交付提交检出失败' }
 git clone --quiet --no-hardlinks --no-checkout $assistantRepo $assistant
 if ($LASTEXITCODE) { throw '助手仓库复制失败' }
-git -C $assistant checkout --quiet --detach 9a7eb914355c327d999948d8c193a916f6780dce
+git -C $assistant checkout --quiet --detach 8c2c80e4db18d54efa41a543a6d2a15438d7d35c
 if ($LASTEXITCODE) { throw '助手交付提交检出失败' }
 $env:INVESTIGATOR_ROOT = $assistant
 Push-Location -LiteralPath $camera -ErrorAction Stop
@@ -149,7 +149,9 @@ B 将问题码简写为 `issues[0]=frame_unverifiable`。在原报告中，准�
 
 两轮使用同一张合成图片和同一套整图解码设置。[第一轮报告](qr-trial-2026-11-08/round-1/01.json)读出一个有效二维码，`known_truth.status` 和整图的 `truth_check.status` 均为 `not_provided`，内容正确性未知。[第二轮报告](qr-trial-2026-11-08/round-2/02.json)使用生成样例前固定的独立答案，整图的 `truth_check.status=correct`、`comparison=exact_payload_bytes`，支持本次读出内容正确。
 
-现有窗口和导出均能在补充记录中找到逐字节一致的结论。第二轮导出的首页还沿用第一轮“没有独立答案”的表述，可能让接手人漏看新证据。**真人走查仍待完成**，主持人将观察参与者能否独立找到当前结论及其依据。[参与者任务卡](qr-trial-2026-11-08/round-1/任务.md) · [主持人走查单与参考说明](qr-trial-2026-11-08/host/走查.md)
+已用原来的两份报告复验：第一轮说明保留内容未验证的结论；第二轮首页分别写明主报告当时已读出二维码、未提供独立答案，以及补充报告的本次整图读出与所给答案逐字节一致。两轮预览均与窗口保存的 Markdown 一致。[新版第二轮首页](qr-trial-2026-11-08/host/after-round-2-scoped.md)
+
+**真人走查仍待完成**，主持人将观察参与者能否独立找到当前结论及其依据。[参与者任务卡](qr-trial-2026-11-08/round-1/任务.md) · [主持人走查单与参考说明](qr-trial-2026-11-08/host/走查.md)
 
 ## 7. 后续扩展的启动条件
 
