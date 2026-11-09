@@ -7,7 +7,7 @@
 摄像头仓库使用 `main`，实拍回放材料见[交接结果 4454051](https://github.com/Z1346-OPS/camera-quality-diagnostics/tree/445405187dcf2ee4a6ff3058b23cddff4d208474)。助手使用 `experiment/multi-agent-fault-benchmark`，当前版本为 [cb0b775](https://github.com/Z1346-OPS/test_failure_investigator/tree/cb0b775a6e3ef0fe185b472b49aa0a6e8caf694b)。第 2 节保留早期联合演示的固定版本。
 
 - **接着看 P01。** 两份报告都核实了帧 2，同批次可在该帧范围内关闭，不同批次仍缺原批次帧 2 的独立复核。两份查询都包含关闭判断、证据位置和缺失检查。[同批次查询](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/same/cli-p01.json) · [不同批次查询](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/different/cli-p01.json)
-- **接着看 QR。** A7 本次读出与所给答案逐字节一致；A4 仍有多个候选，A7 的结果不能关闭 A4。第 6.4 节记录了三组交接回放。[历史样本结果](evidence/qr-photo-pair-2026-11-09/README.md) · [随仓提供的无答案报告](qr-trial-2026-11-08/round-1/01.json) · [同图补上答案的报告](qr-trial-2026-11-08/round-2/02.json)
+- **接着看 QR。** A7 整图读出与所给答案逐字节一致。A4 在历史选区内也取得了逐字节一致的单一读码，但整图仍有多个候选，整图问题继续保留。第 6.4 节给出了两种范围的证据位置。[历史样本结果](evidence/qr-photo-pair-2026-11-09/README.md) · [随仓提供的无答案报告](qr-trial-2026-11-08/round-1/01.json) · [同图补上答案的报告](qr-trial-2026-11-08/round-2/02.json)
 
 新增独立实拍暂缓，真人走查待完成。本机历史照片及含解码载荷的报告只保留在本机。手机上可以直接阅读以上查询、报告与交接结论。
 
@@ -234,6 +234,15 @@ B 将问题码简写为 `issues[0]=frame_unverifiable`。在原报告中，准�
 修正前，A7 导出的“仍缺什么”把主报告的“没有独立答案”写成了当前缺口。现在该节标注“主报告当时”，并逐份列出补充记录的核验结果。三组均使用同一批原报告复验。本机 `data/reports/qr-handoff-1794153640273/` 保留四份 JSON 和修正前后的交接说明，新版为 `same-A4-revised.md`、`same-A7-revised.md` 和 `cross-revised.md`。本次使用历史开发照片，真人走查和新增独立实拍仍待完成。
 
 **A4 多候选的交接摘要（助手 `cb0b775`）。** 使用上表相同的四份报告重新导出。“简明结论”和“仍缺什么”现在都说明 A4 补充报告已提供独立答案，整图仍检测到多个候选，还缺可用于逐字节比对的单一读码。证据为 `known_truth.status=provided`，以及 `decode_summaries[0]` 的 `decode.status=ambiguous`、`truth_check.status=ambiguous`。同图 A4 仍未通过，同图 A7 在本次范围内通过，跨图仍不可比较。本机三份导出在 `data/reports/qr-handoff-1794153640273/replay-36205c61/`。
+
+**A4 局部读码能否关闭整图问题。** 在 A4 原图上复用 10 月 2 日已记录的人工选区 `(x=600, y=650, width=1900, height=1900)`。两次运行均使用同一份拍摄前固定的答案。原图和答案的 SHA-256 与历史报告一致。[选区来源](../stage-2-roi-qr-baseline.md)
+
+| 同图、同选区的分析 | 整图 `decode_summaries[0]` | 选区 `decode_summaries[1]` |
+| --- | --- | --- |
+| 基线 | 候选解码出错，`truth_check.status=decode_error` | 未读出，`truth_check.status=not_decoded` |
+| 基线加降采样搜索 | 多个候选，`truth_check.status=ambiguous` | 单一有效读码，`truth_check.status=correct`，与预设答案逐字节一致 |
+
+助手将以上两份报告比较为“未通过”，首页同时给出局部一致和整图仍缺单一读码。另从上一轮只含整图的 A4 报告追加本次双区域报告，助手给出“不可比较”，原因是覆盖范围由一个区域变为两个。两个结论都保留了 A4 整图问题。本机原始输出在 `data/reports/a4-roi-1794183427312/`，包含 `baseline.json`、`search.json` 以及两个对照的 `same-regions.md`、`added-region.md`。
 
 ### 6.5 设备打开失败后，后续采集成功能证明什么
 
