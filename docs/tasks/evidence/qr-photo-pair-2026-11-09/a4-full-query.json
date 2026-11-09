@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "source_name": "search.json",
+  "report_sha256": "6c88a7a83aa85b550c1e097ac02f96dfaa3efebf426591fd43ab998f0726d07e",
+  "region": {
+    "kind": "full_image",
+    "x": 0,
+    "y": 0,
+    "width": 3072,
+    "height": 4096
+  },
+  "status": "unverified",
+  "evidence_paths": [
+    "known_truth.status",
+    "decode_summaries[0].region",
+    "decode_summaries[0].decode.status",
+    "decode_summaries[0].truth_check.status",
+    "source.sha256",
+    "known_truth.sha256",
+    "decode_summaries[0].truth_check.comparison"
+  ],
+  "missing_evidence": [
+    "需要在所选区域取得可用于比对的单一有效读码。"
+  ],
+  "decode_status": "ambiguous",
+  "truth_status": "provided",
+  "truth_check_status": "ambiguous",
+  "judgment": "整图检测到多个候选码，已提供独立答案，仍缺可用于逐字节比对的单一读码。"
+}

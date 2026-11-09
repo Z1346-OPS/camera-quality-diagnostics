@@ -4,7 +4,7 @@
 
 ## 手机续接（2026-11-09）
 
-摄像头仓库使用 `main`，实拍回放材料见[交接结果 4454051](https://github.com/Z1346-OPS/camera-quality-diagnostics/tree/445405187dcf2ee4a6ff3058b23cddff4d208474)。助手使用 `experiment/multi-agent-fault-benchmark`，当前版本为 [cb0b775](https://github.com/Z1346-OPS/test_failure_investigator/tree/cb0b775a6e3ef0fe185b472b49aa0a6e8caf694b)。第 2 节保留早期联合演示的固定版本。
+摄像头仓库使用 `main`，实拍回放材料见[交接结果 4454051](https://github.com/Z1346-OPS/camera-quality-diagnostics/tree/445405187dcf2ee4a6ff3058b23cddff4d208474)。助手使用 `experiment/multi-agent-fault-benchmark`，当前版本为 [7053ee2](https://github.com/Z1346-OPS/test_failure_investigator/tree/7053ee2ce166bd59cd9ea1f102cabcc950b6ea35)。第 2 节保留早期联合演示的固定版本。
 
 - **接着看 P01。** 两份报告都核实了帧 2，同批次可在该帧范围内关闭，不同批次仍缺原批次帧 2 的独立复核。两份查询都包含关闭判断、证据位置和缺失检查。[同批次查询](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/same/cli-p01.json) · [不同批次查询](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/different/cli-p01.json)
 - **接着看 QR。** A7 整图读出与所给答案逐字节一致。A4 在历史选区内也取得了逐字节一致的单一读码，但整图仍有多个候选，整图问题继续保留。第 6.4 节给出了两种范围的证据位置。[历史样本结果](evidence/qr-photo-pair-2026-11-09/README.md) · [随仓提供的无答案报告](qr-trial-2026-11-08/round-1/01.json) · [同图补上答案的报告](qr-trial-2026-11-08/round-2/02.json)
@@ -243,6 +243,10 @@ B 将问题码简写为 `issues[0]=frame_unverifiable`。在原报告中，准�
 | 基线加降采样搜索 | 多个候选，`truth_check.status=ambiguous` | 单一有效读码，`truth_check.status=correct`，与预设答案逐字节一致 |
 
 助手将以上两份报告比较为“未通过”，首页同时给出局部一致和整图仍缺单一读码。另从上一轮只含整图的 A4 报告追加本次双区域报告，助手给出“不可比较”，原因是覆盖范围由一个区域变为两个。两个结论都保留了 A4 整图问题。本机原始输出在 `data/reports/a4-roi-1794183427312/`，包含 `baseline.json`、`search.json` 以及两个对照的 `same-regions.md`、`added-region.md`。
+
+**按区域查询 QR 证据。** 在助手仓库运行 `.\.venv\Scripts\python.exe -B -X utf8 src/query_qr.py 分析报告.json --region full_image`。将区域改为 `roi` 即可查选区。每份输出注明报告文件摘要、证据字段位置以及完成该区域内容判断所缺的检查。
+
+同一份 A4 报告的整图为 `unverified`，`decode_summaries[0]` 显示多个候选，还缺单一有效读码；选区为 `correct`，`decode_summaries[1]` 的逐字节比对完成，待补检查为空。两个结果均只针对所选区域。另用本节两份随仓 QR 报告验证，无答案时为 `unverified`，补上答案后整图为 `correct`，查询未检查的选区为 `not_checked`。[A4 整图查询](evidence/qr-photo-pair-2026-11-09/a4-full-query.json) · [A4 选区查询](evidence/qr-photo-pair-2026-11-09/a4-roi-query.json)
 
 ### 6.5 设备打开失败后，后续采集成功能证明什么
 

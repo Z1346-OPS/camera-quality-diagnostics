@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "source_name": "search.json",
+  "report_sha256": "6c88a7a83aa85b550c1e097ac02f96dfaa3efebf426591fd43ab998f0726d07e",
+  "region": {
+    "kind": "roi",
+    "x": 600,
+    "y": 650,
+    "width": 1900,
+    "height": 1900
+  },
+  "status": "correct",
+  "evidence_paths": [
+    "known_truth.status",
+    "decode_summaries[1].region",
+    "decode_summaries[1].decode.status",
+    "decode_summaries[1].truth_check.status",
+    "source.sha256",
+    "known_truth.sha256",
+    "decode_summaries[1].truth_check.comparison",
+    "decode_summaries[1].decode.symbols"
+  ],
+  "missing_evidence": [],
+  "decode_status": "decoded",
+  "truth_status": "provided",
+  "truth_check_status": "correct",
+  "judgment": "ROI（x=600, y=650, 宽=1900, 高=1900）读出的内容与所给答案逐字节一致。"
+}
