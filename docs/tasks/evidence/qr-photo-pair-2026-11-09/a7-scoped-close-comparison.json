@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "primary_region": {
+    "schema_version": 1,
+    "source_name": "a7-primary.json",
+    "report_sha256": "8279d9001dfd74ea3640702750d6edbf4911acc6f8939507c8681e5785f92ccd",
+    "region": {
+      "kind": "full_image",
+      "x": 0,
+      "y": 0,
+      "width": 3072,
+      "height": 4096
+    },
+    "status": "unverified",
+    "evidence_paths": [
+      "known_truth.status",
+      "decode_summaries[0].region",
+      "decode_summaries[0].decode.status",
+      "decode_summaries[0].truth_check.status",
+      "source.sha256",
+      "known_truth.sha256",
+      "decode_summaries[0].truth_check.comparison"
+    ],
+    "missing_evidence": [
+      "需要在所选区域取得可用于比对的单一有效读码。",
+      "区域 1 的独立答案比对尚未完成或状态未知（'decode_error'）"
+    ],
+    "decode_status": "decode_error",
+    "truth_status": "provided",
+    "truth_check_status": "decode_error",
+    "judgment": "所选区域的内容尚未核实，需核对待补检查。"
+  },
+  "followup_region": {
+    "schema_version": 1,
+    "source_name": "a7-followup.json",
+    "report_sha256": "9cfed3996385e234d092cd5cdc965693df90543ec81230c09b702195514095b7",
+    "region": {
+      "kind": "full_image",
+      "x": 0,
+      "y": 0,
+      "width": 3072,
+      "height": 4096
+    },
+    "status": "correct",
+    "evidence_paths": [
+      "known_truth.status",
+      "decode_summaries[0].region",
+      "decode_summaries[0].decode.status",
+      "decode_summaries[0].truth_check.status",
+      "source.sha256",
+      "known_truth.sha256",
+      "decode_summaries[0].truth_check.comparison",
+      "decode_summaries[0].decode.symbols"
+    ],
+    "missing_evidence": [],
+    "decode_status": "decoded",
+    "truth_status": "provided",
+    "truth_check_status": "correct",
+    "judgment": "整图读出的内容与所给答案逐字节一致。"
+  },
+  "report_comparison": {
+    "comparable": true,
+    "comparison_reason": "两份记录的对象标识相同，可以比较。",
+    "is_repeat": false,
+    "recheck_result": "范围内通过",
+    "recheck_reason": "同一对象上原记录登记的问题在新结果中不再出现；这只说明该范围内的问题消失，不说明原因。",
+    "original_issue_status": "closed_in_scope",
+    "primary_evidence_paths": [
+      "status",
+      "analysis_id",
+      "decode_summaries",
+      "known_truth.status",
+      "analyzed_at",
+      "source.sha256",
+      "known_truth.sha256",
+      "decode_summaries[0].region",
+      "decode_summaries[0].decode.status",
+      "decode_summaries[0].truth_check.status",
+      "decode_summaries[0].truth_check.comparison",
+      "decode_summaries[0].decode.symbols"
+    ],
+    "followup_evidence_paths": [
+      "status",
+      "analysis_id",
+      "decode_summaries",
+      "known_truth.status",
+      "analyzed_at",
+      "source.sha256",
+      "known_truth.sha256",
+      "decode_summaries[0].region",
+      "decode_summaries[0].decode.status",
+      "decode_summaries[0].truth_check.status",
+      "decode_summaries[0].truth_check.comparison",
+      "decode_summaries[0].decode.symbols"
+    ]
+  }
+}

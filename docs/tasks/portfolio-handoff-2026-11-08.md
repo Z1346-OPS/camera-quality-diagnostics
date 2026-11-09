@@ -4,7 +4,7 @@
 
 ## 手机续接（2026-11-09）
 
-摄像头仓库使用 `main`，实拍回放材料见[交接结果 4454051](https://github.com/Z1346-OPS/camera-quality-diagnostics/tree/445405187dcf2ee4a6ff3058b23cddff4d208474)。助手使用 `experiment/multi-agent-fault-benchmark`，当前版本为 [7053ee2](https://github.com/Z1346-OPS/test_failure_investigator/tree/7053ee2ce166bd59cd9ea1f102cabcc950b6ea35)。第 2 节保留早期联合演示的固定版本。
+摄像头仓库使用 `main`，实拍回放材料见[交接结果 4454051](https://github.com/Z1346-OPS/camera-quality-diagnostics/tree/445405187dcf2ee4a6ff3058b23cddff4d208474)。助手使用 `experiment/multi-agent-fault-benchmark`，当前版本为 [433b321](https://github.com/Z1346-OPS/test_failure_investigator/tree/433b321295fe7c9b01f814e3ccefcd8ebf4b909b)。第 2 节保留早期联合演示的固定版本。
 
 - **接着看 P01。** 两份报告都核实了帧 2，同批次可在该帧范围内关闭，不同批次仍缺原批次帧 2 的独立复核。两份查询都包含关闭判断、证据位置和缺失检查。[同批次查询](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/same/cli-p01.json) · [不同批次查询](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/different/cli-p01.json)
 - **接着看 QR。** A7 整图读出与所给答案逐字节一致。A4 在历史选区内也取得了逐字节一致的单一读码，但整图仍有多个候选，整图问题继续保留。第 6.4 节给出了两种范围的证据位置。[历史样本结果](evidence/qr-photo-pair-2026-11-09/README.md) · [随仓提供的无答案报告](qr-trial-2026-11-08/round-1/01.json) · [同图补上答案的报告](qr-trial-2026-11-08/round-2/02.json)
@@ -247,6 +247,16 @@ B 将问题码简写为 `issues[0]=frame_unverifiable`。在原报告中，准�
 **按区域查询 QR 证据。** 在助手仓库运行 `.\.venv\Scripts\python.exe -B -X utf8 src/query_qr.py 分析报告.json --region full_image`。将区域改为 `roi` 即可查选区。每份输出注明报告文件摘要、证据字段位置以及完成该区域内容判断所缺的检查。
 
 同一份 A4 报告的整图为 `unverified`，`decode_summaries[0]` 显示多个候选，还缺单一有效读码；选区为 `correct`，`decode_summaries[1]` 的逐字节比对完成，待补检查为空。两个结果均只针对所选区域。另用本节两份随仓 QR 报告验证，无答案时为 `unverified`，补上答案后整图为 `correct`，查询未检查的选区为 `not_checked`。[A4 整图查询](evidence/qr-photo-pair-2026-11-09/a4-full-query.json) · [A4 选区查询](evidence/qr-photo-pair-2026-11-09/a4-roi-query.json)
+
+**同时查询选区与原问题。** 在助手仓库运行 `.\.venv\Scripts\python.exe -B -X utf8 src/query_qr.py 补充报告.json --region roi --primary 原报告.json`。两份区域结果分别列出报告摘要、证据位置与缺失检查。`report_comparison` 使用完整报告判断原登记问题能否关闭，覆盖全部报告区域。
+
+| 原报告与补充报告 | 所查区域 | 原问题判断 |
+| --- | --- | --- |
+| A4，两份都覆盖整图和相同选区 | 补充报告的选区与答案逐字节一致。 | 整图仍有多个候选，复验未通过。[查询输出](evidence/qr-photo-pair-2026-11-09/a4-same-regions-comparison.json) |
+| A4，从仅检查整图变为检查整图和选区 | 补充报告的选区与答案逐字节一致。 | 两份报告的覆盖范围不同，不可比较，原问题仍未解决。[查询输出](evidence/qr-photo-pair-2026-11-09/a4-added-region-comparison.json) |
+| A7，同一张原图和预设答案，先运行基线，再增加降采样搜索 | 整图由候选解码错误变为单一有效读码，与答案逐字节一致。 | 补充报告的分析编号独立、分析时间晚于原异常，原问题可在本次整图范围内关闭。[查询输出](evidence/qr-photo-pair-2026-11-09/a7-scoped-close-comparison.json) |
+
+另用较早的 A7 正确报告做反向时间对照，其内容正确，但缺少晚于原异常的复验。跨图返回不可比较，重复导入未增加证据，原报告未登记问题时返回 `no_registered_issue`。A7 本次两份单图分析在本机 `data/reports/qr-pair-1794185752260/`。
 
 ### 6.5 设备打开失败后，后续采集成功能证明什么
 

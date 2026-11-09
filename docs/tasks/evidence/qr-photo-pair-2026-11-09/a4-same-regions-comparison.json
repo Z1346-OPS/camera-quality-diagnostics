@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "primary_region": {
+    "schema_version": 1,
+    "source_name": "baseline.json",
+    "report_sha256": "d6fa5072eb85c9f64a4b745825ef3b291b05fc16c1b5a3f99b9e52de7e254e82",
+    "region": {
+      "kind": "roi",
+      "x": 600,
+      "y": 650,
+      "width": 1900,
+      "height": 1900
+    },
+    "status": "unverified",
+    "evidence_paths": [
+      "known_truth.status",
+      "decode_summaries[1].region",
+      "decode_summaries[1].decode.status",
+      "decode_summaries[1].truth_check.status",
+      "source.sha256",
+      "known_truth.sha256",
+      "decode_summaries[1].truth_check.comparison"
+    ],
+    "missing_evidence": [
+      "需要在所选区域取得可用于比对的单一有效读码。",
+      "区域 2 的独立答案比对尚未完成或状态未知（'not_decoded'）"
+    ],
+    "decode_status": "not_decoded",
+    "truth_status": "provided",
+    "truth_check_status": "not_decoded",
+    "judgment": "所选区域的内容尚未核实，需核对待补检查。"
+  },
+  "followup_region": {
+    "schema_version": 1,
+    "source_name": "search.json",
+    "report_sha256": "6c88a7a83aa85b550c1e097ac02f96dfaa3efebf426591fd43ab998f0726d07e",
+    "region": {
+      "kind": "roi",
+      "x": 600,
+      "y": 650,
+      "width": 1900,
+      "height": 1900
+    },
+    "status": "correct",
+    "evidence_paths": [
+      "known_truth.status",
+      "decode_summaries[1].region",
+      "decode_summaries[1].decode.status",
+      "decode_summaries[1].truth_check.status",
+      "source.sha256",
+      "known_truth.sha256",
+      "decode_summaries[1].truth_check.comparison",
+      "decode_summaries[1].decode.symbols"
+    ],
+    "missing_evidence": [],
+    "decode_status": "decoded",
+    "truth_status": "provided",
+    "truth_check_status": "correct",
+    "judgment": "ROI（x=600, y=650, 宽=1900, 高=1900）读出的内容与所给答案逐字节一致。"
+  },
+  "report_comparison": {
+    "comparable": true,
+    "comparison_reason": "两份记录的对象标识相同，可以比较。",
+    "is_repeat": false,
+    "recheck_result": "未通过",
+    "recheck_reason": "同一对象上仍存在问题：full_image：检测到多个候选码，存在歧义，尚不能选定一个有效答案。部分改善不能关闭其他问题。",
+    "original_issue_status": "unresolved",
+    "primary_evidence_paths": [
+      "status",
+      "analysis_id",
+      "decode_summaries",
+      "known_truth.status",
+      "analyzed_at",
+      "source.sha256",
+      "known_truth.sha256",
+      "decode_summaries[0].region",
+      "decode_summaries[0].decode.status",
+      "decode_summaries[0].truth_check.status",
+      "decode_summaries[0].truth_check.comparison",
+      "decode_summaries[0].decode.symbols",
+      "decode_summaries[1].region",
+      "decode_summaries[1].decode.status",
+      "decode_summaries[1].truth_check.status",
+      "decode_summaries[1].truth_check.comparison",
+      "decode_summaries[1].decode.symbols"
+    ],
+    "followup_evidence_paths": [
+      "status",
+      "analysis_id",
+      "decode_summaries",
+      "known_truth.status",
+      "analyzed_at",
+      "source.sha256",
+      "known_truth.sha256",
+      "decode_summaries[0].region",
+      "decode_summaries[0].decode.status",
+      "decode_summaries[0].truth_check.status",
+      "decode_summaries[0].truth_check.comparison",
+      "decode_summaries[0].decode.symbols",
+      "decode_summaries[1].region",
+      "decode_summaries[1].decode.status",
+      "decode_summaries[1].truth_check.status",
+      "decode_summaries[1].truth_check.comparison",
+      "decode_summaries[1].decode.symbols"
+    ]
+  }
+}
