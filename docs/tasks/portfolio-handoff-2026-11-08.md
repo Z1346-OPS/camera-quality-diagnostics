@@ -4,7 +4,7 @@
 
 ## 手机续接（2026-11-09）
 
-摄像头仓库使用 `main`，实拍回放材料见[交接结果 4454051](https://github.com/Z1346-OPS/camera-quality-diagnostics/tree/445405187dcf2ee4a6ff3058b23cddff4d208474)。助手使用 `experiment/multi-agent-fault-benchmark`，当前版本为 [7a44b99](https://github.com/Z1346-OPS/test_failure_investigator/tree/7a44b99ee377bb0be2f86ebe3d90634c03a40909)。第 2 节保留早期联合演示的固定版本。
+摄像头仓库使用 `main`，实拍回放材料见[交接结果 4454051](https://github.com/Z1346-OPS/camera-quality-diagnostics/tree/445405187dcf2ee4a6ff3058b23cddff4d208474)。助手使用 `experiment/multi-agent-fault-benchmark`，当前版本为 [93dc1ee](https://github.com/Z1346-OPS/test_failure_investigator/tree/93dc1eec6090beb6b85a406882c6faeca26cb0da)。第 2 节保留早期联合演示的固定版本。
 
 **DeepSeek 模型列表。** 在证据问答区点“模型设置”，填写账号名，勾选 Flash 或 V4 Pro，首次输入该账号的 Key 并应用。Key 由当前用户的 Windows 凭据管理器保存。以后可从“当前模型”选择，同一账号的两个模型共用 Key，重启后恢复上次选择。点击生成说明时才发送当前规则回答。[使用步骤](https://github.com/Z1346-OPS/test_failure_investigator/blob/7a44b99ee377bb0be2f86ebe3d90634c03a40909/README.md#使用自己的模型-api-key)
 
@@ -208,6 +208,8 @@ B 将问题码简写为 `issues[0]=frame_unverifiable`。在原报告中，准�
 本机盲测目录为 `data/reports/handoff-reading-d4c90b6b/`，原答分别位于其下的 `A/answer.md` 和 `B/answer.md`。上述结论限于两名 AI 对这组合成材料的阅读；**真人走查仍待完成**。
 
 ### 6.4 QR 已读出，何时能判定内容正确
+
+**DeepSeek 复测后的规则回答修正（2026-11-09）。** 上一次真实调用答对了两轮的读码结果，也没有推断根因，但把第一轮未验证内容列在“待补检查”下。本轮使用下列原报告运行助手的 Python 问答命令复验，只导入第一轮时，依据写明当时已读出、未提供独立答案，待补独立答案及比对记录。追加第二轮后，依据分别指向 `01.json / decode_summaries[0]` 和 `02.json / decode_summaries[0]`，写明补充报告的整图内容与所给答案逐字节一致，本次整图内容比对没有待补检查。另用反例核对，后续仅恢复读码且仍缺答案时，回答会保留内容核验缺口。本轮核对的是助手提供给模型的规则文字，未再次调用 DeepSeek，A4 跳过。
 
 两轮使用同一张合成图片和同一套整图解码设置。[第一轮报告](qr-trial-2026-11-08/round-1/01.json)读出一个有效二维码，`known_truth.status` 和整图的 `truth_check.status` 均为 `not_provided`，内容正确性未知。[第二轮报告](qr-trial-2026-11-08/round-2/02.json)使用生成样例前固定的独立答案，整图的 `truth_check.status=correct`、`comparison=exact_payload_bytes`，支持本次读出内容正确。
 
