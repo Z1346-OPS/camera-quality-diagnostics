@@ -4,7 +4,9 @@
 
 ## 手机续接（2026-11-09）
 
-摄像头仓库使用 `main`，实拍回放材料见[交接结果 4454051](https://github.com/Z1346-OPS/camera-quality-diagnostics/tree/445405187dcf2ee4a6ff3058b23cddff4d208474)。助手使用 `experiment/multi-agent-fault-benchmark`，当前版本为 [433b321](https://github.com/Z1346-OPS/test_failure_investigator/tree/433b321295fe7c9b01f814e3ccefcd8ebf4b909b)。第 2 节保留早期联合演示的固定版本。
+摄像头仓库使用 `main`，实拍回放材料见[交接结果 4454051](https://github.com/Z1346-OPS/camera-quality-diagnostics/tree/445405187dcf2ee4a6ff3058b23cddff4d208474)。助手使用 `experiment/multi-agent-fault-benchmark`，当前版本为 [2abc3cc](https://github.com/Z1346-OPS/test_failure_investigator/tree/2abc3cc8a1e73f0b565902d984cad82de0a2d181)。第 2 节保留早期联合演示的固定版本。
+
+**直接问交接问题。** 打开助手的 QR 调查或选中一个采集问题，点击“原问题能关吗？”即可看到判断、报告中的证据位置和待补检查。点击“复制交接摘要”即可复制显示的回答。从助手根目录运行 `.\.venv\Scripts\python.exe -B -X utf8 src/ask_evidence.py 原报告.json 补充报告.json` 得到相同文字；多个采集问题时加 `--issue P01` 指定编号。[六组实际回答](evidence/qr-photo-pair-2026-11-09/offline-answers.md)
 
 - **接着看 P01。** 两份报告都核实了帧 2，同批次可在该帧范围内关闭，不同批次仍缺原批次帧 2 的独立复核。两份查询都包含关闭判断、证据位置和缺失检查。[同批次查询](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/same/cli-p01.json) · [不同批次查询](capture-trial-2026-11-08/host/frame-2-batch-ffbdee1077/different/cli-p01.json)
 - **接着看 QR。** A7 整图读出与所给答案逐字节一致。A4 在历史选区内也取得了逐字节一致的单一读码，但整图仍有多个候选，整图问题继续保留。第 6.4 节给出了两种范围的证据位置。[历史样本结果](evidence/qr-photo-pair-2026-11-09/README.md) · [随仓提供的无答案报告](qr-trial-2026-11-08/round-1/01.json) · [同图补上答案的报告](qr-trial-2026-11-08/round-2/02.json)
@@ -55,7 +57,8 @@
 | 真人走查 | **待完成** | 主持人材料已备齐，尚待 1～2 位未参与开发的人独立操作并提交匿名记录。 |
 | QR 内容核验走查材料 | 两轮材料已备齐，已通过现有窗口回放 | 同图单一读出；无独立答案时保留未知，与预先固定答案逐字节一致时可判定本次内容正确。首页措辞的走查点见第 6.4 节。 |
 | 设备打开失败后的恢复核对 | 两轮材料已备齐，已通过现有窗口回放 | 编号 9999 打开失败，随后编号 0 采集成功。两个批次不可比较，原失败原因仍未知。见第 6.5 节。 |
-| AI 依据问答与本地 HTTP | 备选阶段 | 已完成方案调研，尚无模型对照结果、推理耗时或独立 HTTP 调用示例 |
+| 固定问题的离线证据问答 | 已交付 | 采集问题与 QR 调查共用三个固定问题，窗口与命令行均支持。A4 同范围的三个问题已逐字核对显示、复制与命令输出。 |
+| AI 依据问答与本地 HTTP | 备选阶段 | 已有离线规则回答用于后续比较，尚无模型对照结果、推理耗时或独立 HTTP 调用示例 |
 
 在 Windows 本机使用两个项目原有的 Python 3.12.10 虚拟环境复验。摄像头完整测试 **509 通过、4 跳过**，助手完整单测 **173 通过、1 跳过**，Tk 冒烟 **161/161 个检查点通过**，Tk 专项回归 **9 项通过**。5 项跳过均涉及 Windows 符号链接权限。第 2 节固定提交的干净检出跨仓回归 **2 通过**，窗口另完成第 5.1 节的材料三回放。此前 QR 的 development 和 test 各 23 个样本，结果均与入库期望完全一致。联合验证使用模拟设备和合成材料。
 
