@@ -4,9 +4,9 @@
 
 ## 手机续接（2026-11-09）
 
-摄像头仓库使用 `main`，实拍回放材料见[交接结果 4454051](https://github.com/Z1346-OPS/camera-quality-diagnostics/tree/445405187dcf2ee4a6ff3058b23cddff4d208474)。助手使用 `experiment/multi-agent-fault-benchmark`，当前版本为 [4de98b8](https://github.com/Z1346-OPS/test_failure_investigator/tree/4de98b896de0125241f5968196876ff4e51e670e)。第 2 节保留早期联合演示的固定版本。
+摄像头仓库使用 `main`，实拍回放材料见[交接结果 4454051](https://github.com/Z1346-OPS/camera-quality-diagnostics/tree/445405187dcf2ee4a6ff3058b23cddff4d208474)。助手使用 `experiment/multi-agent-fault-benchmark`，当前版本为 [51c49af](https://github.com/Z1346-OPS/test_failure_investigator/tree/51c49afbbf980869dee09fbbf05f79b2a07c9c75)。第 2 节保留早期联合演示的固定版本。
 
-**连接模型 API。** 在证据问答区打开“模型设置”，填写服务商的 API Key，按需修改基础地址和模型 ID。提问后点击“发送此回答给模型”，模型解释单独显示。设置仅在当前程序运行期间有效。已用合成 QR 报告及本机模拟服务检查成功、HTTP 401 和超时，真实账号调用待配置。[设置步骤](https://github.com/Z1346-OPS/test_failure_investigator/blob/4de98b896de0125241f5968196876ff4e51e670e/README.md#使用自己的模型-api-key)
+**连接模型 API。** 在证据问答区打开“模型设置”，填写服务商的 API Key、基础地址和模型 ID。设置窗口可用 ×、Esc 或“取消”独立关闭，重复点击会回到同一窗口。关闭主窗口时仍会提示处理未保存的调查。本次预填 DeepSeek 官方地址 `https://api.deepseek.com` 和模型 `deepseek-flash`，载入合成 QR 的第一轮、第二轮报告后实际调用一次，已收到模型补充说明。[设置步骤](https://github.com/Z1346-OPS/test_failure_investigator/blob/51c49afbbf980869dee09fbbf05f79b2a07c9c75/README.md#使用自己的模型-api-key)
 
 **直接问交接问题。** 打开助手的 QR 调查或选中一个采集问题，点击“原问题能关吗？”即可看到判断、报告中的证据位置和待补检查。点击“复制交接摘要”即可复制显示的回答。从助手根目录运行 `.\.venv\Scripts\python.exe -B -X utf8 src/ask_evidence.py 原报告.json 补充报告.json` 得到相同文字；多个采集问题时加 `--issue P01` 指定编号。[六组实际回答](evidence/qr-photo-pair-2026-11-09/offline-answers.md)
 
@@ -62,7 +62,7 @@
 | QR 内容核验走查材料 | 两轮材料已备齐，已通过现有窗口回放 | 同图单一读出；无独立答案时保留未知，与预先固定答案逐字节一致时可判定本次内容正确。首页措辞的走查点见第 6.4 节。 |
 | 设备打开失败后的恢复核对 | 两轮材料已备齐，已通过现有窗口回放 | 编号 9999 打开失败，随后编号 0 采集成功。两个批次不可比较，原失败原因仍未知。见第 6.5 节。 |
 | 离线证据问答 | 已交付 | 采集问题与 QR 调查支持直接输入常见中文问法，窗口和命令行共用调查规则。固定问题仍可点击。 |
-| 可选模型说明 | API 客户端已交付 | 用户可配置兼容 Chat Completions 的服务。通过模拟接口验收，尚待真实账号调用与模型效果对照。 |
+| 可选模型说明 | API 客户端已交付 | 已用合成 QR 材料实测 DeepSeek 服务成功返回说明。模型说明质量对照待完成。 |
 | 本地 HTTP 服务 | 备选阶段 | 待出现独立客户端调用需求。 |
 
 在 Windows 本机使用两个项目原有的 Python 3.12.10 虚拟环境复验。摄像头完整测试 **509 通过、4 跳过**，助手完整单测 **173 通过、1 跳过**，Tk 冒烟 **161/161 个检查点通过**，Tk 专项回归 **9 项通过**。5 项跳过均涉及 Windows 符号链接权限。第 2 节固定提交的干净检出跨仓回归 **2 通过**，窗口另完成第 5.1 节的材料三回放。此前 QR 的 development 和 test 各 23 个样本，结果均与入库期望完全一致。联合验证使用模拟设备和合成材料。
