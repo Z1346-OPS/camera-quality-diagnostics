@@ -1,30 +1,14 @@
 # camera-quality-diagnostics
 
-基于 Python/OpenCV 的**图像质量测量、摄像头采集留证与 QR 自动化回归工具**。用于记录测量结果、核对采集证据，并复现识读链路的边界与失败恢复行为。
+基于 Python/OpenCV 的**图像质量测量、摄像头采集留证与 QR 自动化回归工具**，用固定样本、独立答案和精确期望闸门验证识读链路的行为与失败边界。
 
 [![tests](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/workflows/tests.yml/badge.svg)](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/workflows/tests.yml)
 
-## 已交付与验证
+**结果入口：** [有证据的结果](#有证据的结果)（QR 回归：baseline 与内部降采样搜索的配对比较） · [缺陷案例 F01](#缺陷案例-f01失败的取帧被计为成功) · [验证边界](#验证边界) · [逐样本证据](docs/verification/stage1-readme-evidence-2026-11-19.md)
 
-| 验证项 | 结果与范围 |
-| --- | --- |
-| 已验证代码基线 | [`6dba7c7`](https://github.com/Z1346-OPS/camera-quality-diagnostics/commit/6dba7c799754e90ef687d48fa99dca61445e58f5)，修正已提交并推送 |
-| Ubuntu CI | [Actions #14](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/39424609746)：**512 passed in 7.13s**；精确评测闸门单独执行并通过 |
-| 固定合成 QR 回归 | development/test 各 **23 张**；每组正确读取数 **18/23 → 21/23**，配对比较 improved=3、degraded=0 |
-| 历史 Windows 实采 | 2026-10-16，DirectShow，**3 轮 × 6 张 = 18 张**，摘要与指标核对一致；对应当时基线 `81b86e6` |
+## 可运行示例：无需摄像头
 
-以上结果分别绑定代码版本与环境。最终修正包含取帧失败传播、Linux V4L2 后端选择、PNG 透明色处理和报告独占发布。[公开验收汇总](docs/verification/acceptance-summary-2026-10-27.md)附版本、CI 日志摘录与实采口径；历史候选记录已归档。
-
-## 主要能力
-
-- **采集与留证**：定时间隔采样，保存质量/颜色 CSV、原始帧 PNG 与任务 JSON；通过 `run_id`、帧号和 SHA-256 关联。
-- **质量测量与复核**：测量亮度、曝光比例、清晰度、对比度与颜色统计。离线复核对同一份 PNG 字节计算摘要并重算五项质量指标，避免文件被替换后混用两帧的证据。
-- **QR 识读验证**：整图、人工 ROI、内部降采样搜索；用独立答案逐字节核验，按冻结清单批量评测。
-- **自动化回归**：pytest 参数化、假设备、可控时钟和故障注入；GitHub Actions 检查测试及固定数据集的精确期望。
-
-## 快速运行：无需摄像头
-
-使用 Python 3.12，在克隆后的项目根目录执行。安装依赖后，先运行一个已知答案样例。
+使用 Python 3.12，在克隆后的项目根目录执行。
 
 ### Windows / PowerShell
 
@@ -32,7 +16,12 @@
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 New-Item -ItemType Directory -Path '.\data\reports' -Force | Out-Null
+
+# A：提供独立答案
 .\.venv\Scripts\python.exe -X utf8 src\analyze_label.py data\samples\stage2-known-qr.png --expected-file data\samples\stage2-known-qr.expected.txt --truth-source '固定合成样例' --output data\reports\qr-first-run-001.json
+
+# B：不提供答案
+.\.venv\Scripts\python.exe -X utf8 src\analyze_label.py data\samples\stage2-known-qr.png --output data\reports\qr-first-run-002.json
 ```
 
 ### Linux / Bash
@@ -42,34 +31,62 @@ python3.12 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 mkdir -p data/reports
 .venv/bin/python -X utf8 src/analyze_label.py data/samples/stage2-known-qr.png --expected-file data/samples/stage2-known-qr.expected.txt --truth-source '固定合成样例' --output data/reports/qr-first-run-001.json
+.venv/bin/python -X utf8 src/analyze_label.py data/samples/stage2-known-qr.png --output data/reports/qr-first-run-002.json
 ```
 
-预期退出码为 0、`status=completed`，尝试与区域汇总中的 `truth_check.status=correct`。报告拒绝覆盖，再次运行请更换输出文件名。
+| 运行 | 预期退出码 | 预期 `truth_check.status` | 含义 |
+| --- | --- | --- | --- |
+| A | 0 | `correct` | 只有一个有效码，且载荷与独立答案逐字节相同 |
+| B | 0 | `not_provided` | 只报告读出，没有答案就不判定为正确 |
+
+以上预期值已在 Windows 11 的项目 `.venv`（Python 3.12.10）中实测，代码版本 `0904038`，样本为单张合成图 `stage2-known-qr.png`，见[首页证据](docs/verification/stage1-readme-evidence-2026-11-19.md#2-两次示例运行)。Linux 命令没有在本机实测。报告拒绝覆盖已有文件，再次运行请更换输出文件名。
 
 完整回归与精确评测闸门：
 
 ```powershell
-.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe -X utf8 -m pytest -q -rs
 .\.venv\Scripts\python.exe -X utf8 tools\check_evaluation_expectations.py
 ```
 
-合成 QR 闸门同时核对汇总和逐样本期望。按样本 ID 比对图片及独立答案的 SHA-256，再按区域核对基线与降采样搜索的结果。若两个样本的成败互换，即使总正确数相同，差异也会指出具体样本和方法。
+Linux 将解释器替换为 `.venv/bin/python`。
 
-Linux 将解释器替换为 `.venv/bin/python`。还可运行[离线采集复核演示](docs/tasks/capture-review-walkthrough.md)，复现正常、缺失和篡改输入的处理流程。
+## 有证据的结果
 
-如同时检出了排查助手，可运行[跨仓复验用例](docs/tasks/investigator-contract.md)。它使用合成采集结果，验证旧报告重排、局部复核和 QR 答案身份缺失时的判断，并实际导出交接说明。
+**比较的是什么：** 同一批固定合成 QR 样本，先用 **baseline**（zxing-cpp 单次解码，关闭内部降采样）读取，再用 **启用内部降采样搜索**的方式读取（在 baseline 之外，再做一次开启 zxing-cpp 内部降采样的尝试，两次结果汇总）。每张图都用独立答案逐字节判定是否 `correct`。
 
-## 三个工程设计
+| 结果 | 数字 | 样本范围 | 绑定版本与环境 | 证据 |
+| --- | --- | --- | --- | --- |
+| 固定合成 QR 回归 | 每组 baseline 正确读取 **18/23**，启用内部降采样搜索后 **21/23**；每组改进 3、退化 0 | `synthetic-qr-v1` 的 development 组、test 组，各 23 张程序生成的固定样本 | CI：提交 [`6dba7c7`](https://github.com/Z1346-OPS/camera-quality-diagnostics/commit/6dba7c799754e90ef687d48fa99dca61445e58f5)，Ubuntu 24.04.5，Python 3.12.15；本地复核：代码版本 `0904038`，Windows 11，Python 3.12.10，2026-11-19 | [逐样本证据](docs/verification/stage1-readme-evidence-2026-11-19.md#6-逐样本改进的-6-张)、[入库期望](data/manifests/evaluation-synthetic-expectations.json)、[CI 日志摘录](docs/verification/ci-6dba7c7.json) |
+| 自动化测试 | CI **512 passed**；Windows 本地 **509 passed、4 skipped**（4 项真实符号链接用例因 WinError 1314 权限不足跳过，不计为通过） | 默认收集的 `tests/` 全部产品测试 | CI：`6dba7c7`，Ubuntu 24.04.5，Python 3.12.15，[Actions #14](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/39424609746)；本地：代码版本 `0904038`，Windows 11，Python 3.12.10，2026-11-19 | [公开验收汇总](docs/verification/acceptance-summary-2026-10-27.md)、[首页证据](docs/verification/stage1-readme-evidence-2026-11-19.md#3-自动化测试本地) |
+| 历史 Windows 实采 | **3 轮 × 6 张 = 18 张**留证图片，摘要与指标核对一致 | 单台设备，正常照明，640×480，每轮 30 秒、每 5 秒留证 | 2026-10-16，当时基线 `81b86e6`，Windows，DirectShow；不是最终修正后的新实机验收 | [公开验收汇总](docs/verification/acceptance-summary-2026-10-27.md#历史-windows-实采验收) |
 
-- **失败标志传播**：默认摄像头适配器显式检查 `grab()` / `retrieve()`；底层返回失败时，即使数组非空也不计为成功帧。见[读取边界防护](docs/stage-37-read-failure-guard.md)。
-- **报告独占发布**：临时文件完整关闭后，用同目录硬链接发布；同名目标出现时拒绝覆盖，发布失败保留原始采集错误。见[发布修正](docs/stage-39-release-review-fixes.md)。
-- **精确评测闸门**：先检查允许的退出状态与报告存在性，再精确比较稳定业务字段；区分预期解码失败与程序异常。见[数据集与闸门](docs/stage-33-synthetic-regression-dataset.md)。
+关于合成 QR 回归的读法：
 
-## 验证范围
+- 两组共 46 张，都是程序生成的固定样本。失败样本保留在分母里。
+- 改进的 6 张是两组 `noise-large` 退化族的第 21–23 号样本：baseline `not_decoded`，启用降采样搜索后 `correct`。
+- **test 组参加过历史回归，不是未见数据的盲测**，数字不代表实拍场景的识读率。
+- 闸门按样本 ID 比对图片与答案的 SHA-256，再逐区域核对结果。即使两个样本成败互换、总数不变，也会报出具体样本。见[数据集与闸门](docs/stage-33-synthetic-regression-dataset.md)。
 
-Windows 指定设备已有实采记录；Linux 的定时采集入口已选择 V4L2，并通过平台模拟测试及 Ubuntu CI，Linux 摄像头实机仍待验证。其他交互采集入口不属于此次 Linux 适配范围。
+## 缺陷案例 F01：失败的取帧被计为成功
 
-图像指标用于测量与复核，尚未标定工业合格阈值。合成数据结果只描述固定样本，实拍 QR 没有独立答案时仅记录读出状态。历史异常画面的根因仍未确认。报告发布要求文件系统支持硬链接，采集流程采用同步 I/O。
+| 项 | 内容 |
+| --- | --- |
+| 触发条件 | 底层 `grab()` 成功、`retrieve()` 返回 False，但输出数组非空。DirectShow 会在取像素之前预分配数组，而 `cv2.VideoCapture.read()` 只按数组是否为空判断成功 |
+| 错误结果 | 修复前，这次失败被当作有效帧，任务报告 `completed` 并保存了样本 |
+| 修复位置 | [`src/capture_task.py`](src/capture_task.py) 中的 `_GrabRetrieveCamera.read`。默认工厂 `_default_camera_factory` 用它包装设备，分别检查 `grab()` 和 `retrieve()` 的真实返回值，任一失败返回 `(False, None)`，转入既有的 `read_failed` 流程。随提交 [`6dba7c7`](https://github.com/Z1346-OPS/camera-quality-diagnostics/commit/6dba7c799754e90ef687d48fa99dca61445e58f5) 进入仓库 |
+| 能抓住它的测试 | [`tests/test_capture_task.py`](tests/test_capture_task.py) 中的 `test_default_factory_retrieve_failure_is_read_failed`：经真实默认工厂驱动假设备，断言 `failed` / `read_failed`、有效帧 0、样本 0，并且没有调用底层 `read()`。辅助用例：`test_grab_retrieve_adapter_rejects_nonempty_array_on_retrieve_failure` |
+| 修复前后 | 先写测试、后修复。修复前，核心用例在旧代码上行为失败（`DID NOT RAISE CaptureTaskError`）；修复后，该组 12 个目标用例全部通过。记录时间 2026-10-17，环境为 Windows 11、Python 3.12.10、OpenCV 5.0.0、pytest 9.1.1，代码为基线 `81b86e6` 加上尚未提交的修复；这份修复中的适配器代码与 `6dba7c7` 一致。数字组成见[首页证据](docs/verification/stage1-readme-evidence-2026-11-19.md#5-缺陷案例-f01-的修复前后记录) |
+| 结论边界 | 只修复了这条状态传播缺陷，**不等于**确认了历史近黑画面的根因 |
+
+详见[读取边界防护](docs/stage-37-read-failure-guard.md)。同一轮修正还包括报告独占发布与 PNG 透明色处理，见[发布修正](docs/stage-39-release-review-fixes.md)。
+
+## 验证边界
+
+- **合成数据**：结果只描述固定样本；实拍 QR 没有独立答案时，只记录读出或未读出。
+- **图像指标**：用于测量与复核，尚未标定工业合格阈值。脏污、条纹、噪点、偏色等故障不做自动识别。
+- **平台**：Windows 指定设备有实采记录。Linux 定时采集入口已选择 V4L2，通过平台模拟测试和 Ubuntu CI，Linux 摄像头实机仍待验证。其他交互采集入口不在 Linux 适配范围内。
+- **运行条件**：报告发布要求文件系统支持硬链接；采集流程采用同步 I/O。
+- **未确认事项**：历史异常画面的根因仍未确认。
 
 ## 目录与文档
 
@@ -84,8 +101,15 @@ Windows 指定设备已有实采记录；Linux 的定时采集入口已选择 V4
 | `.github/workflows/tests.yml` | Ubuntu / Python 3.12 自动回归 |
 
 - [公开验收汇总与 CI 证据](docs/verification/acceptance-summary-2026-10-27.md)
+- [首页证据：示例运行与逐样本结果](docs/verification/stage1-readme-evidence-2026-11-19.md)
 - [项目能力矩阵](docs/stage-34-project-capability-matrix.md)
 - [详细使用与历史阶段指南](docs/project-guide.md)
+- [离线采集复核演示](docs/tasks/capture-review-walkthrough.md)：复现正常、缺失和篡改输入的处理流程
+- [跨仓复验用例](docs/tasks/investigator-contract.md)：同时检出排查助手时可运行
 - [简历项目描述与数字口径](docs/resume-project-summary.md)
 
 `photo/`、`data/reports/` 和 `.venv/` 保留在本地；公开验收汇总不包含私人画面或二维码载荷。
+
+## 未来方向
+
+后续拟探索二维码读取失败后的原因分析与恢复建议。
