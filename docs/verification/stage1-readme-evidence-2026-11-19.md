@@ -78,7 +78,29 @@
 
 两组都保留 23 个样本作分母。闸门 `tools/check_evaluation_expectations.py` 接受退出码 0 和 2，但不依据退出码判断结果，而是读取生成的 JSON 报告，逐项对照冻结期望。两组实际结果都与期望一致，所以闸门返回 0。
 
-## 5. 逐样本：改进的 6 张
+退出码 2 还有另一个用途：程序级失败。`src/evaluate_labels.py` 第 28–32 行在 `EvaluationError`、`OSError`、`MemoryError` 时打印 `评测失败 [...]` 并返回 2，这时不会写出报告 JSON。闸门靠"是否生成报告 JSON"区分这两种退出码 2：没有报告就判为评测进程异常并失败（见 `tools/check_evaluation_expectations.py` 中的 `run_evaluation`）。
+
+## 5. 缺陷案例 F01 的修复前后记录
+
+README 中 F01 的"修复前失败、修复后 12 个目标用例通过"来自 2026-10-17 的本地验证记录，摘要见 [`stage-37-read-failure-guard.md`](../stage-37-read-failure-guard.md) §4–§5。原始输出在本机被忽略的目录 `data/reports/read-failure-guard-20261017-101037-9d36a959/` 中，未入库。
+
+| 项 | 值 |
+| --- | --- |
+| 代码 | 基线 `81b86e6` 加上尚未提交的修复（`src/capture_task.py`、`tests/test_capture_task.py`）。修复后来随 `6dba7c7` 提交；2026-11-19 复核：把当时保存的差异应用到 `81b86e6` 后，`_GrabRetrieveCamera` 与 `6dba7c7` 中的实现一致，其余差异只来自同一提交里的 V4L2 后端选择和报告发布改动 |
+| 环境 | Windows 11（10.0.26100）、Python 3.12.10、OpenCV 5.0.0、NumPy 2.5.3、pytest 9.1.1 |
+| 命令 | `pytest tests/test_capture_task.py -k "grab_retrieve or default_factory" -q -rA` |
+| 修复前 | `6 failed, 6 passed, 90 deselected`，`EXIT=1` |
+| 修复后 | `12 passed, 90 deselected`，`EXIT=0` |
+
+修复前的 6 个失败不都是行为失败：
+
+- 4 个是 `AttributeError`：旧代码里还没有 `_GrabRetrieveCamera` 类，直接测试适配器的用例无法运行。
+- 核心用例 `test_default_factory_retrieve_failure_is_read_failed` 是行为失败（`Failed: DID NOT RAISE CaptureTaskError`）：旧代码把失败的取帧当成功帧处理。
+- `test_default_factory_normal_frame_pixels_and_review_unchanged` 是断言失败（`assert 4 == 0`，旧代码调用了底层 `read()`）。
+
+因此 README 只引用"核心用例行为失败"这一结论，不把 6 个失败都当作缺陷证据。
+
+## 6. 逐样本：改进的 6 张
 
 两组改进的都是 `noise-large` 退化族的 21–23 号样本，结果都是 baseline `not_decoded` → 降采样搜索 `correct`。两组都没有退化样本。
 
@@ -93,7 +115,7 @@
 
 每条期望记录同时固定了图片与答案的 SHA-256。闸门先按样本 ID 核对这两个摘要，再逐区域比较结果。
 
-## 6. 结论边界
+## 7. 结论边界
 
 - 这些数字只描述这 46 张固定合成样本，不是识读率，也不能外推到实拍场景。
 - `test` 组参加过历史回归，不是未见数据的盲测。

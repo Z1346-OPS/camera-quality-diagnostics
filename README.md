@@ -4,6 +4,8 @@
 
 [![tests](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/workflows/tests.yml/badge.svg)](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/workflows/tests.yml)
 
+**结果入口：** [有证据的结果](#有证据的结果)（QR 回归：baseline 与内部降采样搜索的配对比较） · [缺陷案例 F01](#缺陷案例-f01失败的取帧被计为成功) · [验证边界](#验证边界) · [逐样本证据](docs/verification/stage1-readme-evidence-2026-11-19.md)
+
 ## 可运行示例：无需摄像头
 
 使用 Python 3.12，在克隆后的项目根目录执行。
@@ -37,12 +39,12 @@ mkdir -p data/reports
 | A | 0 | `correct` | 只有一个有效码，且载荷与独立答案逐字节相同 |
 | B | 0 | `not_provided` | 只报告读出，没有答案就不判定为正确 |
 
-报告拒绝覆盖已有文件，再次运行请更换输出文件名。两次运行的实测记录见[首页证据](docs/verification/stage1-readme-evidence-2026-11-19.md#2-两次示例运行)。
+以上预期值已在 Windows 11 的项目 `.venv`（Python 3.12.10）中实测，代码版本 `0904038`，样本为单张合成图 `stage2-known-qr.png`，见[首页证据](docs/verification/stage1-readme-evidence-2026-11-19.md#2-两次示例运行)。Linux 命令没有在本机实测。报告拒绝覆盖已有文件，再次运行请更换输出文件名。
 
 完整回归与精确评测闸门：
 
 ```powershell
-.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe -X utf8 -m pytest -q -rs
 .\.venv\Scripts\python.exe -X utf8 tools\check_evaluation_expectations.py
 ```
 
@@ -50,18 +52,20 @@ Linux 将解释器替换为 `.venv/bin/python`。
 
 ## 有证据的结果
 
-| 结果 | 数字 | 绑定版本与环境 | 证据 |
-| --- | --- | --- | --- |
-| 固定合成 QR 回归 | development、test 各 **23 张**；每组正确读取 **18/23 → 21/23**，改进 3、退化 0 | CI：提交 [`6dba7c7`](https://github.com/Z1346-OPS/camera-quality-diagnostics/commit/6dba7c799754e90ef687d48fa99dca61445e58f5)，Ubuntu 24.04.5，Python 3.12.15；本地复核：`0904038`，Windows 11，Python 3.12.10 | [逐样本证据](docs/verification/stage1-readme-evidence-2026-11-19.md#5-逐样本改进的-6-张)、[入库期望](data/manifests/evaluation-synthetic-expectations.json)、[CI 日志摘录](docs/verification/ci-6dba7c7.json) |
-| 自动化测试 | Ubuntu CI **512 passed**；Windows 本地 **509 passed、4 skipped**（4 项真实符号链接用例受 WinError 1314 权限限制而跳过，不计为通过） | CI：`6dba7c7`，[Actions #14](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/39424609746)；本地：`0904038`，Windows 11，Python 3.12.10，2026-11-19 | [公开验收汇总](docs/verification/acceptance-summary-2026-10-27.md)、[首页证据](docs/verification/stage1-readme-evidence-2026-11-19.md#3-自动化测试本地) |
-| 历史 Windows 实采 | DirectShow，**3 轮 × 6 张 = 18 张**，摘要与指标核对一致 | 2026-10-16，当时基线 `81b86e6`；不是最终修正后的新实机验收 | [公开验收汇总](docs/verification/acceptance-summary-2026-10-27.md#历史-windows-实采验收) |
+**比较的是什么：** 同一批固定合成 QR 样本，先用 **baseline**（zxing-cpp 单次解码，关闭内部降采样）读取，再用 **启用内部降采样搜索**的方式读取（在 baseline 之外，再做一次开启 zxing-cpp 内部降采样的尝试，两次结果汇总）。每张图都用独立答案逐字节判定是否 `correct`。
+
+| 结果 | 数字 | 样本范围 | 绑定版本与环境 | 证据 |
+| --- | --- | --- | --- | --- |
+| 固定合成 QR 回归 | 每组 baseline 正确读取 **18/23**，启用内部降采样搜索后 **21/23**；每组改进 3、退化 0 | `synthetic-qr-v1` 的 development 组、test 组，各 23 张程序生成的固定样本 | CI：提交 [`6dba7c7`](https://github.com/Z1346-OPS/camera-quality-diagnostics/commit/6dba7c799754e90ef687d48fa99dca61445e58f5)，Ubuntu 24.04.5，Python 3.12.15；本地复核：代码版本 `0904038`，Windows 11，Python 3.12.10，2026-11-19 | [逐样本证据](docs/verification/stage1-readme-evidence-2026-11-19.md#6-逐样本改进的-6-张)、[入库期望](data/manifests/evaluation-synthetic-expectations.json)、[CI 日志摘录](docs/verification/ci-6dba7c7.json) |
+| 自动化测试 | CI **512 passed**；Windows 本地 **509 passed、4 skipped**（4 项真实符号链接用例因 WinError 1314 权限不足跳过，不计为通过） | 默认收集的 `tests/` 全部产品测试 | CI：`6dba7c7`，Ubuntu 24.04.5，Python 3.12.15，[Actions #14](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/39424609746)；本地：代码版本 `0904038`，Windows 11，Python 3.12.10，2026-11-19 | [公开验收汇总](docs/verification/acceptance-summary-2026-10-27.md)、[首页证据](docs/verification/stage1-readme-evidence-2026-11-19.md#3-自动化测试本地) |
+| 历史 Windows 实采 | **3 轮 × 6 张 = 18 张**留证图片，摘要与指标核对一致 | 单台设备，正常照明，640×480，每轮 30 秒、每 5 秒留证 | 2026-10-16，当时基线 `81b86e6`，Windows，DirectShow；不是最终修正后的新实机验收 | [公开验收汇总](docs/verification/acceptance-summary-2026-10-27.md#历史-windows-实采验收) |
 
 关于合成 QR 回归的读法：
 
-- 46 张都是程序生成的固定样本，答案逐字节核验，失败样本保留在分母。
-- 改进的 6 张都是 `noise-large` 退化族的 21–23 号样本，从 baseline `not_decoded` 变为 `correct`。
+- 两组共 46 张，都是程序生成的固定样本。失败样本保留在分母里。
+- 改进的 6 张是两组 `noise-large` 退化族的第 21–23 号样本：baseline `not_decoded`，启用降采样搜索后 `correct`。
 - **test 组参加过历史回归，不是未见数据的盲测**，数字不代表实拍场景的识读率。
-- 闸门按样本 ID 比对图片与答案的 SHA-256，再逐区域核对结果；即使两个样本成败互换、总数不变，也会报出具体样本。见[数据集与闸门](docs/stage-33-synthetic-regression-dataset.md)。
+- 闸门按样本 ID 比对图片与答案的 SHA-256，再逐区域核对结果。即使两个样本成败互换、总数不变，也会报出具体样本。见[数据集与闸门](docs/stage-33-synthetic-regression-dataset.md)。
 
 ## 缺陷案例 F01：失败的取帧被计为成功
 
@@ -69,9 +73,9 @@ Linux 将解释器替换为 `.venv/bin/python`。
 | --- | --- |
 | 触发条件 | 底层 `grab()` 成功、`retrieve()` 返回 False，但输出数组非空。DirectShow 会在取像素之前预分配数组，而 `cv2.VideoCapture.read()` 只按数组是否为空判断成功 |
 | 错误结果 | 修复前，这次失败被当作有效帧，任务报告 `completed` 并保存了样本 |
-| 修复位置 | [`src/capture_task.py`](src/capture_task.py) 中的 `_GrabRetrieveCamera.read`。默认工厂 `_default_camera_factory` 用它包装设备，分别检查 `grab()` 和 `retrieve()` 的真实返回值，任一失败返回 `(False, None)`，转入既有的 `read_failed` 流程 |
+| 修复位置 | [`src/capture_task.py`](src/capture_task.py) 中的 `_GrabRetrieveCamera.read`。默认工厂 `_default_camera_factory` 用它包装设备，分别检查 `grab()` 和 `retrieve()` 的真实返回值，任一失败返回 `(False, None)`，转入既有的 `read_failed` 流程。随提交 [`6dba7c7`](https://github.com/Z1346-OPS/camera-quality-diagnostics/commit/6dba7c799754e90ef687d48fa99dca61445e58f5) 进入仓库 |
 | 能抓住它的测试 | [`tests/test_capture_task.py`](tests/test_capture_task.py) 中的 `test_default_factory_retrieve_failure_is_read_failed`：经真实默认工厂驱动假设备，断言 `failed` / `read_failed`、有效帧 0、样本 0，并且没有调用底层 `read()`。辅助用例：`test_grab_retrieve_adapter_rejects_nonempty_array_on_retrieve_failure` |
-| 修复前后 | 目标回归在旧代码上 `6 failed, 6 passed`（核心用例 `DID NOT RAISE CaptureTaskError`），修复后 `12 passed` |
+| 修复前后 | 先写测试、后修复。修复前，核心用例在旧代码上行为失败（`DID NOT RAISE CaptureTaskError`）；修复后，该组 12 个目标用例全部通过。记录时间 2026-10-17，环境为 Windows 11、Python 3.12.10、OpenCV 5.0.0、pytest 9.1.1，代码为基线 `81b86e6` 加上尚未提交的修复；这份修复中的适配器代码与 `6dba7c7` 一致。数字组成见[首页证据](docs/verification/stage1-readme-evidence-2026-11-19.md#5-缺陷案例-f01-的修复前后记录) |
 | 结论边界 | 只修复了这条状态传播缺陷，**不等于**确认了历史近黑画面的根因 |
 
 详见[读取边界防护](docs/stage-37-read-failure-guard.md)。同一轮修正还包括报告独占发布与 PNG 透明色处理，见[发布修正](docs/stage-39-release-review-fixes.md)。
