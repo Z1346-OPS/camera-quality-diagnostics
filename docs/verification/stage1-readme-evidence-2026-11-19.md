@@ -69,7 +69,14 @@
 闸门通过：数据集行为与入库期望一致。
 ```
 
-`decode_error`（development）和 `ambiguous`（test）属于业务结果，不是程序异常，仍计入分母 23。
+两组的非正确样本含义不同：
+
+- development 有 1 个样本发生候选码解码错误（`decode_error`），所以批量评测状态是 `completed_with_errors`，评测 CLI `src/evaluate_labels.py` 返回 2。
+- test 有 1 个样本结果歧义（`ambiguous`），这是识读结论，不是错误，所以评测状态是 `completed`，评测 CLI 返回 0。
+
+本机直接运行评测 CLI 复核过：development 退出码 2，test 退出码 0。
+
+两组都保留 23 个样本作分母。闸门 `tools/check_evaluation_expectations.py` 接受退出码 0 和 2，但不依据退出码判断结果，而是读取生成的 JSON 报告，逐项对照冻结期望。两组实际结果都与期望一致，所以闸门返回 0。
 
 ## 5. 逐样本：改进的 6 张
 
