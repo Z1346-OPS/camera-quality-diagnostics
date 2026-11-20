@@ -9,7 +9,7 @@
 2026-10-02 的入口核验已补充错误码、JSON 格式版本 2、分析 ID、配置与源码哈希、运行库版本及 Git 状态。原有指标字段保留，旧 JSON 不改写。真实手机照片已由用户确认实拍来源及正确方向；验证与操作步骤见[阶段 1 核验记录](docs/stage-1-local-input-verification.md)。
 
 ```powershell
-Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
+Set-Location '<仓库根>'
 .\.venv\Scripts\python.exe -X utf8 .\src\analyze_image.py 'D:\Photos\label.jpg' --output '.\data\reports\label-analysis-001.json'
 ```
 
@@ -147,7 +147,7 @@ result = analyze_quality(bgr, roi=(100, 200, 600, 600))  # roi 为 x y width hei
 |---|---|
 | Python | **3.12.10**（官方 CPython，64 位） |
 | Python 安装位置 | `D:\DevTools\Python312` |
-| 虚拟环境 | `D:\Projects\Python\camera-quality-diagnostics\.venv` |
+| 虚拟环境 | `<仓库根>\.venv` |
 | pip 缓存 | `D:\DevCache\pip` |
 
 > 上表记录的是本机环境，不要求其他电脑使用完全相同的安装路径；重建环境前应核对项目依赖与本机 Python 版本。
@@ -180,7 +180,7 @@ python -m venv .venv
 
 ```powershell
 # 本机示例：先进入项目根目录；其他电脑请换成实际路径
-Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
+Set-Location '<仓库根>'
 
 # 环境自检
 .\.venv\Scripts\python.exe src\main.py

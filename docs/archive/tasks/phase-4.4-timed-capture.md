@@ -236,7 +236,7 @@ CLI：
 
 | 检查 | 结果 |
 | --- | --- |
-| 会话 cwd | `D:\Projects\Python\camera-quality-diagnostics`（项目根） |
+| 会话 cwd | `<仓库根>`（项目根） |
 | HEAD | `afdca8f`（`docs(agents): point number source at the capability matrix`） |
 | `git status` | 既有未提交改动全部保留：`README.md`、`docs/stage-34-project-capability-matrix.md` 已修改；`data/experiments/`、`docs/observations/`、`docs/stage-35/36-*.md`、`docs/tasks/evidence/`、`docs/tasks/phase-4.1/4.2/4.3-*.md`、`src/quality_analysis.py`、`src/quality_qr_analysis.py`、`tests/test_blur_experiment.py`、`tests/test_quality_analysis.py`、`tests/test_quality_qr_analysis.py`、`tools/run_blur_experiment.py` 为未跟踪文件 |
 | 基线 pytest | `343 passed in 23.01s`，exit 0（本轮实际执行，非历史记录） |
@@ -416,7 +416,7 @@ docs/stage-34-project-capability-matrix.md （§0 测试行与源模块行、202
 ### 5.3 三个独立反例：修复前后结果
 
 Codex 反例文件（只读使用，未修改）：
-`C:\Users\zex\.codex\visualizations\2026\10\12\01a12ed0-11d7-7d13-be87-0c4bd858475b\phase44_review\test_independent_contract.py`
+`<用户目录>\.codex\visualizations\2026\10\12\01a12ed0-11d7-7d13-be87-0c4bd858475b\phase44_review\test_independent_contract.py`
 
 运行方式（显式指定 rootdir / confcutdir / basetemp，`-B -p no:cacheprovider`，不向项目写缓存）：
 

@@ -84,13 +84,13 @@
 
 ```powershell
 $ErrorActionPreference = 'Stop'
-Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
+Set-Location '<仓库根>'
 
 @'
 import hashlib, json, subprocess, sys
 from pathlib import Path
 
-ROOT = Path(r"D:\Projects\Python\camera-quality-diagnostics")
+ROOT = Path(r"<仓库根>")
 FROZEN = ROOT / "docs/tasks/evidence/phase-4.2-quality-qr-association/qr-stable-fields-oracle.json"
 SCRIPT = ROOT / "docs/tasks/evidence/phase-4.2-quality-qr-association/extract_qr_stable_fields.py"
 

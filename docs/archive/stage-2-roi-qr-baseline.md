@@ -51,8 +51,8 @@ wheel 包含本机原生扩展，上述检查不等于对二进制做完整安�
 最终运行：
 
 ```powershell
-.\.venv\Scripts\python.exe -B -X utf8 -m pytest tests\test_label_analysis.py -q -p no:cacheprovider --basetemp C:\Users\zex\Documents\ChatGPT\project1\stage2-label-tests-20261002-3
-.\.venv\Scripts\python.exe -B -X utf8 -m pytest -q -p no:cacheprovider --basetemp C:\Users\zex\Documents\ChatGPT\project1\stage2-full-20261002-3
+.\.venv\Scripts\python.exe -B -X utf8 -m pytest tests\test_label_analysis.py -q -p no:cacheprovider --basetemp <用户目录>\Documents\ChatGPT\project1\stage2-label-tests-20261002-3
+.\.venv\Scripts\python.exe -B -X utf8 -m pytest -q -p no:cacheprovider --basetemp <用户目录>\Documents\ChatGPT\project1\stage2-full-20261002-3
 .\.venv\Scripts\python.exe -B -X utf8 -m pip check
 ```
 

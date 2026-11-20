@@ -32,12 +32,12 @@
 
 ## 实际执行命令
 
-工作目录：`D:\Projects\Python\camera-quality-diagnostics`。各检查使用项目 .venv；禁用字节码与 pytest 缓存，basetemp 在仓库外。
+工作目录：`<仓库根>`。各检查使用项目 .venv；禁用字节码与 pytest 缓存，basetemp 在仓库外。
 
 ### project-targeted
 
 ```powershell
-D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf8 -m pytest -q -p no:cacheprovider -rs --basetemp C:\Users\zex\.codex\visualizations\2026\10\15\01a13df0-98e2-72f3-b260-ccd645216690\phase45-acceptance-9232zdr0\targeted tests/test_review_capture.py
+<仓库根>\.venv\Scripts\python.exe -B -X utf8 -m pytest -q -p no:cacheprovider -rs --basetemp <用户目录>\.codex\visualizations\2026\10\15\01a13df0-98e2-72f3-b260-ccd645216690\phase45-acceptance-9232zdr0\targeted tests/test_review_capture.py
 ```
 
 实际退出码：0。
@@ -45,7 +45,7 @@ D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf
 ### deepseek-independent
 
 ```powershell
-D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf8 -m pytest -q -p no:cacheprovider -rs --rootdir D:\harness\camera_review\phase45-review --confcutdir D:\harness\camera_review\phase45-review --basetemp C:\Users\zex\.codex\visualizations\2026\10\15\01a13df0-98e2-72f3-b260-ccd645216690\phase45-acceptance-9232zdr0\deepseek-independent D:\harness\camera_review\phase45-review\test_phase45_independent.py
+<仓库根>\.venv\Scripts\python.exe -B -X utf8 -m pytest -q -p no:cacheprovider -rs --rootdir <仓库外临时目录>\camera_review\phase45-review --confcutdir <仓库外临时目录>\camera_review\phase45-review --basetemp <用户目录>\.codex\visualizations\2026\10\15\01a13df0-98e2-72f3-b260-ccd645216690\phase45-acceptance-9232zdr0\deepseek-independent <仓库外临时目录>\camera_review\phase45-review\test_phase45_independent.py
 ```
 
 实际退出码：0。
@@ -53,7 +53,7 @@ D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf
 ### codex-independent
 
 ```powershell
-D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf8 -m pytest -q -p no:cacheprovider -rs --rootdir C:\Users\zex\.codex\visualizations\2026\10\12\01a12ed0-11d7-7d13-be87-0c4bd858475b\phase45-review --confcutdir C:\Users\zex\.codex\visualizations\2026\10\12\01a12ed0-11d7-7d13-be87-0c4bd858475b\phase45-review --basetemp C:\Users\zex\.codex\visualizations\2026\10\15\01a13df0-98e2-72f3-b260-ccd645216690\phase45-acceptance-9232zdr0\codex-independent C:\Users\zex\.codex\visualizations\2026\10\12\01a12ed0-11d7-7d13-be87-0c4bd858475b\phase45-review\test_independent_contract.py
+<仓库根>\.venv\Scripts\python.exe -B -X utf8 -m pytest -q -p no:cacheprovider -rs --rootdir <用户目录>\.codex\visualizations\2026\10\12\01a12ed0-11d7-7d13-be87-0c4bd858475b\phase45-review --confcutdir <用户目录>\.codex\visualizations\2026\10\12\01a12ed0-11d7-7d13-be87-0c4bd858475b\phase45-review --basetemp <用户目录>\.codex\visualizations\2026\10\15\01a13df0-98e2-72f3-b260-ccd645216690\phase45-acceptance-9232zdr0\codex-independent <用户目录>\.codex\visualizations\2026\10\12\01a12ed0-11d7-7d13-be87-0c4bd858475b\phase45-review\test_independent_contract.py
 ```
 
 实际退出码：0。
@@ -61,7 +61,7 @@ D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf
 ### full-regression
 
 ```powershell
-D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf8 -m pytest -q -p no:cacheprovider -rs --basetemp C:\Users\zex\.codex\visualizations\2026\10\15\01a13df0-98e2-72f3-b260-ccd645216690\phase45-acceptance-9232zdr0\full
+<仓库根>\.venv\Scripts\python.exe -B -X utf8 -m pytest -q -p no:cacheprovider -rs --basetemp <用户目录>\.codex\visualizations\2026\10\15\01a13df0-98e2-72f3-b260-ccd645216690\phase45-acceptance-9232zdr0\full
 ```
 
 实际退出码：0。
@@ -69,7 +69,7 @@ D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf
 ### expectations
 
 ```powershell
-D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf8 tools/check_evaluation_expectations.py
+<仓库根>\.venv\Scripts\python.exe -B -X utf8 tools/check_evaluation_expectations.py
 ```
 
 实际退出码：0。
@@ -77,7 +77,7 @@ D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf
 ### smoke-trial-003
 
 ```powershell
-D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf8 src/review_capture.py D:\Projects\Python\camera-quality-diagnostics\data\reports\timed-capture\trial-003
+<仓库根>\.venv\Scripts\python.exe -B -X utf8 src/review_capture.py <仓库根>\data\reports\timed-capture\trial-003
 ```
 
 实际退出码：0。
@@ -85,7 +85,7 @@ D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf
 ### smoke-trial-004
 
 ```powershell
-D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf8 src/review_capture.py D:\Projects\Python\camera-quality-diagnostics\data\reports\timed-capture\trial-004
+<仓库根>\.venv\Scripts\python.exe -B -X utf8 src/review_capture.py <仓库根>\data\reports\timed-capture\trial-004
 ```
 
 实际退出码：0。
@@ -93,7 +93,7 @@ D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf
 ### module-smoke
 
 ```powershell
-D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf8 -m src.review_capture D:\Projects\Python\camera-quality-diagnostics\data\reports\timed-capture\trial-004
+<仓库根>\.venv\Scripts\python.exe -B -X utf8 -m src.review_capture <仓库根>\data\reports\timed-capture\trial-004
 ```
 
 实际退出码：0。
@@ -101,7 +101,7 @@ D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf
 ### junction-probe
 
 ```powershell
-D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf8 C:\Users\zex\.codex\visualizations\2026\10\15\01a13df0-98e2-72f3-b260-ccd645216690\phase45-acceptance-9232zdr0\probe_junction_no_cleanup.py
+<仓库根>\.venv\Scripts\python.exe -B -X utf8 <用户目录>\.codex\visualizations\2026\10\15\01a13df0-98e2-72f3-b260-ccd645216690\phase45-acceptance-9232zdr0\probe_junction_no_cleanup.py
 ```
 
 实际退出码：0。
@@ -109,7 +109,7 @@ D:\Projects\Python\camera-quality-diagnostics\.venv\Scripts\python.exe -B -X utf
 ## 原始证据位置
 
 ```text
-C:\Users\zex\.codex\visualizations\2026\10\15\01a13df0-98e2-72f3-b260-ccd645216690\phase45-acceptance-9232zdr0
+<用户目录>\.codex\visualizations\2026\10\15\01a13df0-98e2-72f3-b260-ccd645216690\phase45-acceptance-9232zdr0
 ```
 
 该目录包含 summary.json、before.json、after.json 与各检查同名 .log。本文便于直接从项目目录阅读，原始证据保留。

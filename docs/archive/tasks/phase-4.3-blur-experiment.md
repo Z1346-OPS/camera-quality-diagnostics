@@ -31,7 +31,7 @@
 ## 2. 实际命令
 
 ```powershell
-Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
+Set-Location '<仓库根>'
 
 # 新增测试
 .\.venv\Scripts\python.exe -m pytest -q tests\test_blur_experiment.py

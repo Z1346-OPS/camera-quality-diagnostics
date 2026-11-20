@@ -156,7 +156,7 @@ if ($LASTEXITCODE -ne 0) { throw "selector run failed with exit code $LASTEXITCO
 
 ```powershell
 $ErrorActionPreference = 'Stop'
-Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
+Set-Location '<仓库根>'
 if ($approvedSpecSha -cnotmatch '^[0-9a-f]{64}$') { throw 'Set approvedSpecSha from the user-approved delivery first' }
 
 @'
@@ -203,7 +203,7 @@ if ($LASTEXITCODE -ne 0) { throw 'spec contract check failed' }
 
 ```powershell
 $ErrorActionPreference = 'Stop'
-Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
+Set-Location '<仓库根>'
 
 $manifest = 'docs\tasks\evidence\phase-4.2-quality-qr-association\protected-sha256.txt'
 
@@ -298,7 +298,7 @@ foreach ($doc in $mutableDocs) {
 
 ```powershell
 $ErrorActionPreference = 'Stop'
-Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
+Set-Location '<仓库根>'
 
 # Class 3: newly approved files (section 6.8).
 $approvedNew = @(
@@ -359,13 +359,13 @@ Write-Host "new files all approved: $($added -join ', ')"
 
 ```powershell
 $ErrorActionPreference = 'Stop'
-Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
+Set-Location '<仓库根>'
 
 @'
 import hashlib, json, subprocess, sys
 from pathlib import Path
 
-ROOT = Path(r"D:\Projects\Python\camera-quality-diagnostics")
+ROOT = Path(r"<仓库根>")
 FROZEN = ROOT / "docs/tasks/evidence/phase-4.2-quality-qr-association/qr-stable-fields-oracle.json"
 SCRIPT = ROOT / "docs/tasks/evidence/phase-4.2-quality-qr-association/extract_qr_stable_fields.py"
 
@@ -426,7 +426,7 @@ if ($LASTEXITCODE -ne 0) { throw "oracle comparison failed" }
 
 ```powershell
 $ErrorActionPreference = 'Stop'
-Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
+Set-Location '<仓库根>'
 
 # $ErrorActionPreference does NOT stop on a non-zero exit code of a NATIVE command.
 # Every native command must be followed by an explicit $LASTEXITCODE check, and a
@@ -1007,7 +1007,7 @@ CLI 与评测链路、合成数据集与清单、`photo/`、`data/samples/`、`d
 - 以下首次执行者自测保留为历史记录；本轮独立复验见 §8.1。
 - 日期：2026-10-13。执行者自测 + 规格 4.3 的独立检查。
 - 环境：项目 `.venv`，Python 3.12.10 / OpenCV 5.0.0 / NumPy 2.5.3 / Pillow 12.3.0 / zxing-cpp 3.1.1；
-  同一项目路径 `D:\Projects\Python\camera-quality-diagnostics`。
+  同一项目路径 `<仓库根>`。
 
 | 检查 | 依据 | 结果 |
 | --- | --- | --- |

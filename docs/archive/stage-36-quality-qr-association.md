@@ -154,7 +154,7 @@ GUI / Web 服务、CLI 接入、批量入口、相机参数控制、实验数据
 ## 8. 复现命令
 
 ```powershell
-Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
+Set-Location '<仓库根>'
 
 # 关联层验收（B01–B18）
 .\.venv\Scripts\python.exe -m pytest -q tests\test_quality_qr_analysis.py

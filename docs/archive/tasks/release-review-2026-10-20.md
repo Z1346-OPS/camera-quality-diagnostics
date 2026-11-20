@@ -135,6 +135,6 @@ for mode, color, key in [("RGB", (0, 0, 0), (0, 0, 0)), ("L", 0, 0)]:
 | `src/analyze_image.py` | `dd246c36102f5c02331e26ba3862e4bdc86d0114c683030f460d3d2560cda9cb` |
 | `data/manifests/evaluation-synthetic-expectations.json` | `5ad8ef2b06ee3e43077eaf50faca8f4fd6d4461d5421a158b8985271bfb41a5d` |
 
-合成探针产物与 pytest 临时文件仅本机：`data/reports/release-review-*`。文档三类复核演示本轮输出在 `C:\Users\zex\AppData\Local\Temp\capture-review-demo-1g7okez4`；上述路径不是普通克隆交付内容。
+合成探针产物与 pytest 临时文件仅本机：`data/reports/release-review-*`。文档三类复核演示本轮输出在 `<用户目录>\AppData\Local\Temp\capture-review-demo-1g7okez4`；上述路径不是普通克隆交付内容。
 
 本轮未访问摄像头、未重新验证 Linux 设备、未修改历史图片/报告、未刷新期望、未暂存、未提交、未推送或发布。

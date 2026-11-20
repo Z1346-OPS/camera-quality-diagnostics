@@ -150,7 +150,7 @@ Linux/macOS 形态为 `.venv/bin/python`，但当前候选的 Linux 实机采集
 
 ### 8.5 固定 D 盘路径
 
-`docs/tasks/capture-review-walkthrough.md` 中的 `Set-Location 'D:\Projects\Python\camera-quality-diagnostics'` 与 `README.md` 早期示例中的 D 盘路径都是**开发者本机路径**。其他使用者应进入自己的项目根目录；演示不要求拥有作者本机的 `photo/` 实拍文件或历史 `data/reports/` 目录。
+`docs/tasks/capture-review-walkthrough.md` 中的 `Set-Location '<仓库根>'` 与 `README.md` 早期示例中的 D 盘路径都是**开发者本机路径**。其他使用者应进入自己的项目根目录；演示不要求拥有作者本机的 `photo/` 实拍文件或历史 `data/reports/` 目录。
 
 ### 8.6 助手可接收的材料
 

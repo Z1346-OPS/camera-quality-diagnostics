@@ -308,7 +308,7 @@ Ubuntu 在项目根使用已安装依赖的 `.venv`；输出目录须不存在�
 |---|---|
 | Python | **3.12.10**（官方 CPython，64 位） |
 | Python 安装位置 | `D:\DevTools\Python312` |
-| 虚拟环境 | `D:\Projects\Python\camera-quality-diagnostics\.venv` |
+| 虚拟环境 | `<仓库根>\.venv` |
 | pip 缓存 | `D:\DevCache\pip` |
 
 > 上表记录的是本机环境，不要求其他电脑使用完全相同的安装路径；重建环境前应核对项目依赖与本机 Python 版本。

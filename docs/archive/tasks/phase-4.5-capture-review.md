@@ -225,7 +225,7 @@
 7.1–7.6 的首轮自测记录**保留不改**；以下是修复经过，不把首次失败改写为首次通过。
 
 **Codex 独立反例文件**（只读使用，未修改）：
-`C:\Users\zex\.codex\visualizations\2026\10\12\01a12ed0-11d7-7d13-be87-0c4bd858475b\phase45-review\test_independent_contract.py`
+`<用户目录>\.codex\visualizations\2026\10\12\01a12ed0-11d7-7d13-be87-0c4bd858475b\phase45-review\test_independent_contract.py`
 
 **修复前复跑该反例文件**（仓库外 `--rootdir/--confcutdir/--basetemp`，`-B`、`PYTHONDONTWRITEBYTECODE=1`、`-p no:cacheprovider`）：
 `3 failed, 9 passed`，exit 1。失败项即三处声明反例：

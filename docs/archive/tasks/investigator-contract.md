@@ -3,7 +3,7 @@
 两个仓库通过 JSON 报告对接。此用例在摄像头项目的 Python 3.12 虚拟环境内运行，使用模拟设备、临时目录及固定合成 QR 样例。在 PowerShell 中将 `INVESTIGATOR_ROOT` 指向要核验的本地排查助手检出目录，再从摄像头项目根目录运行：
 
 ```powershell
-$env:INVESTIGATOR_ROOT = 'D:\AIProjects\projects\test_failure_investigator'
+$env:INVESTIGATOR_ROOT = '<排查助手仓库>'
 $caseDir = Join-Path ([IO.Path]::GetTempPath()) ('camera-contract-' + [guid]::NewGuid().ToString('N'))
 .\.venv\Scripts\python.exe -B -X utf8 -m pytest -q tools/test_investigator_contract.py --basetemp $caseDir
 Get-ChildItem -LiteralPath $caseDir -Recurse -Filter '*.md'

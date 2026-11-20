@@ -13,7 +13,7 @@
 - 未发现项目级 `AGENTS.md`，已按适用用户级规则处理；当前分支 `main`，HEAD `9fab64c`。README、`src/camera_test.py`、`src/verify_frame_metrics.py` 已修改；方向文档、阶段 31 文档、本地分析及配置模块和对应测试为未跟踪文件，均保留。
 - `src/metrics.py` 是数组指标核心；`src/camera_test.py` 仍是本地摄像头界面；`src/analyze_image.py` 是只读本地 JPEG/PNG 分析入口，不含 ROI、解码或权限。
 - 修改文档：新增主设计与本记录，在既有方向文档顶部说明新旧顺序关系，并更新阶段 31 下一步。没有改源码、测试、旧 CSV/JSON 或原图。
-- 当前本机运行 `.\.venv\Scripts\python.exe -m pytest -q -p no:cacheprovider --basetemp C:\Users\zex\Documents\ChatGPT\project1\camera-quality-stage0-baseline`：`162 passed in 6.73s`。此命令使用可写临时目录，避免默认 pytest 临时路径的沙箱限制；未进行真实手机或摄像头验证。
+- 当前本机运行 `.\.venv\Scripts\python.exe -m pytest -q -p no:cacheprovider --basetemp <用户目录>\Documents\ChatGPT\project1\camera-quality-stage0-baseline`：`162 passed in 6.73s`。此命令使用可写临时目录，避免默认 pytest 临时路径的沙箱限制；未进行真实手机或摄像头验证。
 
 ## 错误定位、局限与下一步
 

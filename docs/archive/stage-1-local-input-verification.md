@@ -38,9 +38,9 @@ CLI 错误在 stderr 显示码和提示，不打印成功 JSON。内存不足的
 
 ```powershell
 # 新入口测试
-.\.venv\Scripts\python.exe -B -m pytest tests\test_analyze_image.py -q -p no:cacheprovider --basetemp C:\Users\zex\Documents\ChatGPT\project1\camera-quality-stage1-20261002b
+.\.venv\Scripts\python.exe -B -m pytest tests\test_analyze_image.py -q -p no:cacheprovider --basetemp <用户目录>\Documents\ChatGPT\project1\camera-quality-stage1-20261002b
 # 完整旧功能回归与新测试
-.\.venv\Scripts\python.exe -B -m pytest -q -p no:cacheprovider --basetemp C:\Users\zex\Documents\ChatGPT\project1\camera-quality-stage1-full-20261002
+.\.venv\Scripts\python.exe -B -m pytest -q -p no:cacheprovider --basetemp <用户目录>\Documents\ChatGPT\project1\camera-quality-stage1-full-20261002
 ```
 
 当次结果分别为 `39 passed in 3.72s` 和 `189 passed in 10.09s`。以后在普通本机终端可按 README 的 `python -m pytest` 运行；若再次使用 `--basetemp`，选择新的临时目录，pytest 会清理指定的临时根。源码与测试的内存编译检查通过。项目没有配置独立 lint、类型检查或构建命令。
@@ -99,8 +99,8 @@ CLI 错误在 stderr 显示码和提示，不打印成功 JSON。内存不足的
 使用项目虚拟环境运行（临时目录选用新的可写目录）：
 
 ```powershell
-.\.venv\Scripts\python.exe -B -X utf8 -m pytest tests\test_analyze_image.py -q -p no:cacheprovider --basetemp C:\Users\zex\Documents\ChatGPT\project1\exif-zero-tests-20261002-1
-.\.venv\Scripts\python.exe -B -X utf8 -m pytest -q -p no:cacheprovider --basetemp C:\Users\zex\Documents\ChatGPT\project1\exif-zero-full-20261002-1
+.\.venv\Scripts\python.exe -B -X utf8 -m pytest tests\test_analyze_image.py -q -p no:cacheprovider --basetemp <用户目录>\Documents\ChatGPT\project1\exif-zero-tests-20261002-1
+.\.venv\Scripts\python.exe -B -X utf8 -m pytest -q -p no:cacheprovider --basetemp <用户目录>\Documents\ChatGPT\project1\exif-zero-full-20261002-1
 ```
 
 实际结果：`45 passed in 6.45s`；完整回归 `195 passed in 8.62s`，无失败或跳过。源码与测试使用内存编译检查，不生成项目内缓存。项目未配置独立 build、lint 或 type-check 命令，因此未虚构这些工具的验证结果。
