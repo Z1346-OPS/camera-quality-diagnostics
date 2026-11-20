@@ -1,8 +1,8 @@
 # camera-quality-diagnostics — 项目规则
 
-> 项目专属规则。跨项目通用约束见 `C:\Users\zex\.codex\AGENTS.md`。
+> 项目专属规则。跨项目通用约束见用户级全局规则 `~/.codex/AGENTS.md`。
 > 下面的路径与命令均已在本机实测；测试数量随用例变化，2026-10-20 的本地记录为 508 passed、4 skipped
-> （见 `docs/tasks/delivery-candidate-2026-10-20.md`；跳过原因是 Windows 符号链接权限不足）。
+> （见 `docs/archive/tasks/delivery-candidate-2026-10-20.md`；跳过原因是 Windows 符号链接权限不足）。
 
 ## 项目定位
 
@@ -21,12 +21,12 @@
 ## 能力状态判断（防误判）
 
 判断某项能力是否已实现时，**以最新的核对/设计记录为准**：能力边界看
-`docs/stage-32-docs-vs-code-consistency.md`，数据集与 CI 回归看
-`docs/stage-33-synthetic-regression-dataset.md`；**项目数字（提交数、用例数、仓库体积等）
-看 `docs/stage-34-project-capability-matrix.md`，不要凭记忆说数字。**
-不要依据 `docs/label-reading-project-design.md`（2026-10-01 的历史记录）或旧提交信息。
+`docs/archive/stage-32-docs-vs-code-consistency.md`，数据集与 CI 回归看
+`docs/archive/stage-33-synthetic-regression-dataset.md`；**项目数字（提交数、用例数、仓库体积等）
+看 `docs/archive/stage-34-project-capability-matrix.md`，不要凭记忆说数字。**
+不要依据 `docs/archive/label-reading-project-design.md`（2026-10-01 的历史记录）或旧提交信息。
 
-交付候选身份、支持范围与当前验证依据看 `docs/tasks/delivery-candidate-2026-10-20.md`；
+交付候选身份、支持范围与当前验证依据看 `docs/archive/tasks/delivery-candidate-2026-10-20.md`；
 **未提交改动不属于 HEAD**，不能把当前 HEAD 单独称为包含最新修正的版本。
 
 已实现能力的准确位置：
@@ -44,7 +44,7 @@
 ## 环境与命令（实测）
 
 - Python **3.12.10**，虚拟环境在项目根的 `.venv`。一律使用 `.venv`，不要用系统 Python。
-- 项目根：`D:\Projects\Python\camera-quality-diagnostics`
+- 项目根：仓库根目录（本机即克隆位置）
   **会话 cwd 必须 = 项目根**（见全局规则中的沙箱说明）。
 
 ```powershell
@@ -74,21 +74,21 @@
 - `tests/` — pytest 用例，与 `src/` 模块同名对应
 - `tools/` — 辅助**生成、校验、维护**数据与开发流程的脚本（如合成数据集生成、评测期望闸门）；
   **不是产品入口**，不要当作业务代码，也不要让 `src/` 依赖它
-- `docs/` — 记录文件 `stage-NN-*.md`；NN 是**文档序号**，不是业务阶段号（见下节）
+- `docs/` — 公开文档；`docs/archive/` — 开发日志，含历史记录文件 `stage-NN-*.md` 与 `tasks/`；NN 是**文档序号**，不是业务阶段号（见下节）
 - `data/reports/` — 生成的 JSON / CSV；`data/samples/` — 合成样例；`data/manifests/` — 入库的评测清单与期望值
 - `photo/` — 实拍原图
 
 ## 文档编号规范
 
 - `stage-NN-*.md` 里的 NN 只表示「这是第几份记录」，**不表示业务阶段**。
-- **适用范围**：本规范只管 `docs/` 顶层的阶段性设计、验证、总结文档；
-  `docs/tasks/` 保持任务管理格式，**不受 stage 编号约束**。
+- **适用范围**：本规范只管 `docs/` 与 `docs/archive/` 各自顶层的阶段性设计、验证、总结文档；
+  `docs/archive/tasks/` 保持任务管理格式，**不受 stage 编号约束**。
 - NN 用两位数，从 `01` 起，只增不改；作废的编号不复用（在文档正文里注明作废即可）。
 - 业务阶段号只能写在标题或正文，且必须同时给出文档序号，例如：
   `业务阶段 1（文档 31）：通用图片分析入口`。
-- 新增文档：NN = `docs/` 下已有 `stage-NN-*` 的最大 NN + 1（截至 2026-10-20 为 `stage-39-`）。
+- 新增文档：扫描 `docs/` 和 `docs/archive/` **各自顶层**的 `stage-NN-*.md`，按数值取最大 NN 再加 1（截至 2026-11-20 最大为 39，下一份为 `stage-40-`）。
 - 引用历史文档时**只写文件名**，不要用「阶段 N」指代。
-- 已知历史偏差（**不改文件名、不重写历史**）：
+- 已知历史偏差（**保留原文件名、编号和结论**；只允许归档所需的路径脱敏与链接修复；这些文件已归档到 `docs/archive/`）：
   - `stage-0-design-and-learning.md`、`stage-1-local-input-verification.md`、
     `stage-2-roi-qr-baseline.md` 用一位数编号；
   - `stage-31-local-image-analysis.md` 文件序号是 31、正文却自称「阶段 1」；

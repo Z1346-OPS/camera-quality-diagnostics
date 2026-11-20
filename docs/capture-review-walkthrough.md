@@ -9,7 +9,7 @@
 在项目根目录的 PowerShell 中执行。每次新建一个系统临时目录，保留输入与结果，不覆盖旧文件。三份输入都是演示夹具，不是真实摄像头采集记录。
 
 ```powershell
-Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
+# 在仓库根目录执行
 $env:PYTHONDONTWRITEBYTECODE = '1'
 @'
 import hashlib
@@ -102,7 +102,7 @@ print("演示数据与完整JSON：", output)
 以下命令会访问摄像头并保存图片；合成演示没有执行它们。使用唯一的新目录，完成采集后再离线复核：
 
 ```powershell
-Set-Location 'D:\Projects\Python\camera-quality-diagnostics'
+# 在仓库根目录执行
 $taskDir = Join-Path 'data\reports\timed-capture' ('demo-' + [guid]::NewGuid().ToString('N'))
 .\.venv\Scripts\python.exe -X utf8 src\run_capture.py --camera-index 0 --duration 10 --interval 5 --output-dir $taskDir
 if ($LASTEXITCODE -ne 0) { throw '采集未成功结束；请查看错误及任务状态，不按completed任务处理。' }
@@ -117,4 +117,4 @@ if ($LASTEXITCODE -ne 0) { throw '采集未成功结束；请查看错误及任�
 
 可以展示：输入一个目录如何代替手动填写多处路径；缺图与指标差异如何定位到具体帧；正常结果与异常结果如何分别解释。
 
-本演示不新增质量评分、QR流程、网络传输或数据库。算法定义、测试数量与各环境验证记录仍以[能力矩阵](../stage-34-project-capability-matrix.md)和[Phase 4.5验收记录](phase-4.5-capture-review.md)为准。
+本演示不新增质量评分、QR流程、网络传输或数据库。算法定义、测试数量与各环境验证记录仍以[能力矩阵](archive/stage-34-project-capability-matrix.md)和[Phase 4.5验收记录](archive/tasks/phase-4.5-capture-review.md)为准。

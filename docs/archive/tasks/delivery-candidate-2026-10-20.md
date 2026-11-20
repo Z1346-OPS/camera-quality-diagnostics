@@ -1,6 +1,6 @@
 # 交付候选历史说明（2026-10-20）
 
-> 2026-10-27 补记：下文是提交前的候选快照。列出的修改与新增文件已随 `6dba7c799754e90ef687d48fa99dca61445e58f5` 提交并推送；[Actions #14](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/39424609746) 为 512 passed、两组精确闸门通过。当前交付状态见[公开验收汇总](../verification/acceptance-summary-2026-10-27.md)。正文中的“未提交”“待纳入”仅描述当时状态。
+> 2026-10-27 补记：下文是提交前的候选快照。列出的修改与新增文件已随 `6dba7c799754e90ef687d48fa99dca61445e58f5` 提交并推送；[Actions #14](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/39424609746) 为 512 passed、两组精确闸门通过。当前交付状态见[公开验收汇总](../../verification/acceptance-summary-2026-10-27.md)。正文中的“未提交”“待纳入”仅描述当时状态。
 
 ## 目标与身份
 

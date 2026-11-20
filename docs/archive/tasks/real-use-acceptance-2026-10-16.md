@@ -35,7 +35,7 @@
 | 2 | 6 | 165.4 | 151.6 | 210.3 | 887 |
 | 3 | 6 | 164.9 | 151.7 | 204.0 | 888 |
 
-![全部正式样本的测量曲线](../../data/reports/acceptance-20261016-135457-6277a5b2/capture-observations.png)
+![全部正式样本的测量曲线](../../../data/reports/acceptance-20261016-135457-6277a5b2/capture-observations.png)
 
 每轮首帧明显比后续帧亮；后续帧亮度约 151.6–151.9。该现象提示开机后的画面可能存在过渡过程，但未锁定或记录设备曝光设置，也未排除目标变化，不能确认原因。首帧和后五帧的拆分是事后探索性描述，全部帧仍保留并参与原始统计。清晰度变化不能直接解释为失焦或硬件故障。
 
@@ -68,16 +68,16 @@
 
 ## 证据位置与复跑
 
-运行目录：`data/reports/acceptance-20261016-135457-6277a5b2/`，按既有规则被 Git 忽略；原始图片和 QR 载荷未提交或上传。
+运行目录：`data/reports/acceptance-20261016-135457-6277a5b2/`，按既有规则被 Git 忽略；原始图片和 QR 载荷未提交或上传。下列链接与上方曲线图均为**本机证据，未入库**，克隆的仓库中无法打开。
 
-- [完整验收汇总](../../data/reports/acceptance-20261016-135457-6277a5b2/SUMMARY.md)
-- [逐帧独立测量 CSV](../../data/reports/acceptance-20261016-135457-6277a5b2/measurements.csv)
-- [原环境命令和退出码](../../data/reports/acceptance-20261016-135457-6277a5b2/basic-checks-final.json)
-- [新环境命令和退出码](../../data/reports/acceptance-20261016-135457-6277a5b2/rebuild-checks.json)
-- [三轮正式采集及核对](../../data/reports/acceptance-20261016-135457-6277a5b2/camera-rounds.json)
-- [真实 QR 整图汇总](../../data/reports/acceptance-20261016-135457-6277a5b2/physical-qr-summary.json)
-- [真实 QR 人工 ROI 汇总](../../data/reports/acceptance-20261016-135457-6277a5b2/physical-qr-roi-summary.json)
-- [保护文件摘要检查](../../data/reports/acceptance-20261016-135457-6277a5b2/final-protection-check.json)
+- [完整验收汇总](../../../data/reports/acceptance-20261016-135457-6277a5b2/SUMMARY.md)
+- [逐帧独立测量 CSV](../../../data/reports/acceptance-20261016-135457-6277a5b2/measurements.csv)
+- [原环境命令和退出码](../../../data/reports/acceptance-20261016-135457-6277a5b2/basic-checks-final.json)
+- [新环境命令和退出码](../../../data/reports/acceptance-20261016-135457-6277a5b2/rebuild-checks.json)
+- [三轮正式采集及核对](../../../data/reports/acceptance-20261016-135457-6277a5b2/camera-rounds.json)
+- [真实 QR 整图汇总](../../../data/reports/acceptance-20261016-135457-6277a5b2/physical-qr-summary.json)
+- [真实 QR 人工 ROI 汇总](../../../data/reports/acceptance-20261016-135457-6277a5b2/physical-qr-roi-summary.json)
+- [保护文件摘要检查](../../../data/reports/acceptance-20261016-135457-6277a5b2/final-protection-check.json)
 
 本机沙箱中默认临时目录存在访问限制，可在**新的、尚不存在的**临时目录中复跑，不需要修改系统权限。例如：
 
