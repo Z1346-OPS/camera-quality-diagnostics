@@ -78,7 +78,7 @@ Linux 将解释器替换为 `.venv/bin/python`。
 | 修复前后 | 先写测试、后修复。修复前，核心用例在旧代码上行为失败（`DID NOT RAISE CaptureTaskError`）；修复后，该组 12 个目标用例全部通过。记录时间 2026-10-17，环境为 Windows 11、Python 3.12.10、OpenCV 5.0.0、pytest 9.1.1，代码为基线 `81b86e6` 加上尚未提交的修复；这份修复中的适配器代码与 `6dba7c7` 一致。数字组成见[首页证据](docs/verification/stage1-readme-evidence-2026-11-19.md#5-缺陷案例-f01-的修复前后记录) |
 | 结论边界 | 只修复了这条状态传播缺陷，**不等于**确认了历史近黑画面的根因 |
 
-详见[亮点说明 · 故障注入与可控环境](docs/highlights.md#2-故障注入与可控环境)。同一轮修正中的报告独占发布见[亮点说明 · 证据完整性](docs/highlights.md#3-证据完整性)；PNG 透明色处理等其余修正见开发日志中的[发布修正记录](docs/archive/stage-39-release-review-fixes.md)。
+详见[亮点说明 · 故障注入与可控环境](docs/highlights.md#2-故障注入与可控环境)。同一轮修正中的报告独占发布见[亮点说明 · 证据完整性](docs/highlights.md#3-证据完整性)；PNG 透明色处理等其余修正见开发日志中的[发布修正记录](docs/archive/stage-39-release-review-fixes.md)。撤销这处修复的补丁和失败输出见[测试策略 · F01 回放](docs/testing-strategy.md#f01失败的取帧被计为成功)。
 
 ## 验证边界
 
@@ -101,6 +101,7 @@ Linux 将解释器替换为 `.venv/bin/python`。
 | `.github/workflows/tests.yml` | Ubuntu / Python 3.12 自动回归 |
 
 - [亮点说明](docs/highlights.md)：oracle 设计、故障注入、证据完整性、如实报告，各附证据
+- [测试策略与缺陷回放](docs/testing-strategy.md)：风险与测试的对照表；撤销 F01、F03、F07 的修复后，指定测试如何失败，附可复现补丁
 - [架构与退出码契约](docs/architecture.md)
 - [公开验收汇总与 CI 证据](docs/verification/acceptance-summary-2026-10-27.md)
 - [首页证据：示例运行与逐样本结果](docs/verification/stage1-readme-evidence-2026-11-19.md)

@@ -1,0 +1,13 @@
+diff --git a/src/review_capture.py b/src/review_capture.py
+index 1717b9c..f9c4215 100644
+--- a/src/review_capture.py
++++ b/src/review_capture.py
+@@ -287,7 +287,7 @@ class CaptureTaskReviewer:
+                 hash_issue = f"文件摘要 {digest} 与任务记录 {sample['image_sha256']} 不同"
+ 
+             compared = compare_frame_metrics(
+-                run_id, frame_count, task_dir, quality_path, color_path, png_bytes=png_bytes
++                run_id, frame_count, task_dir, quality_path, color_path
+             )
+         except (OSError, ValueError, cv2.error) as error:
+             operation = "无法读取留证图片" if image_sha256_match is None else "无法重算指标"
