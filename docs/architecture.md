@@ -12,7 +12,7 @@
 | 冻结期望闸门 | `tools/check_evaluation_expectations.py` | — | 运行真实评测 CLI，把报告与 `data/manifests/evaluation-synthetic-expectations.json` 精确比对 |
 | 定时采集 | `src/run_capture.py` | `capture_task.py`、`frame_evidence.py`、`report.py` | 按时长和间隔采集，保存留证 PNG、质量与颜色 CSV、任务报告 |
 | 采集复核 | `src/review_capture.py` | `verify_frame_metrics.py` | 只读复核一个采集任务目录：CSV 配对、PNG 摘要、从 PNG 重算指标 |
-| 质量与 QR 关联 | `src/quality_qr_analysis.py` | `quality_analysis.py` | 把同一张图、同一区域的质量测量与 QR 报告关联，只输出测量事实，不给出质量结论 |
+| 质量与 QR 关联 | — | `src/quality_qr_analysis.py` 的 Python 函数 `analyze_quality_and_qr()`（没有命令行入口），使用 `quality_analysis.py` | 把同一张图、同一区域的质量测量与 QR 报告关联，只输出测量事实，不给出质量结论 |
 
 `src/` 下还有早期的交互采集与只读汇总脚本，如 `camera_test.py`、`main.py`、`check_reports.py`、`summarize_*.py`，它们不在上述主链路中。`tools/` 是生成与校验脚本，`src/` 不依赖它。
 
@@ -47,7 +47,7 @@ QR 识读与回归
 
 `truth_check` 的规则：没有独立答案时为 `not_provided`。只有解码汇总为单一有效码（`decoded`），且载荷与答案逐字节相同，才为 `correct`。见 `src/label_analysis.py` 的 `check_expected()`。
 
-所有 JSON 输出都以独占方式新建文件；目标已存在时报错，不覆盖历史报告。
+写入磁盘的报告以独占方式新建，目标已存在时报错；`src/review_capture.py` 的复核 CLI 把 JSON 输出到 stdout，不写文件。
 
 ## 退出码
 
