@@ -36,7 +36,11 @@
 ## 冻结证据与摘要核对
 
 - **`tasks/evidence/phase-4.2-quality-qr-association/protected-sha256.txt` 是 `afdca8f` 时的快照。** 它记录的是当时的工作区：HEAD 为 `afdca8f`，另有 7 项未提交改动，文件头部有说明。其中列出的 170 个路径和摘要指当时的文件，核对时请按原提交与原路径进行，例如 `git show afdca8f:<原路径> | sha256sum`，不要拿当前工作区的文件去比。文件头列出的那几项已修改或未跟踪的文件，当时的字节不在 git 中，无法这样还原。
-- **该目录有 3 个文件仍被测试读取。** 它们是 `protected-sha256.txt`、`qr-stable-fields-oracle.json` 和 `extract_qr_stable_fields.py`，被 `tests/test_blur_experiment.py` 当作冻结资产：测试在实验前后计算它们的 SHA-256 并断言不变。移动这些文件时，必须同步修改测试中的路径。
+- **该目录有 3 个文件仍被测试读取。** 它们是 `protected-sha256.txt`、`qr-stable-fields-oracle.json` 和 `extract_qr_stable_fields.py`，涉及两个测试文件：
+  - `tests/test_blur_experiment.py` 把这 3 个文件当作冻结资产，在实验前后计算 SHA-256 并断言不变；
+  - `tests/test_quality_qr_analysis.py` 读取 `qr-stable-fields-oracle.json` 作为只读 oracle，并核对 `extract_qr_stable_fields.py` 的摘要。
+
+  移动这些文件时，两个测试文件中的路径都要同步修改。
 - **有 3 份记录的 SHA-256 不再与当前字节一致。** 同一目录下的 `README.md`、`README.phase-4.2-baseline.md`、`specification-review-snapshot.md` 做过占位符替换。其他记录钉住的是它们的原始字节，应以 `120d8a3` 及原路径 `docs/tasks/evidence/phase-4.2-quality-qr-association/` 为准，例如：
 
   ```bash
