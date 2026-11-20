@@ -1,6 +1,6 @@
 # 测试策略与缺陷回放
 
-本页回答两个问题：每类风险由哪条测试负责；这些测试是否真的能抓住缺陷。第二个问题用**缺陷回放**回答：把已修复缺陷的修复撤销，确认指定测试失败，失败原因就是该缺陷；恢复修复后再确认通过。
+本页回答两个问题：每类风险由哪条测试负责；这些测试是否真的能抓住缺陷。第二个问题用**缺陷回放**回答：把已修复缺陷的修复撤销，确认至少有一条指定测试因该缺陷失败；恢复修复后再确认通过。
 
 默认测试入口是 `pytest`，`pytest.ini` 设置 `testpaths = tests`，CI 在 Ubuntu 上额外运行冻结期望闸门（见 `.github/workflows/tests.yml`）。
 
@@ -39,10 +39,12 @@ F03、F07 换成对应的补丁和测试文件即可。下列结果是 2026-11-2
 
 ### F01：失败的取帧被计为成功
 
-- **缺陷**：底层 `grab()` 成功、`retrieve()` 返回 False，但输出数组非空。`cv2.VideoCapture.read()` 只看数组是否为空，于是这次失败被当成有效帧。
+- **缺陷**：底层 `grab()` 成功、`retrieve()` 返回 False，但输出数组非空。OpenCV 的 `VideoCapture.read()` 在 `grab()` 成功后不看 `retrieve()` 的返回值，只按输出是否为空判定成功（`grab()` 失败时会清空输出），所以修复前的默认路径把这次失败当成了有效帧。
 - **修复**：`src/capture_task.py` 的默认工厂 `_default_camera_factory` 用 `_GrabRetrieveCamera` 包装设备，分别检查两个返回值。
-- **撤销**：[`F01-undo-fix.patch`](defect-replay/F01-undo-fix.patch) 让默认工厂直接返回底层设备，不再包装，恢复修复前的读取路径。
-- **结果**：`tests/test_capture_task.py` 中 8 failed、107 passed。核心用例的失败就是缺陷本身：取帧失败的任务没有报错，而是跑完了。
+- **撤销**：[`F01-undo-fix.patch`](defect-replay/F01-undo-fix.patch) 让默认工厂不再接入 `_GrabRetrieveCamera`，直接返回底层设备，恢复修复前的读取路径；适配器类本身和后端选择保留。
+- **结果**：`tests/test_capture_task.py` 中 8 failed、107 passed。
+  - **3 项复现了误判成功**：核心用例 `test_default_factory_retrieve_failure_is_read_failed` 和两项 `retrieve_failed` 平台用例，均为 `DID NOT RAISE`，即取帧失败的任务没有报错，而是跑完了。
+  - **另 5 项是结构断言**：`normal`、`grab_failed` 用例在 `backend.read_calls == 0` 处失败，说明默认路径又调用了底层 `read()`；这 5 项的业务结果本身没有错。
 
 ```text
 >       with pytest.raises(CaptureTaskError) as excinfo:
@@ -50,13 +52,11 @@ E       Failed: DID NOT RAISE CaptureTaskError
 FAILED tests/test_capture_task.py::test_default_factory_retrieve_failure_is_read_failed
 ```
 
-其余 7 项失败中，`retrieve_failed` 平台用例的原因同样是 `DID NOT RAISE`；`normal` 和 `grab_failed` 用例在断言 `backend.read_calls == 0` 时失败，也就是检测到默认路径又调用了那个会误报成功的 `read()`。
-
 ### F03：PNG 透明色没有按白底处理
 
 - **缺陷**：RGB 或 L 模式的 PNG 可以用 tRNS 指定一种透明色。修复前只对调色板（P）模式识别这种透明，RGB/L 的透明像素按原色参与测量，改变了测量输入。
 - **修复**：`src/analyze_image.py` 的 `load_normalized_image` 对所有带 `transparency` 信息的图像走白底合成。
-- **撤销**：[`F03-undo-fix.patch`](defect-replay/F03-undo-fix.patch) 恢复为只判断 P 模式。
+- **撤销**：[`F03-undo-fix.patch`](defect-replay/F03-undo-fix.patch) 恢复为只对 P 模式识别 tRNS 透明色；RGBA/LA 的 alpha 处理不受影响。
 - **结果**：`tests/test_analyze_image.py` 中 6 failed、45 passed，失败的正是两组透明色用例的全部 6 个参数组合。透明像素读成了原色 0，而不是白底 255：
 
 ```text
@@ -70,7 +70,7 @@ E        [0, 1, 0]: 0 (ACTUAL), 255 (DESIRED)
 - **缺陷**：离线复核先读一次 PNG 算 SHA-256，再由 `compare_frame_metrics()` 重新读文件算指标。两次读取之间文件被替换，摘要会来自旧文件，指标会来自新文件。
 - **修复**：`src/review_capture.py` 只读一次，用同一份字节算摘要，并通过 `png_bytes=` 交给重算。
 - **撤销**：[`F07-undo-fix.patch`](defect-replay/F07-undo-fix.patch) 去掉 `png_bytes=` 参数，让重算再次读文件。
-- **结果**：`tests/test_review_capture.py` 中 1 failed、23 passed、4 skipped（跳过的是符号链接用例，见下节）。测试中，任务记录的亮度是 200，原图实际是 100，第一次读取后文件被换成亮度 200 的图。撤销修复后，摘要与原记录一致，重算又读到了替换后的图，两者拼在一起，复核错误地给出了“一致”：
+- **结果**：`tests/test_review_capture.py` 中 1 failed、23 passed、4 skipped（跳过的是符号链接用例，见下节）。测试中，质量 CSV 记录的亮度是 200，任务 JSON 里记的是原 PNG 的 SHA-256，原图实际亮度是 100，第一次读取后文件被换成亮度 200 的图。撤销修复后，摘要与原记录一致，重算又读到了替换后的图，两者拼在一起，复核错误地给出了“一致”：
 
 ```text
 >       assert result["verification_status"] == "inconsistent"
@@ -87,4 +87,4 @@ FAILED tests/test_review_capture.py::test_png_replacement_after_read_cannot_mix_
 - **真实 OpenCV 设备的取帧失败**：F01 的回归测试用假设备模拟 DirectShow 的行为，没有在真实设备上稳定复现 `retrieve()` 失败的场景；修复也不等于确认历史近黑画面的根因。
 - **不支持硬链接的文件系统**：报告发布在这种环境下的报错只通过注入 `os.link` 失败来测试，没有在真实的此类文件系统上运行。
 - **`tools/` 下的联合测试**：`tools/test_investigator_contract.py` 不在 `testpaths` 内，默认 `pytest` 和 CI 都不运行它。
-- **实拍 QR 的识读率**：没有独立答案的实拍图只记录读出或未读出，不判定正确，也没有统计识读率。
+- **实拍 QR 的识读率**：实拍批次没有独立答案，只记录单一读出、歧义和解码错误的数量（见[验收汇总](verification/acceptance-summary-2026-10-27.md)），不判定正确，也不代表实际场景的识读率。
