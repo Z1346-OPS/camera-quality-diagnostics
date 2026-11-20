@@ -4,7 +4,7 @@
 
 [![tests](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/workflows/tests.yml/badge.svg)](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/workflows/tests.yml)
 
-**结果入口：** [有证据的结果](#有证据的结果)（QR 回归：baseline 与内部降采样搜索的配对比较） · [缺陷案例 F01](#缺陷案例-f01失败的取帧被计为成功) · [验证边界](#验证边界) · [逐样本证据](docs/verification/stage1-readme-evidence-2026-11-19.md)
+**结果入口：** [有证据的结果](#有证据的结果)（QR 回归：baseline 与内部降采样搜索的配对比较） · [缺陷案例 F01](#缺陷案例-f01失败的取帧被计为成功) · [验证边界](#验证边界) · [逐样本证据](docs/verification/stage1-readme-evidence-2026-11-19.md) · [亮点说明](docs/highlights.md)（oracle、故障注入、证据完整性、如实报告）
 
 ## 可运行示例：无需摄像头
 
@@ -65,7 +65,7 @@ Linux 将解释器替换为 `.venv/bin/python`。
 - 两组共 46 张，都是程序生成的固定样本。失败样本保留在分母里。
 - 改进的 6 张是两组 `noise-large` 退化族的第 21–23 号样本：baseline `not_decoded`，启用降采样搜索后 `correct`。
 - **test 组参加过历史回归，不是未见数据的盲测**，数字不代表实拍场景的识读率。
-- 闸门按样本 ID 比对图片与答案的 SHA-256，再逐区域核对结果。即使两个样本成败互换、总数不变，也会报出具体样本。见[数据集与闸门](docs/stage-33-synthetic-regression-dataset.md)。
+- 闸门按样本 ID 比对图片与答案的 SHA-256，再逐区域核对结果。即使两个样本成败互换、总数不变，也会报出具体样本。见[亮点说明 · Oracle 设计](docs/highlights.md#1-oracle-设计)。
 
 ## 缺陷案例 F01：失败的取帧被计为成功
 
@@ -78,7 +78,7 @@ Linux 将解释器替换为 `.venv/bin/python`。
 | 修复前后 | 先写测试、后修复。修复前，核心用例在旧代码上行为失败（`DID NOT RAISE CaptureTaskError`）；修复后，该组 12 个目标用例全部通过。记录时间 2026-10-17，环境为 Windows 11、Python 3.12.10、OpenCV 5.0.0、pytest 9.1.1，代码为基线 `81b86e6` 加上尚未提交的修复；这份修复中的适配器代码与 `6dba7c7` 一致。数字组成见[首页证据](docs/verification/stage1-readme-evidence-2026-11-19.md#5-缺陷案例-f01-的修复前后记录) |
 | 结论边界 | 只修复了这条状态传播缺陷，**不等于**确认了历史近黑画面的根因 |
 
-详见[读取边界防护](docs/stage-37-read-failure-guard.md)。同一轮修正还包括报告独占发布与 PNG 透明色处理，见[发布修正](docs/stage-39-release-review-fixes.md)。
+详见[亮点说明 · 故障注入与可控环境](docs/highlights.md#2-故障注入与可控环境)。同一轮修正中的报告独占发布见[亮点说明 · 证据完整性](docs/highlights.md#3-证据完整性)；PNG 透明色处理等其余修正见开发日志中的[发布修正记录](docs/archive/stage-39-release-review-fixes.md)。
 
 ## 验证边界
 
@@ -97,16 +97,15 @@ Linux 将解释器替换为 `.venv/bin/python`。
 | `tools/` | 合成样本生成、精确期望闸门与受控模糊实验 |
 | `data/samples/`、`data/manifests/` | 入库合成数据与评测清单 |
 | `data/experiments/` | 固定模糊实验的计划、结果和退化样本 |
-| `docs/` | 验收汇总、设计说明、使用指南与历史阶段记录 |
+| `docs/` | 公开文档（见下）；`docs/archive/` 为开发日志 |
 | `.github/workflows/tests.yml` | Ubuntu / Python 3.12 自动回归 |
 
+- [亮点说明](docs/highlights.md)：oracle 设计、故障注入、证据完整性、如实报告，各附证据
+- [架构与退出码契约](docs/architecture.md)
 - [公开验收汇总与 CI 证据](docs/verification/acceptance-summary-2026-10-27.md)
 - [首页证据：示例运行与逐样本结果](docs/verification/stage1-readme-evidence-2026-11-19.md)
-- [项目能力矩阵](docs/stage-34-project-capability-matrix.md)
-- [详细使用与历史阶段指南](docs/project-guide.md)
-- [离线采集复核演示](docs/tasks/capture-review-walkthrough.md)：复现正常、缺失和篡改输入的处理流程
-- [跨仓复验用例](docs/tasks/investigator-contract.md)：同时检出排查助手时可运行
-- [简历项目描述与数字口径](docs/resume-project-summary.md)
+- [离线采集复核演示](docs/capture-review-walkthrough.md)：复现正常、缺失和篡改输入的处理流程
+- [开发日志归档](docs/archive/README.md)：按时间保留的原始记录，不代表当前能力
 
 `photo/`、`data/reports/` 和 `.venv/` 保留在本地；公开验收汇总不包含私人画面或二维码载荷。
 

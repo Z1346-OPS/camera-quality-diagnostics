@@ -31,7 +31,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SAMPLES = ROOT / "data" / "samples"
 SYNTHETIC = SAMPLES / "synthetic-qr-v1" / "development"
 TEST_SPLIT = SAMPLES / "synthetic-qr-v1" / "test"
-EVIDENCE = ROOT / "docs" / "tasks" / "evidence" / "phase-4.2-quality-qr-association"
+EVIDENCE = ROOT / "docs" / "archive" / "tasks" / "evidence" / "phase-4.2-quality-qr-association"
 ORACLE = EVIDENCE / "qr-stable-fields-oracle.json"
 
 STAGE2 = SAMPLES / "stage2-known-qr.png"

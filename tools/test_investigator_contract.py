@@ -1,4 +1,4 @@
-"""两个本地仓库的可选联合回归。运行方式见 docs/tasks/investigator-contract.md。"""
+"""两个本地仓库的可选联合回归。运行方式见 docs/archive/tasks/investigator-contract.md。"""
 
 import json
 import os

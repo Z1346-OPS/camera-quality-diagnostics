@@ -37,9 +37,9 @@ VOLATILE_PATHS = ("analysis_id", "analyzed_at", "analysis_duration_seconds",
 
 # 原资产与冻结证据：本实验不得改动其中任何一项。
 FROZEN_ASSETS = [
-    PROJECT_ROOT / "docs/tasks/evidence/phase-4.2-quality-qr-association/protected-sha256.txt",
-    PROJECT_ROOT / "docs/tasks/evidence/phase-4.2-quality-qr-association/qr-stable-fields-oracle.json",
-    PROJECT_ROOT / "docs/tasks/evidence/phase-4.2-quality-qr-association/extract_qr_stable_fields.py",
+    PROJECT_ROOT / "docs/archive/tasks/evidence/phase-4.2-quality-qr-association/protected-sha256.txt",
+    PROJECT_ROOT / "docs/archive/tasks/evidence/phase-4.2-quality-qr-association/qr-stable-fields-oracle.json",
+    PROJECT_ROOT / "docs/archive/tasks/evidence/phase-4.2-quality-qr-association/extract_qr_stable_fields.py",
 ]
 
 

@@ -180,7 +180,7 @@ class CaptureConfig:
 class _GrabRetrieveCamera:
     """默认摄像头读取边界的薄适配：显式传播 ``grab()``/``retrieve()`` 的真实标志。
 
-    背景（已核对 OpenCV 5.0.0 官方源码，见 `docs/stage-37-read-failure-guard.md`）：
+    背景（已核对 OpenCV 5.0.0 官方源码，见 `docs/archive/stage-37-read-failure-guard.md`）：
     ``cv2.VideoCapture.read()`` 丢弃 ``retrieve()`` 的布尔返回值，只按输出数组是否
     为空判定成功；DirectShow 的 ``retrieveFrame()`` 在取像素**之前**先
     ``frame.create()`` 预分配非空数组，因此取帧超时失败时仍可能返回非空数组。

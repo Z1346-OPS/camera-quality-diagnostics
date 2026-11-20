@@ -45,7 +45,7 @@
 | 入库精确期望（汇总与逐样本） | [`data/manifests/evaluation-synthetic-expectations.json`](../../data/manifests/evaluation-synthetic-expectations.json)；development 汇总 [L5–L41](../../data/manifests/evaluation-synthetic-expectations.json#L5-L41)，test 汇总 [L277–L313](../../data/manifests/evaluation-synthetic-expectations.json#L277-L313) |
 | 样本清单 | [`evaluation-synthetic-development.json`](../../data/manifests/evaluation-synthetic-development.json)、[`evaluation-synthetic-test.json`](../../data/manifests/evaluation-synthetic-test.json) |
 | CI 原始日志摘录（提交 `6dba7c7`，Actions #14，Ubuntu 24.04.5，Python 3.12.15） | [`ci-6dba7c7.json`](ci-6dba7c7.json) |
-| 数据集设计与闸门反向测试 | [`stage-33-synthetic-regression-dataset.md`](../stage-33-synthetic-regression-dataset.md) |
+| 数据集设计与闸门反向测试 | [亮点说明 · Oracle 设计](../highlights.md#1-oracle-设计)；原始记录 [`archive/stage-33-synthetic-regression-dataset.md`](../archive/stage-33-synthetic-regression-dataset.md) |
 
 提交 `ea2a1be` 把期望文件升级为 schema v2，新增了逐样本记录；两组的汇总计数与 `6dba7c7` 时相同。
 
@@ -82,7 +82,7 @@
 
 ## 5. 缺陷案例 F01 的修复前后记录
 
-README 中 F01 的"修复前失败、修复后 12 个目标用例通过"来自 2026-10-17 的本地验证记录，摘要见 [`stage-37-read-failure-guard.md`](../stage-37-read-failure-guard.md) §4–§5。原始输出在本机被忽略的目录 `data/reports/read-failure-guard-20261017-101037-9d36a959/` 中，未入库。
+README 中 F01 的"修复前失败、修复后 12 个目标用例通过"来自 2026-10-17 的本地验证记录，摘要见[亮点说明 · 故障注入与可控环境](../highlights.md#2-故障注入与可控环境)，数字的原始记录为 [`archive/stage-37-read-failure-guard.md`](../archive/stage-37-read-failure-guard.md) §4–§5。原始输出在本机被忽略的目录 `data/reports/read-failure-guard-20261017-101037-9d36a959/` 中，未入库。
 
 | 项 | 值 |
 | --- | --- |
