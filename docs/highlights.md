@@ -48,6 +48,7 @@
   - 评测 CLI `src/evaluate_labels.py` 的退出码 2 有两种含义：一是批量结果中有 `decode_error` 或 `execution_error`，状态为 `completed_with_errors`，这时报告已写出；二是程序级失败，这时没有报告。
   - 闸门 `run_evaluation()` 接受退出码 0 和 2，再看“是否生成了报告 JSON”，没有报告就判失败。
   - 完整的退出码表见[架构 · 退出码](architecture.md#退出码)。
+- **缺陷回放**：撤销 F01、F03、F07 的修复后，指定测试都会失败，且失败原因就是缺陷本身；恢复修复后通过。补丁、复现命令和失败输出见[测试策略与缺陷回放](testing-strategy.md#2-缺陷回放)。
 
 延伸阅读：[F01 原始记录](archive/stage-37-read-failure-guard.md)。
 

@@ -1,0 +1,13 @@
+diff --git a/src/capture_task.py b/src/capture_task.py
+index 71f37cc..143edbd 100644
+--- a/src/capture_task.py
++++ b/src/capture_task.py
+@@ -232,7 +232,7 @@ def _default_camera_factory(camera_index: int):
+     避免底层取帧失败但输出数组非空时被误计为成功采集。
+     """
+     capture = cv2.VideoCapture(camera_index, getattr(cv2, _requested_backend()))
+-    return _GrabRetrieveCamera(capture)
++    return capture
+ 
+ 
+ def _utc_now_iso() -> str:

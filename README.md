@@ -101,6 +101,7 @@ Linux 将解释器替换为 `.venv/bin/python`。
 | `.github/workflows/tests.yml` | Ubuntu / Python 3.12 自动回归 |
 
 - [亮点说明](docs/highlights.md)：oracle 设计、故障注入、证据完整性、如实报告，各附证据
+- [测试策略与缺陷回放](docs/testing-strategy.md)：风险与测试的对照表；撤销 F01、F03、F07 的修复后，指定测试如何失败，附可复现补丁
 - [架构与退出码契约](docs/architecture.md)
 - [公开验收汇总与 CI 证据](docs/verification/acceptance-summary-2026-10-27.md)
 - [首页证据：示例运行与逐样本结果](docs/verification/stage1-readme-evidence-2026-11-19.md)
