@@ -8,25 +8,22 @@ target-version = "py312"
 extend-exclude = ["docs/archive/tasks/evidence"]
 
 [lint]
+# E402 不在默认规则集里；声明为外部规则后，ruff 保留这些 # noqa: E402 标注，同时仍能报出其他多余的 noqa。
+external = ["E402"]
 ignore = [
-    # 导入排序只影响版式；修复要改 30+ 个文件的导入块，且多个文件故意在 sys.path.insert 之后导入。
+    # 导入排序只影响版式，修复会大范围调整 30 多个文件的导入块；故意的晚导入由 # noqa: E402 说明。
     "I001",
     # datetime.UTC 与 datetime.timezone.utc 是同一对象，只是别名替换；不为纯风格改 6 个模块的导入。
     "UP017",
-    # `# noqa: E402` 标注了故意在 sys.path.insert 之后的导入；E402 不在默认规则集里，ruff 视为“未使用”，
-    # 但 pycodestyle / flake8 类工具仍会识别，保留这些标注。
-    "RUF100",
 ]
 
 [lint.per-file-ignores]
-# 宽泛捕获是有意设计：采集任务需要在任何异常（含 KeyboardInterrupt）时记录失败阶段并写出报告，
-# 再原样抛出；解码失败要记为 decoder_execution_error 而不是“未读出”；环境检查脚本要打印错误并返回退出码。
+# 采集在任务和清理边界记录主异常及附加错误，按现有契约传播；解码将普通执行异常写入结构化结果；交互入口打印诊断并按各自约定处理退出状态。
 "src/capture_task.py" = ["BLE001"]
 "src/label_analysis.py" = ["BLE001"]
 "src/camera_test.py" = ["BLE001"]
 "src/main.py" = ["BLE001"]
-# 输入格式错误统一抛 ValueError 是对外契约，tests/test_review_capture.py 等用 pytest.raises(ValueError) 断言；
-# 改成 TypeError 会改变行为。
+# 非法报告输入统一抛出 ValueError，两个 CLI 通过该分支输出诊断并返回既定错误码。保留现有异常类型。
 "src/review_capture.py" = ["TRY004"]
 "src/summarize_pairs.py" = ["TRY004"]
 # 这两个工具要读取子进程的退出码自行判断（评测 CLI 的退出码 2 也表示业务结果 completed_with_errors），

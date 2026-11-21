@@ -295,7 +295,7 @@ def _release_camera(camera) -> tuple[list, BaseException | None]:
     first_error = None
     try:
         camera.release()
-    except BaseException as error:  # noqa: BLE001 - 释放失败要如实记录，不能吞掉
+    except BaseException as error:  # 释放失败要如实记录，不能吞掉
         entries.append({"type": type(error).__name__, "message": str(error)})
         first_error = error
     return entries, first_error
@@ -577,7 +577,7 @@ class CaptureRunner:
         publish_error = None
         try:
             _publish_report(report, output_dir / REPORT_NAME)
-        except BaseException as error:  # noqa: BLE001 - 见下：发布错误只作为附加信息
+        except BaseException as error:  # 见下：发布错误只作为附加信息
             publish_error = error
 
         if primary_exception is not None:
