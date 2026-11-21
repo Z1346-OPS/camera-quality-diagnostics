@@ -14,7 +14,7 @@
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 New-Item -ItemType Directory -Path '.\data\reports' -Force | Out-Null
 
 # A：提供独立答案
@@ -28,7 +28,7 @@ New-Item -ItemType Directory -Path '.\data\reports' -Force | Out-Null
 
 ```bash
 python3.12 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m pip install -r requirements-dev.txt
 mkdir -p data/reports
 .venv/bin/python -X utf8 src/analyze_label.py data/samples/stage2-known-qr.png --expected-file data/samples/stage2-known-qr.expected.txt --truth-source '固定合成样例' --output data/reports/qr-first-run-001.json
 .venv/bin/python -X utf8 src/analyze_label.py data/samples/stage2-known-qr.png --output data/reports/qr-first-run-002.json
