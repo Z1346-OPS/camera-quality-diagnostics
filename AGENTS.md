@@ -1,8 +1,11 @@
 # camera-quality-diagnostics — 项目规则
 
 > 项目专属规则。跨项目通用约束见用户级全局规则 `~/.codex/AGENTS.md`。
-> 下面的路径与命令均已在本机实测；测试数量随用例变化，2026-10-20 的本地记录为 508 passed、4 skipped
-> （见 `docs/archive/tasks/delivery-candidate-2026-10-20.md`；跳过原因是 Windows 符号链接权限不足）。
+> 下面的路径与命令均已在本机实测；测试数量随用例变化，最近一次公开记录为 509 passed、4 skipped
+> （代码 `0904038`，Windows 11、Python 3.12.10，见 `docs/verification/stage1-readme-evidence-2026-11-19.md` 第 3 节；
+> 跳过原因是 Windows 符号链接权限不足 WinError 1314）。
+> CI（`a9647f5`，运行 #41：https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/44857941368）
+> 在 Ubuntu 与 Windows 上均为 513 passed，符号链接用例在 GitHub runner 上可运行。
 
 ## 项目定位
 
@@ -22,8 +25,9 @@
 
 判断某项能力是否已实现时，**以最新的核对/设计记录为准**：能力边界看
 `docs/archive/stage-32-docs-vs-code-consistency.md`，数据集与 CI 回归看
-`docs/archive/stage-33-synthetic-regression-dataset.md`；**项目数字（提交数、用例数、仓库体积等）
-看 `docs/archive/stage-34-project-capability-matrix.md`，不要凭记忆说数字。**
+`docs/archive/stage-33-synthetic-regression-dataset.md`；**项目数字（用例数、CI 结果等）看
+`docs/verification/acceptance-summary-2026-10-27.md`，并以数字所绑定的提交和环境为准，不要凭记忆说数字。**
+（`docs/archive/stage-34-project-capability-matrix.md` 已是历史记录，其正文第 23 行说明当前数字见公开验收汇总。）
 不要依据 `docs/archive/label-reading-project-design.md`（2026-10-01 的历史记录）或旧提交信息。
 
 交付候选身份、支持范围与当前验证依据看 `docs/archive/tasks/delivery-candidate-2026-10-20.md`；
@@ -48,7 +52,13 @@
   **会话 cwd 必须 = 项目根**（见全局规则中的沙箱说明）。
 
 ```powershell
-# 测试（默认由 pytest.ini 收集完整 tests/；2026-10-20 本地记录 508 passed、4 skipped）
+# 安装依赖：requirements.txt 只含运行时依赖；开发与测试（pytest、ruff）用 requirements-dev.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+
+# 静态检查（ruff 默认规则集，忽略项及理由见 ruff.toml；不要运行 ruff format 或全仓库 --fix）
+.\.venv\Scripts\python.exe -m ruff check .
+
+# 测试（默认由 pytest.ini 收集完整 tests/；最近一次公开记录见文件开头）
 .\.venv\Scripts\python.exe -m pytest -q
 
 # 重新生成合成回归数据集（重写样例目录与两份清单；稳定后不要反复重生成）

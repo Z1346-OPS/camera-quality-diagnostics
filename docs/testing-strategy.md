@@ -2,7 +2,7 @@
 
 本页回答两个问题：每类风险由哪条测试负责；这些测试是否真的能抓住缺陷。第二个问题用**缺陷回放**回答：把已修复缺陷的修复撤销，确认至少有一条指定测试因该缺陷失败；恢复修复后再确认通过。
 
-默认测试入口是 `pytest`，`pytest.ini` 设置 `testpaths = tests`，CI 在 Ubuntu 上额外运行冻结期望闸门（见 `.github/workflows/tests.yml`）。
+默认测试入口是 `pytest`，`pytest.ini` 设置 `testpaths = tests`，CI 在 Ubuntu 和 Windows 上分别运行 ruff、pytest 和冻结期望闸门（见 `.github/workflows/tests.yml`）。
 
 ## 1. 风险 → 测试对照
 
@@ -82,7 +82,7 @@ FAILED tests/test_review_capture.py::test_png_replacement_after_read_cannot_mix_
 
 ## 3. 未测内容及原因
 
-- **Windows 上 4 项符号链接用例跳过**：`tests/test_review_capture.py` 中的 `test_r08_symlinked_image_escaping_dir_is_rejected_before_read`（1 项）和 `test_r08_symlinked_fixed_input_escaping_dir_is_rejected_before_read`（3 项）需要创建真实符号链接，Windows 普通用户权限下报 `WinError 1314`，测试以 `skip` 记录，不计为通过。它们在 Ubuntu CI 上运行。同类风险在 Windows 上另有 `test_r08_injected_resolution_outside_dir_is_rejected` 覆盖路径解析逻辑，但不等于真实符号链接。
+- **Windows 本机 4 项符号链接用例跳过**：`tests/test_review_capture.py` 中的 `test_r08_symlinked_image_escaping_dir_is_rejected_before_read`（1 项）和 `test_r08_symlinked_fixed_input_escaping_dir_is_rejected_before_read`（3 项）需要创建真实符号链接，Windows 本机普通用户权限下报 `WinError 1314`，测试以 `skip` 记录，不计为通过。在 GitHub Actions 的 Ubuntu 与 Windows runner 上，这 4 项都实际运行并通过（[运行 #41](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/44857941368)，`a9647f5`）。同类风险在 Windows 上另有 `test_r08_injected_resolution_outside_dir_is_rejected` 覆盖路径解析逻辑，但不等于真实符号链接。
 - **Linux 摄像头没有实机验证**：Linux 下选择 V4L2 只经过平台模拟测试和 Ubuntu CI，没有接真实 Linux 摄像头。
 - **真实 OpenCV 设备的取帧失败**：F01 的回归测试用假设备模拟 DirectShow 的行为，没有在真实设备上稳定复现 `retrieve()` 失败的场景；修复也不等于确认历史近黑画面的根因。
 - **不支持硬链接的文件系统**：报告发布在这种环境下的报错只通过注入 `os.link` 失败来测试，没有在真实的此类文件系统上运行。

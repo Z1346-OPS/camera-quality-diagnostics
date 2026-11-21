@@ -86,7 +86,7 @@ def test_opencv_importable():
 
 def test_opencv_can_create_image():
     """能创建一张图像 (黑图)"""
-    cv2 = pytest.importorskip("cv2")
+    pytest.importorskip("cv2")
     img = np.zeros((100, 200, 3), dtype=np.uint8)
     assert img.shape == (100, 200, 3)
     assert img.sum() == 0, "全黑图的像素和应该是 0"

@@ -6,13 +6,29 @@ on:
 
 jobs:
   pytest:
-    runs-on: ubuntu-latest
+    strategy:
+      # Report both platforms even if one fails.
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            venv-python: .venv/bin/python
+          - os: windows-latest
+            venv-python: .venv/Scripts/python.exe
+
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: bash
 
     steps:
-      - uses: actions/checkout@v4
+      # checkout@v5 and setup-python@v6 are the first official majors whose action.yml
+      # declares `using: node24` (checkout@v4 and setup-python@v5 declare node20).
+      - uses: actions/checkout@v5
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -24,16 +40,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          .venv/bin/python -m pip install --upgrade pip
-          .venv/bin/python -m pip install -r requirements.txt
+          ${{ matrix.venv-python }} -m pip install --upgrade pip
+          ${{ matrix.venv-python }} -m pip install -r requirements-dev.txt
+
+      - name: Lint (ruff)
+        run: |
+          ${{ matrix.venv-python }} -m ruff check .
 
       - name: Run tests
         run: |
-          .venv/bin/python -m pytest -q
+          ${{ matrix.venv-python }} -m pytest -q -rs
 
       # The evaluator exits 2 both for a crash and for the business outcome
       # "completed_with_errors", so the gate judges the JSON report against committed
       # expectations instead of the exit code.
       - name: Gate label evaluation on the synthetic dataset
         run: |
-          .venv/bin/python -X utf8 tools/check_evaluation_expectations.py
+          ${{ matrix.venv-python }} -X utf8 tools/check_evaluation_expectations.py

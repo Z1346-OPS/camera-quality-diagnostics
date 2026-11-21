@@ -1529,7 +1529,7 @@ def test_default_factory_delegates_camera_index(tmp_path, monkeypatch):
     """适配不改变摄像头编号的传递。"""
     clock = FakeClock()
     backend = FakeVideoCapture(clock=clock, step=0.5, frame=make_frame(1))
-    config, runner, seen_indices = _run_with_default_factory(
+    _config, runner, seen_indices = _run_with_default_factory(
         tmp_path, backend, duration=2, interval=1, clock=clock,
         monkeypatch=monkeypatch, camera_index=3,
     )
