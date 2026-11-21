@@ -4,6 +4,8 @@
 > 下面的路径与命令均已在本机实测；测试数量随用例变化，最近一次公开记录为 509 passed、4 skipped
 > （代码 `0904038`，Windows 11、Python 3.12.10，见 `docs/verification/stage1-readme-evidence-2026-11-19.md` 第 3 节；
 > 跳过原因是 Windows 符号链接权限不足 WinError 1314）。
+> CI（`a9647f5`，运行 #41：https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/44857941368）
+> 在 Ubuntu 与 Windows 上均为 513 passed，符号链接用例在 GitHub runner 上可运行。
 
 ## 项目定位
 

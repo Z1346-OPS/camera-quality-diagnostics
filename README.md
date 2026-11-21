@@ -3,6 +3,7 @@
 基于 Python/OpenCV 的**图像质量测量、摄像头采集留证与 QR 自动化回归工具**，用固定样本、独立答案和精确期望闸门验证识读链路的行为与失败边界。
 
 [![tests](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/workflows/tests.yml?query=branch%3Amain)
+徽章显示 main 分支的 CI 状态。下表的 CI 结果对应提交 `a9647f5`，见 [CI 运行 #41](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/44857941368)。
 
 **结果入口：** [有证据的结果](#有证据的结果)（QR 回归：baseline 与内部降采样搜索的配对比较） · [缺陷案例 F01](#缺陷案例-f01失败的取帧被计为成功) · [验证边界](#验证边界) · [逐样本证据](docs/verification/stage1-readme-evidence-2026-11-19.md) · [亮点说明](docs/highlights.md)（oracle、故障注入、证据完整性、如实报告）
 
@@ -56,8 +57,8 @@ Linux 将解释器替换为 `.venv/bin/python`。
 
 | 结果 | 数字 | 样本范围 | 绑定版本与环境 | 证据 |
 | --- | --- | --- | --- | --- |
-| 固定合成 QR 回归 | 每组 baseline 正确读取 **18/23**，启用内部降采样搜索后 **21/23**；每组改进 3、退化 0 | `synthetic-qr-v1` 的 development 组、test 组，各 23 张程序生成的固定样本 | CI：提交 [`6dba7c7`](https://github.com/Z1346-OPS/camera-quality-diagnostics/commit/6dba7c799754e90ef687d48fa99dca61445e58f5)，Ubuntu 24.04.5，Python 3.12.15；本地复核：代码版本 `0904038`，Windows 11，Python 3.12.10，2026-11-19 | [逐样本证据](docs/verification/stage1-readme-evidence-2026-11-19.md#6-逐样本改进的-6-张)、[入库期望](data/manifests/evaluation-synthetic-expectations.json)、[CI 日志摘录](docs/verification/ci-6dba7c7.json) |
-| 自动化测试 | CI **512 passed**；Windows 本地 **509 passed、4 skipped**（4 项真实符号链接用例因 WinError 1314 权限不足跳过，不计为通过） | 默认收集的 `tests/` 全部产品测试 | CI：`6dba7c7`，Ubuntu 24.04.5，Python 3.12.15，[Actions #14](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/39424609746)；本地：代码版本 `0904038`，Windows 11，Python 3.12.10，2026-11-19 | [公开验收汇总](docs/verification/acceptance-summary-2026-10-27.md)、[首页证据](docs/verification/stage1-readme-evidence-2026-11-19.md#3-自动化测试本地) |
+| 固定合成 QR 回归 | 每组 baseline 正确读取 **18/23**，启用内部降采样搜索后 **21/23**；每组改进 3、退化 0 | `synthetic-qr-v1` 的 development 组、test 组，各 23 张程序生成的固定样本 | CI：提交 [`6dba7c7`](https://github.com/Z1346-OPS/camera-quality-diagnostics/commit/6dba7c799754e90ef687d48fa99dca61445e58f5)，Ubuntu 24.04.5，Python 3.12.15；本地复核：代码版本 `0904038`，Windows 11，Python 3.12.10，2026-11-19；`a9647f5` 上冻结期望闸门在 Ubuntu 与 Windows 均通过 | [逐样本证据](docs/verification/stage1-readme-evidence-2026-11-19.md#6-逐样本改进的-6-张)、[入库期望](data/manifests/evaluation-synthetic-expectations.json)、[CI 日志摘录](docs/verification/ci-6dba7c7.json) |
+| 自动化测试 | CI 在 Ubuntu 与 Windows 上均为 **513 passed**；Windows 本地 **509 passed、4 skipped**（4 项真实符号链接用例因 WinError 1314 权限不足跳过，不计为通过；GitHub 的 Windows runner 允许创建符号链接，这 4 项在 CI 上实际运行） | 默认收集的 `tests/` 全部产品测试 | CI：`a9647f5`，GitHub Actions `ubuntu-latest` 与 `windows-latest`，Python 3.12，[运行 #41](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/runs/44857941368)；本地：代码版本 `0904038`，Windows 11，Python 3.12.10，2026-11-19 | [公开验收汇总](docs/verification/acceptance-summary-2026-10-27.md)、[首页证据](docs/verification/stage1-readme-evidence-2026-11-19.md#3-自动化测试本地) |
 | 历史 Windows 实采 | **3 轮 × 6 张 = 18 张**留证图片，摘要与指标核对一致 | 单台设备，正常照明，640×480，每轮 30 秒、每 5 秒留证 | 2026-10-16，当时基线 `81b86e6`，Windows，DirectShow；不是最终修正后的新实机验收 | [公开验收汇总](docs/verification/acceptance-summary-2026-10-27.md#历史-windows-实采验收) |
 
 关于合成 QR 回归的读法：
