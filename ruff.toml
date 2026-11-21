@@ -1,0 +1,37 @@
+# ruff 最小配置：只用 ruff 自带的默认规则集（不额外 select），下面只列忽略项及理由。
+# 不运行 `ruff format`；CI 只跑 `ruff check .`。
+
+target-version = "py312"
+
+# 冻结证据：extract_qr_stable_fields.py 由 tests/test_blur_experiment.py 按 SHA-256 锁定，
+# 不允许改动任何字节，因此不纳入 lint。
+extend-exclude = ["docs/archive/tasks/evidence"]
+
+[lint]
+ignore = [
+    # 导入排序只影响版式；修复要改 30+ 个文件的导入块，且多个文件故意在 sys.path.insert 之后导入。
+    "I001",
+    # datetime.UTC 与 datetime.timezone.utc 是同一对象，只是别名替换；不为纯风格改 6 个模块的导入。
+    "UP017",
+    # `# noqa: E402` 标注了故意在 sys.path.insert 之后的导入；E402 不在默认规则集里，ruff 视为“未使用”，
+    # 但 pycodestyle / flake8 类工具仍会识别，保留这些标注。
+    "RUF100",
+]
+
+[lint.per-file-ignores]
+# 宽泛捕获是有意设计：采集任务需要在任何异常（含 KeyboardInterrupt）时记录失败阶段并写出报告，
+# 再原样抛出；解码失败要记为 decoder_execution_error 而不是“未读出”；环境检查脚本要打印错误并返回退出码。
+"src/capture_task.py" = ["BLE001"]
+"src/label_analysis.py" = ["BLE001"]
+"src/camera_test.py" = ["BLE001"]
+"src/main.py" = ["BLE001"]
+# 输入格式错误统一抛 ValueError 是对外契约，tests/test_review_capture.py 等用 pytest.raises(ValueError) 断言；
+# 改成 TypeError 会改变行为。
+"src/review_capture.py" = ["TRY004"]
+"src/summarize_pairs.py" = ["TRY004"]
+# 这两个工具要读取子进程的退出码自行判断（评测 CLI 的退出码 2 也表示业务结果 completed_with_errors），
+# 不能用 check=True 把它变成异常。
+"tools/check_evaluation_expectations.py" = ["PLW1510"]
+"tools/test_investigator_contract.py" = ["PLW1510"]
+# 其中一处是断言行；显式写出 "utf-8" 表达的是“答案文件按 UTF-8 字节比较”的契约，不改测试断言。
+"tests/test_label_analysis.py" = ["UP012"]

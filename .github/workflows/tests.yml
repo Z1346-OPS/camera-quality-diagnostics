@@ -27,6 +27,10 @@ jobs:
           .venv/bin/python -m pip install --upgrade pip
           .venv/bin/python -m pip install -r requirements-dev.txt
 
+      - name: Lint (ruff)
+        run: |
+          .venv/bin/ruff check .
+
       - name: Run tests
         run: |
           .venv/bin/python -m pytest -q
