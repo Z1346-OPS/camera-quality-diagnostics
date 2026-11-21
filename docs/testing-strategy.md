@@ -2,7 +2,7 @@
 
 本页回答两个问题：每类风险由哪条测试负责；这些测试是否真的能抓住缺陷。第二个问题用**缺陷回放**回答：把已修复缺陷的修复撤销，确认至少有一条指定测试因该缺陷失败；恢复修复后再确认通过。
 
-默认测试入口是 `pytest`，`pytest.ini` 设置 `testpaths = tests`，CI 在 Ubuntu 上额外运行冻结期望闸门（见 `.github/workflows/tests.yml`）。
+默认测试入口是 `pytest`，`pytest.ini` 设置 `testpaths = tests`，CI 在 Ubuntu 和 Windows 上分别运行 ruff、pytest 和冻结期望闸门（见 `.github/workflows/tests.yml`）。
 
 ## 1. 风险 → 测试对照
 

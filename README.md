@@ -2,7 +2,7 @@
 
 基于 Python/OpenCV 的**图像质量测量、摄像头采集留证与 QR 自动化回归工具**，用固定样本、独立答案和精确期望闸门验证识读链路的行为与失败边界。
 
-[![tests](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/workflows/tests.yml/badge.svg)](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/workflows/tests.yml)
+[![tests](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Z1346-OPS/camera-quality-diagnostics/actions/workflows/tests.yml?query=branch%3Amain)
 
 **结果入口：** [有证据的结果](#有证据的结果)（QR 回归：baseline 与内部降采样搜索的配对比较） · [缺陷案例 F01](#缺陷案例-f01失败的取帧被计为成功) · [验证边界](#验证边界) · [逐样本证据](docs/verification/stage1-readme-evidence-2026-11-19.md) · [亮点说明](docs/highlights.md)（oracle、故障注入、证据完整性、如实报告）
 
@@ -98,7 +98,10 @@ Linux 将解释器替换为 `.venv/bin/python`。
 | `data/samples/`、`data/manifests/` | 入库合成数据与评测清单 |
 | `data/experiments/` | 固定模糊实验的计划、结果和退化样本 |
 | `docs/` | 公开文档（见下）；`docs/archive/` 为开发日志 |
-| `.github/workflows/tests.yml` | Ubuntu / Python 3.12 自动回归 |
+| `.github/workflows/tests.yml` | Ubuntu 与 Windows / Python 3.12 自动回归：ruff、pytest、冻结期望闸门 |
+| `requirements.txt`、`requirements-dev.txt` | 运行时依赖；开发与测试依赖（pytest、ruff） |
+| `ruff.toml` | ruff 默认规则集，忽略项逐条写明理由 |
+| `LICENSE` | MIT |
 
 - [亮点说明](docs/highlights.md)：oracle 设计、故障注入、证据完整性、如实报告，各附证据
 - [测试策略与缺陷回放](docs/testing-strategy.md)：风险与测试的对照表；撤销 F01、F03、F07 的修复后，指定测试如何失败，附可复现补丁
