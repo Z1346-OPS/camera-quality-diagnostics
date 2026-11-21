@@ -106,7 +106,7 @@ def load_normalized_image(path: Path) -> tuple[np.ndarray, dict]:
             if original_mode not in SUPPORTED_MODES:
                 raise AnalysisError("unsupported_mode", f"不支持的图像模式/数据类型: {original_mode}；仅支持 8 位通道")
             orientation = image.getexif().get(274, 1)
-            if orientation not in range(0, 9):
+            if orientation not in range(9):
                 raise AnalysisError("invalid_orientation", f"无效的 EXIF 方向值: {orientation}")
             image.load()
             # Zero gives no reliable direction; preserve the stored pixel order.

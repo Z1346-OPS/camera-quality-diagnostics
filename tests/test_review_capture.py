@@ -343,7 +343,7 @@ def test_r06_declared_counts_and_states(tmp_path):
 @pytest.mark.parametrize("csv_mismatch", [False, True])
 def test_r06_reported_samples_keeps_declared_count(tmp_path, csv_mismatch):
     """声明 3 帧而 samples 只有 1 项时，reported_samples 必须保留声明值 3。"""
-    task_dir, run_id, _ = make_task(
+    task_dir, _run_id, _ = make_task(
         tmp_path, (1,), name=f"reported-{csv_mismatch}", samples_completed=3
     )
     if csv_mismatch:                  # 走 CSV 集合不一致的提前返回分支
@@ -372,7 +372,7 @@ def test_r06_reported_samples_keeps_declared_count(tmp_path, csv_mismatch):
 
 @pytest.mark.parametrize("status", ["failed", "interrupted"])
 def test_r07_non_completed_task_is_not_reviewed(tmp_path, capsys, status):
-    task_dir, run_id, samples = make_task(tmp_path, (1,), status=status)
+    task_dir, run_id, _samples = make_task(tmp_path, (1,), status=status)
     before = snapshot(task_dir)
     result = review(task_dir)
     assert result["verification_status"] == "not_reviewed"
