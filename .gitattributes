@@ -1,0 +1,18 @@
+# 文本文件在仓库中统一为 LF，所有平台检出也用 LF（与 Linux CI 一致）。
+* text=auto eol=lf
+
+# 二进制：不做行尾转换、不做文本 diff。
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.bmp  binary
+*.gif  binary
+*.webp binary
+*.tif  binary
+*.tiff binary
+
+# 字节资产：样本、清单、答案文件、实验结果和冻结证据按入库字节原样保存，不做任何行尾转换。
+# 子目录里已有的 .gitattributes（如 phase-4.2 证据目录的 eol=lf 规则）优先级更高，保持不变。
+photo/**                     -text
+data/**                      -text
+docs/archive/tasks/evidence/** -text
